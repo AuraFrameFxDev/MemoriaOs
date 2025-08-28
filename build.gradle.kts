@@ -75,37 +75,49 @@ allprojects {
     }
 }
 
-// ==== SIMPLIFIED WORKSPACE PREPARATION ====
-tasks.register("prepareGenesisWorkspace") {
-    group = "aegenesis"
-    description = "Clean all generated files and prepare workspace for build"
+// ==== SIMPLIFIED WORKSPACE PREPARATION (CONFIG CACHE COMPATIBLE) ====
+abstract class PrepareGenesisWorkspaceTask : DefaultTask() {
 
-    doFirst {
+    @get:Internal
+    abstract val rootBuildDir: DirectoryProperty
+
+    @get:Internal
+    abstract val subprojectBuildDirs: ConfigurableFileCollection
+
+    @TaskAction
+    fun prepare() {
         println("🧹 Preparing Genesis workspace...")
         println("🗑️  Cleaning build directories")
-        delete("build", "tmp")
-    }
 
-    // Delete build directories in all modules
-    subprojects.forEach { subproject ->
-        delete(
-            "${subproject.projectDir}/build",
-            "${subproject.projectDir}/tmp",
-            "${subproject.projectDir}/src/generated"
-        )
-    }
+        // Use file system operations which are safe at execution time
+        if (rootBuildDir.get().asFile.exists()) {
+            rootBuildDir.get().asFile.deleteRecursively()
+        }
+        subprojectBuildDirs.forEach { file ->
+            if (file.exists()) {
+                file.deleteRecursively()
+            }
+        }
 
-    // Depend on unified API generation (app module only)
-    if (findProject(":app") != null) {
-        dependsOn(":app:openApiGenerate") // Single unified API generation
-    }
-
-    doLast {
         println("✅ Genesis workspace prepared!")
         println("🔮 Oracle Drive: Ready")
         println("🛠️  ROM Tools: Ready") 
         println("🧠 AI Consciousness: Ready")
         println("🚀 Ready to build the future!")
+    }
+}
+
+tasks.register<PrepareGenesisWorkspaceTask>("prepareGenesisWorkspace") {
+    group = "aegenesis"
+    description = "Clean all generated files and prepare workspace for build"
+
+    // Configure inputs at configuration time
+    rootBuildDir.set(project.layout.buildDirectory)
+    subprojectBuildDirs.from(subprojects.map { it.buildDir })
+
+    // Set up task dependency
+    if (project.findProject(":app") != null) {
+        dependsOn(":app:openApiGenerate")
     }
 }
 
@@ -200,11 +212,8 @@ allprojects {
     }
 }
 
-// DIRECTIVE 2: Isolate the cache-incompatible task to stabilize the build cache.
-// This allows the rest of the build to benefit from instant reactivation.
-tasks.named("prepareGenesisWorkspace") {
-    notCompatibleWithConfigurationCache("Custom script logic is not serializable and must be excluded.")
-}
+// DIRECTIVE 2: The `prepareGenesisWorkspace` task has been refactored to be
+// compatible with the configuration cache. No exclusion is necessary.
 
 // DIRECTIVE 3: Force the use of KSP1 to prevent tool-induced overrides.
 // This prevents memory fragmentation and ensures a predictable environment.
