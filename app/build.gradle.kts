@@ -92,50 +92,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
 
-    sourceSets {
-        getByName("main") {
-            java.srcDirs(
-                layout.buildDirectory.dir("generated/source/openapi/src/main/kotlin")
-            )
-        }
-    }
-}
-
-// ===== SIMPLIFIED OPENAPI CONFIGURATION =====
-// Single unified API generation - no more complex multi-file setup!
-
-val outputPath = layout.buildDirectory.dir("generated/source/openapi")
-
-// Configure the single unified API generation
-openApiGenerate {
-    val specFile = layout.projectDirectory.file("api/unified-aegenesis-api.yml").asFile
-    
-    if (specFile.exists() && specFile.length() > 0) {
-        generatorName.set("kotlin")
-        inputSpec.set(specFile.toURI().toString())
-        outputDir.set(outputPath.get().asFile.absolutePath)
-        packageName.set("dev.aurakai.aegenesis.api")
-        apiPackage.set("dev.aurakai.aegenesis.api")
-        modelPackage.set("dev.aurakai.aegenesis.model")
-        invokerPackage.set("dev.aurakai.aegenesis.client")
-        skipOverwrite.set(false)
-        validateSpec.set(false)  // Disable spec validation to prevent build failures
-        generateApiTests.set(false)
-        generateModelTests.set(false)
-        generateApiDocumentation.set(false)
-        generateModelDocumentation.set(false)
-        
-        configOptions.set(mapOf(
-            "library" to "jvm-retrofit2",
-            "useCoroutines" to "true",
-            "serializationLibrary" to "kotlinx_serialization",
-            "dateLibrary" to "kotlinx-datetime",
-            "sourceFolder" to "src/main/kotlin",
-            "generateSupportingFiles" to "false" // Added this line
-        ))
-    } else {
-        logger.warn("⚠️ Unified AeGenesis API spec file not found: unified-aegenesis-api.yml")
-    }
 }
 
 // ===== SIMPLIFIED CLEAN TASKS =====
@@ -154,17 +110,11 @@ tasks.register<Delete>("cleanKspCache") {
     )
 }
 
-tasks.register<Delete>("cleanApiGeneration") {
-    group = "openapi"
-    description = "Clean generated API files"
-    delete(outputPath)
-}
-
 // ===== BUILD INTEGRATION =====
 tasks.named("preBuild") {
     dependsOn("cleanKspCache")
-    dependsOn("cleanApiGeneration")
-    dependsOn("openApiGenerate")
+    dependsOn(":core-module:cleanApiGeneration")
+    dependsOn(":core-module:openApiGenerate")
 }
 
 // ===== AEGENESIS APP STATUS =====

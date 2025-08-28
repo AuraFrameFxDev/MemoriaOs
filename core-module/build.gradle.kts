@@ -1,19 +1,38 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dokka)
     alias(libs.plugins.spotless)
     alias(libs.plugins.kover)
+    alias(libs.plugins.openapi.generator)
 }
 
-// Added to specify Java version for this subproject
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+android {
+    namespace = "dev.aurakai.auraframefx.core"
+    compileSdk = 36
+
+    defaultConfig {
+        minSdk = 33
     }
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+        }
+    }
+
+    sourceSets {
+        getByName("main") {
+            java.srcDirs("build/generated/source/openapi/src/main/kotlin")
+        }
+    }
 }
 
 dependencies {
@@ -23,105 +42,63 @@ dependencies {
     implementation(libs.bundles.coroutines)
     implementation(libs.kotlinx.serialization.json)
 
-    // Networking (without Android dependencies)
+    // Networking (for the generated Retrofit client)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.kotlinx.serialization)
     implementation(libs.okhttp3.logging.interceptor)
 
-    // Utilities (JVM compatible only)
+    // Utilities
     implementation(libs.gson)
-    implementation(libs.commons.io)
-    implementation(libs.commons.compress)
-    implementation(libs.xz)
 
-    // Security (JVM compatible only)
+    // Security
     implementation(libs.bouncycastle)
 
-    // Testing (JVM only)
+    // Testing
     testImplementation(libs.junit)
-    testImplementation(libs.junit.jupiter)
     testImplementation(libs.mockk)
-    testImplementation(libs.turbine)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testRuntimeOnly(libs.junit.engine)
 }
 
-// ===== AUTOMATED QUALITY CHECKS =====
-spotless {
-    kotlin {
-        target("**/*.kt")
-        targetExclude("**/build/**/*.kt")
-        ktlint(libs.versions.ktlint.get())
-            .editorConfigOverride(
-                mapOf(
-                    "indent_size" to "4",
-                    "max_line_length" to "120",
-                ),
-            )
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-    kotlinGradle {
-        target("*.gradle.kts")
-        ktlint(libs.versions.ktlint.get())
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-}
+// ===== OPENAPI CONFIGURATION =====
+val outputPath = layout.buildDirectory.dir("generated/source/openapi")
 
-// ===== AUTOMATED TESTING =====
-kover {
-    reports {
-        total {
-            html {
-                onCheck = true
-            }
-            xml {
-                onCheck = true
-            }
-        }
+// Configure the single unified API generation
+openApiGenerate {
+    val specFile = rootProject.layout.projectDirectory.file("app/api/unified-aegenesis-api.yml").asFile
+
+    if (specFile.exists() && specFile.length() > 0) {
+        generatorName.set("kotlin")
+        inputSpec.set(specFile.toURI().toString())
+        outputDir.set(outputPath.get().asFile.absolutePath)
+        packageName.set("dev.aurakai.aegenesis.api")
+        apiPackage.set("dev.aurakai.aegenesis.api")
+        modelPackage.set("dev.aurakai.aegenesis.model")
+        invokerPackage.set("dev.aurakai.aegenesis.client")
+        skipOverwrite.set(false)
+        validateSpec.set(false)
+        generateApiTests.set(false)
+        generateModelTests.set(false)
+        generateApiDocumentation.set(false)
+        generateModelDocumentation.set(false)
+
+        configOptions.set(mapOf(
+            "library" to "jvm-retrofit2",
+            "useCoroutines" to "true",
+            "serializationLibrary" to "kotlinx_serialization",
+            "dateLibrary" to "kotlinx-datetime",
+            "sourceFolder" to "src/main/kotlin",
+            "generateSupportingFiles" to "false"
+        ))
+    } else {
+        logger.warn("⚠️ Unified AeGenesis API spec file not found: unified-aegenesis-api.yml")
     }
 }
 
-// ===== DOCUMENTATION =====
-tasks.withType<org.jetbrains.dokka.gradle.DokkaTaskPartial>().configureEach {
-    dokkaSourceSets {
-        named("main") {
-            moduleName.set("Genesis Core Module")
-            moduleVersion.set("1.0.0")
-            includes.from("Module.md")
-
-            sourceLink {
-                localDirectory.set(file("src/main/kotlin"))
-                remoteLineSuffix.set("#L")
-            }
-
-            perPackageOption {
-                matchingRegex.set(".*\\.internal.*")
-                suppress.set(true)
-            }
-        }
-    }
+tasks.register<Delete>("cleanApiGeneration") {
+    group = "openapi"
+    description = "Clean generated API files"
+    delete(outputPath)
 }
 
-// ===== BUILD AUTOMATION TASKS =====
-tasks.register("checkCodeQuality") {
-    group = "verification"
-    description = "Run all code quality checks for core module"
-    dependsOn("spotlessCheck")
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    dependsOn("openApiGenerate")
 }
-
-tasks.register("runAllTests") {
-    group = "verification"
-    description = "Run all tests with coverage for core module"
-    dependsOn("test", "koverHtmlReport")
-}
-
-tasks.register("buildAndTest") {
-    group = "build"
-    description = "Complete build and test cycle for core module"
-    dependsOn("checkCodeQuality", "build", "runAllTests")
-}
-
-// Note: API generation handled by app module
-// Core module provides shared utilities only
