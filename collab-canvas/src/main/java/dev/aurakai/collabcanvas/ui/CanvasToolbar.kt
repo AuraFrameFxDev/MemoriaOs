@@ -7,8 +7,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -47,14 +46,14 @@ fun CanvasToolbar(
             IconButton(
                 onClick = { showColorPicker = !showColorPicker }
             ) {
-                Icon(Palette, "Color Picker")
+                Icon(Icons.Default.Palette, "Color Picker")
             }
             
             // Stroke width button
             IconButton(
                 onClick = { showStrokeSelector = !showStrokeSelector }
             ) {
-                Icon(Edit, "Stroke Width")
+                Icon(Icons.Default.Edit, "Stroke Width")
             }
             
             // Clear button

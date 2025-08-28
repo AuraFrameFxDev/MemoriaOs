@@ -8,11 +8,7 @@ import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Circle
-import androidx.compose.material.icons.filled.CropSquare
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -81,10 +77,10 @@ fun CanvasScreen() {
                         elements.clear()
                         animatedPaths.clear()
                     }) {
-                        Icon(Delete, "Clear Canvas")
+                        Icon(Icons.Default.Delete, "Clear Canvas")
                     }
                     IconButton(onClick = { /* Save canvas */ }) {
-                        Icon(Check, "Save")
+                        Icon(Icons.Default.Check, "Save")
                     }
                 }
             )
@@ -101,7 +97,7 @@ fun CanvasScreen() {
                     containerColor = if (selectedTool == ElementType.PATH) MaterialTheme.colorScheme.primaryContainer
                     else MaterialTheme.colorScheme.surfaceVariant
                 ) {
-                    Icon(Edit, "Draw")
+                    Icon(Icons.Default.Edit, "Draw")
                 }
                 FloatingActionButton(
                     onClick = { selectedTool = ElementType.RECTANGLE },
@@ -109,7 +105,7 @@ fun CanvasScreen() {
                     containerColor = if (selectedTool == ElementType.RECTANGLE) MaterialTheme.colorScheme.primaryContainer
                     else MaterialTheme.colorScheme.surfaceVariant
                 ) {
-                    Icon(CropSquare, "Rectangle")
+                    Icon(Icons.Default.CropSquare, "Rectangle")
                 }
                 FloatingActionButton(
                     onClick = { selectedTool = ElementType.OVAL },
@@ -117,7 +113,7 @@ fun CanvasScreen() {
                     containerColor = if (selectedTool == ElementType.OVAL) MaterialTheme.colorScheme.primaryContainer
                     else MaterialTheme.colorScheme.surfaceVariant
                 ) {
-                    Icon(Circle, "Circle")
+                    Icon(Icons.Default.Circle, "Circle")
                 }
             }
         }
