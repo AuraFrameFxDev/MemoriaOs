@@ -47,14 +47,14 @@ fun CanvasToolbar(
             IconButton(
                 onClick = { showColorPicker = !showColorPicker }
             ) {
-                Icon(Icons.Default.Palette, "Color Picker")
+                Icon(Palette, "Color Picker")
             }
             
             // Stroke width button
             IconButton(
                 onClick = { showStrokeSelector = !showStrokeSelector }
             ) {
-                Icon(Icons.Default.Edit, "Stroke Width")
+                Icon(Edit, "Stroke Width")
             }
             
             // Clear button
