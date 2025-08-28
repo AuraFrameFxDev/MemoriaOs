@@ -90,7 +90,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-
 }
 
 // ===== SIMPLIFIED CLEAN TASKS =====
@@ -112,8 +111,8 @@ tasks.register<Delete>("cleanKspCache") {
 // ===== BUILD INTEGRATION =====
 tasks.named("preBuild") {
     dependsOn("cleanKspCache")
-    dependsOn(":core-module:cleanApiGeneration")
-    dependsOn(":core-module:openApiGenerate")
+    dependsOn(":cleanApiGeneration")
+    dependsOn(":openApiGenerate")
 }
 
 // ===== AEGENESIS APP STATUS =====
