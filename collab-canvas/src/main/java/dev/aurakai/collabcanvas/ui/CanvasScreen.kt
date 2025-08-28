@@ -52,6 +52,11 @@ import kotlinx.coroutines.launch
  * - The "Save" action is a placeholder and does not persist the canvas.
  * - This composable uses experimental Compose APIs (opted in via annotations).
  */
+/**
+ * Composable screen that provides an interactive collaborative drawing canvas.
+ *
+ * The canvas supports freehand drawing (PATH tool), basic rectangle and oval elements, pinch-to-zoom and pan, per-path animated rendering, and a small toolbar for color/stroke selection. User strokes are accumulated in an in-memory list of PluckablePath and rendered with optional per-path animation state; completed strokes are only added when the stroke bounds are non-empty. The top app bar exposes a clear action (clears paths, elements, and animated state) and a placeholder save action. Experimental Compose APIs are used for gesture handling and material components.
+ */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CanvasScreen() {
