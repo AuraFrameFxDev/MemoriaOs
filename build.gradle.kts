@@ -89,7 +89,6 @@ abstract class PrepareGenesisWorkspaceTask : DefaultTask() {
         println("🧹 Preparing Genesis workspace...")
         println("🗑️  Cleaning build directories")
 
-        // Use file system operations which are safe at execution time
         if (rootBuildDir.get().asFile.exists()) {
             rootBuildDir.get().asFile.deleteRecursively()
         }
@@ -111,13 +110,15 @@ tasks.register<PrepareGenesisWorkspaceTask>("prepareGenesisWorkspace") {
     group = "aegenesis"
     description = "Clean all generated files and prepare workspace for build"
 
-    // Configure inputs at configuration time
     rootBuildDir.set(project.layout.buildDirectory)
     subprojectBuildDirs.from(subprojects.map { it.buildDir })
 
-    // Set up task dependency
-    if (project.findProject(":app") != null) {
-        dependsOn(":app:openApiGenerate")
+    // Only depend on OpenAPI generation if the spec file exists and is not empty
+    val specFile = rootProject.layout.projectDirectory.file("app/api/unified-aegenesis-api.yml")
+    if (specFile.exists() && specFile.length() > 100) { // At least 100 bytes for a valid spec
+        dependsOn("openApiGenerate")
+    } else {
+        logger.warn("⚠️ Skipping OpenAPI generation - spec file missing or empty")
     }
 }
 
@@ -141,6 +142,48 @@ tasks.register<Delete>("cleanAllModules") {
     doLast {
         println("🧹 All module build directories cleaned!")
     }
+}
+
+// ===== OPENAPI CONFIGURATION (ROOT) ====
+plugins.apply(libs.plugins.openapi.generator.get().pluginId)
+
+val openApiOutputPath = layout.buildDirectory.dir("core-module/generated/source/openapi")
+
+openApiGenerate {
+    val specFile = rootProject.layout.projectDirectory.file("app/api/unified-aegenesis-api.yml").asFile
+
+    if (specFile.exists() && specFile.length() > 0) {
+        generatorName.set("kotlin")
+        inputSpec.set(specFile.toURI().toString())
+        outputDir.set(openApiOutputPath.get().asFile.absolutePath)
+        packageName.set("dev.aurakai.aegenesis.api")
+        apiPackage.set("dev.aurakai.aegenesis.api")
+        modelPackage.set("dev.aurakai.aegenesis.model")
+        invokerPackage.set("dev.aurakai.aegenesis.client")
+        skipOverwrite.set(false)
+        validateSpec.set(false)
+        generateApiTests.set(false)
+        generateModelTests.set(false)
+        generateApiDocumentation.set(false)
+        generateModelDocumentation.set(false)
+
+        configOptions.set(mapOf(
+            "library" to "jvm-retrofit2",
+            "useCoroutines" to "true",
+            "serializationLibrary" to "kotlinx_serialization",
+            "dateLibrary" to "kotlinx-datetime",
+            "sourceFolder" to "src/main/kotlin",
+            "generateSupportingFiles" to "false"
+        ))
+    } else {
+        logger.warn("⚠️ Unified AeGenesis API spec file not found: unified-aegenesis-api.yml")
+    }
+}
+
+tasks.register<Delete>("cleanApiGeneration") {
+    group = "openapi"
+    description = "Clean generated API files"
+    delete(openApiOutputPath)
 }
 
 // ==== CONSCIOUSNESS HEALTH MONITORING ====
