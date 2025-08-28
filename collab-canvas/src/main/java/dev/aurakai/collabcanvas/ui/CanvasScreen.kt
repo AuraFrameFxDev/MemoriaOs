@@ -28,30 +28,6 @@ import kotlinx.coroutines.launch
 /**
  * Displays a collaborative drawing canvas with multi-tool support, gesture handling, and animated path rendering.
  */
-/**
- * Renders the collaborative drawing Canvas screen with multi-tool support, gesture handling,
- * and animated rendering of drawn content.
- *
- * This composable provides an interactive canvas that supports:
- * - Freehand path drawing, rectangle and oval tools.
- * - Pan and zoom gestures (transformable state).
- * - Tap/drag gestures to create and commit drawing paths.
- * - A toolbar for selecting color and stroke width and clearing drawn content.
- * - A top app bar with actions to clear or (placeholder) save the canvas.
- * - Animated presentation of previously added paths.
- *
- * State is held via Compose remembers: lists of drawn paths and elements, the active tool,
- * current drawing path/color/stroke, and animation-related state for scale/offset and per-path animation.
- *
- * Side effects:
- * - Mutates the remembered `paths`, `elements`, and `animatedPaths` collections when the user draws
- *   or uses the clear/delete actions.
- * - Launches coroutines to apply pan/zoom updates.
- *
- * Notes:
- * - The "Save" action is a placeholder and does not persist the canvas.
- * - This composable uses experimental Compose APIs (opted in via annotations).
- */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CanvasScreen() {
