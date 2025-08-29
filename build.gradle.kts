@@ -31,7 +31,7 @@ tasks.register("aegenesisInfo") {
         println("🔥 Gradle: 9.0+")
         println("⚡ AGP: 9.0.0-alpha02")
         println("🧠 Kotlin: 2.2.10 (Stable + 2.2.20-RC optimizations)")
-        println("☕ Java: 21 (Toolchain)")
+        println("☕ Java: 24 (Toolchain)")
         println("🎯 Target SDK: 36")
         println("=".repeat(70))
         println("🤖 AI Agents: Genesis, Aura, Kai, DataveinConstructor")
@@ -55,7 +55,7 @@ allprojects {
     
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
             languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
             apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
             
@@ -69,7 +69,7 @@ allprojects {
     plugins.withType<org.gradle.api.plugins.JavaBasePlugin>().configureEach {
         extensions.configure<org.gradle.api.plugins.JavaPluginExtension> {
             toolchain {
-                languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(21))
+                languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(24))
             }
         }
     }
@@ -246,23 +246,15 @@ tasks.register("aegenesisTest") {
 
 // DIRECTIVE 1: Enforce consistent Kotlin & Java versions across all 28 modules.
 // This resolves the primary "api-version vs language-version" conflict.
-allprojects {
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
-            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-        }
-    }
 
-    plugins.withType<org.gradle.api.plugins.JavaBasePlugin>().configureEach {
-        extensions.configure<org.gradle.api.plugins.JavaPluginExtension> {
-            toolchain {
-                languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(21))
-            }
-        }
-    }
-}
+// DIRECTIVE 2: The `prepareGenesisWorkspace` task has been refactored to be
+// compatible with the configuration cache. No exclusion is necessary.
+
+// DIRECTIVE 3: Force the use of KSP1 to prevent tool-induced overrides.
+// This prevents memory fragmentation and ensures a predictable environment.
+// tasks.withType<com.google.devtools.ksp.gradle.KspTask>().configureEach {
+//     useKSP2.set(false) // Commented out due to unresolved reference error
+// }
 
 // DIRECTIVE 2: The `prepareGenesisWorkspace` task has been refactored to be
 // compatible with the configuration cache. No exclusion is necessary.
