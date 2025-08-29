@@ -991,4 +991,85 @@ class BuildScriptsValidationTest {
             assertTrue("gradle.properties should configure JVM args when present", text.contains("org.gradle.jvmargs"))
         }
     }
+    // ===== Further cross-validation tests (JUnit 5 Jupiter + MockK) =====
+
+    @Test
+    fun `no deprecated repositories or processors are used`() {
+        val content = buildFile.readText()
+        assertFalse("Do not use deprecated jcenter()", content.contains("jcenter()"))
+        assertFalse("Prefer KSP over KAPT; kapt should not be present", content.contains("kapt("))
+        assertFalse("Do not use deprecated kotlin-android-extensions plugin", content.contains("kotlin-android-extensions") || content.contains("androidExtensions"))
+    }
+
+    @Test
+    fun `plugin aliases appear at most once`() {
+        val content = buildFile.readText()
+        fun countOf(s: String) = content.split(s).size - 1
+        assertTrue("Android application plugin should appear at most once", countOf("alias(libs.plugins.androidApplication)") <= 1)
+        assertTrue("Kotlin Android plugin should appear at most once", countOf("alias(libs.plugins.kotlinAndroid)") <= 1)
+        assertTrue("KSP plugin should appear at most once", countOf("alias(libs.plugins.ksp)") <= 1)
+        assertTrue("Hilt Android plugin should appear at most once", countOf("alias(libs.plugins.hiltAndroid)") <= 1)
+        assertTrue("Kotlin serialization plugin should appear at most once", countOf("alias(libs.plugins.kotlin.serialization)") <= 1)
+        assertTrue("Google services plugin should appear at most once", countOf("alias(libs.plugins.google.services)") <= 1)
+        assertTrue("OpenAPI generator plugin should appear at most once", countOf("alias(libs.plugins.openapi.generator)") <= 1)
+        assertTrue("Compose plugin id should appear at most once", countOf("org.jetbrains.kotlin.plugin.compose") <= 1)
+    }
+
+    @Test
+    fun `compose enabled implies compose plugin is applied`() {
+        val content = buildFile.readText()
+        if (content.contains("compose = true")) {
+            assertTrue("Compose plugin should be applied when compose build feature is enabled",
+                content.contains("org.jetbrains.kotlin.plugin.compose"))
+        }
+    }
+
+    @Test
+    fun `compose plugin is applied after kotlin android plugin when both present`() {
+        val content = buildFile.readText()
+        val composeIdx = content.indexOf("org.jetbrains.kotlin.plugin.compose")
+        val kotlinAndroidIdx = content.indexOf("alias(libs.plugins.kotlinAndroid)")
+        if (composeIdx != -1 && kotlinAndroidIdx != -1) {
+            assertTrue("Compose plugin should be applied after Kotlin Android plugin", composeIdx > kotlinAndroidIdx)
+        }
+    }
+
+    @Test
+    fun `ksp usage aligns with plugin application`() {
+        val content = buildFile.readText()
+        if (content.contains("ksp(")) {
+            assertTrue("KSP plugin should be applied when KSP configuration is used", content.contains("alias(libs.plugins.ksp)"))
+        }
+        assertFalse("KAPT should not be used in a KSP-based project", content.contains("kapt("))
+    }
+
+    @Test
+    fun `hilt dependencies imply hilt plugin is applied`() {
+        val content = buildFile.readText()
+        val usesHilt =
+            content.contains("libs.hiltAndroid") ||
+            content.contains("libs.hiltNavigationCompose") ||
+            content.contains("libs.hiltWork") ||
+            content.contains("libs.hiltAndroidTesting")
+        if (usesHilt) {
+            assertTrue("Hilt plugin should be applied when Hilt dependencies are present",
+                content.contains("alias(libs.plugins.hiltAndroid)"))
+        }
+    }
+
+    @Test
+    fun `compose artifacts are not hardcoded and rely on version catalog or BOM`() {
+        val content = buildFile.readText()
+        assertFalse("Compose coordinates should come from version catalog or BOM, not hardcoded",
+            content.contains("\"androidx.compose"))
+    }
+
+    @Test
+    fun `openapi plugin is applied when openApiGenerate task is referenced`() {
+        val content = buildFile.readText()
+        if (content.contains("openApiGenerate")) {
+            assertTrue("OpenAPI plugin alias should be applied when openApiGenerate is used",
+                content.contains("alias(libs.plugins.openapi.generator)"))
+        }
+    }
 }
