@@ -150,6 +150,12 @@ abstract class VerifyRomToolsTask : DefaultTask() {
     @get:Optional
     abstract val romToolsDir: org.gradle.api.file.DirectoryProperty
 
+    /**
+     * Verifies that the configured ROM tools directory exists.
+     *
+     * Checks the task's `romToolsDir` directory property and logs a warning if the directory is missing;
+     * logs a success lifecycle message including the absolute path when the directory is present.
+     */
     @TaskAction
     fun verify() {
         val dir = romToolsDir.orNull?.asFile
