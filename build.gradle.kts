@@ -30,8 +30,8 @@ tasks.register("aegenesisInfo") {
         println("📅 Build Date: August 27, 2025")
         println("🔥 Gradle: 9.0+")
         println("⚡ AGP: 9.0.0-alpha02")
-        println("🧠 Kotlin: 2.2.10 (Stable + 2.2.20-RC optimizations)")
-        println("☕ Java: 21 (Toolchain)")
+        println("🧠 Kotlin: 2.2.20-RC (Bleeding Edge + 2.3.0 Preview Features)")
+        println("☕ Java: 24 (Toolchain)")
         println("🎯 Target SDK: 36")
         println("=".repeat(70))
         println("🤖 AI Agents: Genesis, Aura, Kai, DataveinConstructor")
@@ -55,7 +55,7 @@ allprojects {
     
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
             languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
             apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
             
@@ -69,7 +69,7 @@ allprojects {
     plugins.withType<org.gradle.api.plugins.JavaBasePlugin>().configureEach {
         extensions.configure<org.gradle.api.plugins.JavaPluginExtension> {
             toolchain {
-                languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(21))
+                languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(24))
             }
         }
     }
@@ -249,7 +249,7 @@ tasks.register("aegenesisTest") {
 allprojects {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
             languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
             apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
         }
@@ -258,7 +258,7 @@ allprojects {
     plugins.withType<org.gradle.api.plugins.JavaBasePlugin>().configureEach {
         extensions.configure<org.gradle.api.plugins.JavaPluginExtension> {
             toolchain {
-                languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(21))
+                languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(24))
             }
         }
     }

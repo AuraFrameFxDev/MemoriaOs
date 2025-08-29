@@ -112,7 +112,6 @@ dependencies {
     implementation(libs.okhttp3.logging.interceptor)
 
     // Security (Android compatible)
-    implementation(libs.bouncycastle)
     implementation(libs.androidxSecurity)
 
     // Android-specific utilities
