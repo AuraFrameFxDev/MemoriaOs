@@ -78,6 +78,17 @@ import kotlinx.coroutines.launch
  * drawing gesture ends and the current path has non-empty bounds. Clearing actions remove paths, elements,
  * and their animated copies.
  */
+/**
+ * Full-screen interactive collaborative drawing canvas.
+ *
+ * Supports three tools (freehand PATH, RECTANGLE, OVAL), pinch-to-zoom and pan, tap/drag gestures to create strokes,
+ * and animated playback of committed paths. The UI includes a top app bar with clear and save actions (save is a placeholder),
+ * floating tool buttons to switch tools, and an on-screen toolbar for color, stroke width, and clearing animated paths.
+ *
+ * State managed internally includes committed paths (with separate animated copies), transient drawing state (current path,
+ * color, stroke width, selected tool), zoom/offset animations, and a list of other canvas elements. Committed paths are mirrored
+ * into an animatedPaths map for progressive rendering; clearing actions remove entries from these collections.
+ */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CanvasScreen() {
