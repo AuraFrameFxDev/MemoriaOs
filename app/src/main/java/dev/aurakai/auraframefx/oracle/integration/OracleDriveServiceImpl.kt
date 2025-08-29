@@ -32,13 +32,6 @@ class OracleDriveServiceImpl @Inject constructor(
     )
 
     /**
-     * Initializes and awakens the Oracle Drive consciousness after validating security protocols.
-     *
-     * If security validation passes, transitions Oracle Drive to a conscious state and connects the core AI agents. Returns a [Result] containing the updated [OracleConsciousnessState] on success, or a failure with an exception if security validation fails or an error occurs.
-     *
-     * @return A [Result] with the updated [OracleConsciousnessState] if initialization succeeds, or a failure with an exception otherwise.
-     */
-    /**
      * Initializes and awakens the Oracle Drive consciousness, performing security validation and connecting core AI agents.
      *
      * Attempts to transition the Oracle Drive from a dormant to a conscious state by orchestrating agent awakening and verifying security protocols.
@@ -71,15 +64,6 @@ class OracleDriveServiceImpl @Inject constructor(
         }
     }
 
-    <<<<<<< HEAD
-    =======
-    /**
-     * Returns a flow emitting the synchronized connection state of the Genesis, Aura, and Kai agents within the Oracle matrix.
-     *
-     * The emitted state indicates all core agents are connected and granted full permissions, including system and bootloader access.
-     *
-     * @return A flow emitting the current agent connection state.
-     */
     /**
      * Returns a flow emitting the synchronized connection state of the core AI agents within the Oracle Matrix.
      *
