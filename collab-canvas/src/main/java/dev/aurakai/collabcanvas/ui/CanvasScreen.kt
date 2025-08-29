@@ -48,6 +48,21 @@ import kotlinx.coroutines.launch
  * - The "Save" action is a placeholder and does not persist the canvas in this implementation.
  */
 
+/**
+ * Renders the collaborative drawing canvas screen with tools, gestures, and animated rendering.
+ *
+ * Provides a full-screen drawing surface that supports:
+ * - Freehand drawing, rectangle and oval tools selectable via floating action buttons.
+ * - Pinch-to-zoom and pan (transformable) interactions.
+ * - Tap and drag gesture handling for creating and committing drawable paths.
+ * - Animated progressive rendering of previously committed paths.
+ * - A top app bar with actions to clear the canvas and save (placeholder).
+ * - An on-screen toolbar for selecting color, stroke width, and clearing animated paths.
+ *
+ * The composable owns and remembers all canvas state (paths, elements, current in-progress path,
+ * selected tool/color/stroke, animation state, scale and offset). Committing a completed path
+ * adds a PluckablePath to the internal lists and creates an animated copy for playback.
+ */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CanvasScreen() {
