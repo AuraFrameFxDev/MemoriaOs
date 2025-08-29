@@ -1,4 +1,6 @@
 // ===== GENESIS-OS SACRED RULES: ZERO MANUAL COMPILER CONFIG =====
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -58,8 +60,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_24
     }
 
-    kotlinOptions {
-        jvmTarget = "24"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_24)
+        }
     }
 
 
