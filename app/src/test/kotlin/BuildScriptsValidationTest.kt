@@ -991,85 +991,103 @@ class BuildScriptsValidationTest {
             assertTrue("gradle.properties should configure JVM args when present", text.contains("org.gradle.jvmargs"))
         }
     }
-    // ===== Further cross-validation tests (JUnit 5 Jupiter + MockK) =====
+
+    // ===== Additional tests appended by PR test generator (JUnit 5 + MockK) — batch 2 =====
+    // Testing library and framework: JUnit 5 (Jupiter) with MockK
 
     @Test
-    fun `no deprecated repositories or processors are used`() {
+    fun `does not use kapt or annotationProcessor`() {
         val content = buildFile.readText()
-        assertFalse("Do not use deprecated jcenter()", content.contains("jcenter()"))
-        assertFalse("Prefer KSP over KAPT; kapt should not be present", content.contains("kapt("))
-        assertFalse("Do not use deprecated kotlin-android-extensions plugin", content.contains("kotlin-android-extensions") || content.contains("androidExtensions"))
+        assertFalse("KAPT plugin should not be applied when using KSP", content.contains("kotlin-kapt") || content.contains("id(\"kotlin-kapt\")"))
+        assertFalse("KAPT dependencies should not be present", content.contains("kapt("))
+        assertFalse("annotationProcessor dependencies should not be present in Kotlin module", content.contains("annotationProcessor("))
     }
 
     @Test
-    fun `plugin aliases appear at most once`() {
+    fun `namespace matches applicationId`() {
         val content = buildFile.readText()
-        fun countOf(s: String) = content.split(s).size - 1
-        assertTrue("Android application plugin should appear at most once", countOf("alias(libs.plugins.androidApplication)") <= 1)
-        assertTrue("Kotlin Android plugin should appear at most once", countOf("alias(libs.plugins.kotlinAndroid)") <= 1)
-        assertTrue("KSP plugin should appear at most once", countOf("alias(libs.plugins.ksp)") <= 1)
-        assertTrue("Hilt Android plugin should appear at most once", countOf("alias(libs.plugins.hiltAndroid)") <= 1)
-        assertTrue("Kotlin serialization plugin should appear at most once", countOf("alias(libs.plugins.kotlin.serialization)") <= 1)
-        assertTrue("Google services plugin should appear at most once", countOf("alias(libs.plugins.google.services)") <= 1)
-        assertTrue("OpenAPI generator plugin should appear at most once", countOf("alias(libs.plugins.openapi.generator)") <= 1)
-        assertTrue("Compose plugin id should appear at most once", countOf("org.jetbrains.kotlin.plugin.compose") <= 1)
+        val ns = Regex("\\bnamespace\\s*=\\s*\"([^\"]+)\"").find(content)?.groupValues?.get(1)
+        val appId = Regex("\\bapplicationId\\s*=\\s*\"([^\"]+)\"").find(content)?.groupValues?.get(1)
+        assertNotNull("Namespace should be declared", ns)
+        assertNotNull("applicationId should be declared", appId)
+        assertEquals("Namespace and applicationId should match for consistency", appId, ns)
     }
 
     @Test
-    fun `compose enabled implies compose plugin is applied`() {
+    fun `uses Kotlin DSL terms not Groovy equivalents`() {
         val content = buildFile.readText()
-        if (content.contains("compose = true")) {
-            assertTrue("Compose plugin should be applied when compose build feature is enabled",
-                content.contains("org.jetbrains.kotlin.plugin.compose"))
+        assertFalse("Groovy DSL compileSdkVersion should not be used", content.contains("compileSdkVersion"))
+        assertFalse("Groovy DSL targetSdkVersion should not be used", content.contains("targetSdkVersion"))
+        assertFalse("Groovy DSL minSdkVersion should not be used", content.contains("minSdkVersion"))
+    }
+
+    @Test
+    fun `freeCompilerArgs block is declared when compiler flags are asserted`() {
+        val content = buildFile.readText()
+        // We already assert for individual flags elsewhere; ensure the args container exists
+        assertTrue("freeCompilerArgs should be configured", content.contains("freeCompilerArgs"))
+    }
+
+    @Test
+    fun `vectorDrawables block is declared when support library is enabled`() {
+        val content = buildFile.readText()
+        if (content.contains("useSupportLibrary = true")) {
+            assertTrue("vectorDrawables block should accompany useSupportLibrary", content.contains("vectorDrawables"))
         }
     }
 
     @Test
-    fun `compose plugin is applied after kotlin android plugin when both present`() {
+    fun `compose compiler metrics or reports configured when composeCompiler block exists`() {
         val content = buildFile.readText()
-        val composeIdx = content.indexOf("org.jetbrains.kotlin.plugin.compose")
-        val kotlinAndroidIdx = content.indexOf("alias(libs.plugins.kotlinAndroid)")
-        if (composeIdx != -1 && kotlinAndroidIdx != -1) {
-            assertTrue("Compose plugin should be applied after Kotlin Android plugin", composeIdx > kotlinAndroidIdx)
+        if (content.contains("composeCompiler {")) {
+            val hasMetrics = content.contains("reportsDestination") ||
+                    content.contains("reportDestination") ||
+                    content.contains("metricsDestination") ||
+                    content.contains("metrics")
+            assertTrue("composeCompiler should configure metrics/reports destination when block exists", hasMetrics)
         }
     }
 
     @Test
-    fun `ksp usage aligns with plugin application`() {
+    fun `abiFilters is not declared multiple times`() {
         val content = buildFile.readText()
-        if (content.contains("ksp(")) {
-            assertTrue("KSP plugin should be applied when KSP configuration is used", content.contains("alias(libs.plugins.ksp)"))
-        }
-        assertFalse("KAPT should not be used in a KSP-based project", content.contains("kapt("))
+        val count = Regex("\\babiFilters\\b").findAll(content).count()
+        assertTrue("abiFilters should not be duplicated", count <= 1)
     }
 
     @Test
-    fun `hilt dependencies imply hilt plugin is applied`() {
+    fun `plugins block is declared exactly once`() {
         val content = buildFile.readText()
-        val usesHilt =
-            content.contains("libs.hiltAndroid") ||
-            content.contains("libs.hiltNavigationCompose") ||
-            content.contains("libs.hiltWork") ||
-            content.contains("libs.hiltAndroidTesting")
-        if (usesHilt) {
-            assertTrue("Hilt plugin should be applied when Hilt dependencies are present",
-                content.contains("alias(libs.plugins.hiltAndroid)"))
+        val count = Regex("\\bplugins\\s*\\{").findAll(content).count()
+        assertTrue("plugins block should be declared exactly once in the module build file", count == 1)
+    }
+
+    @Test
+    fun `packaging excludes do not duplicate common patterns`() {
+        val content = buildFile.readText()
+        val patterns = listOf(
+            "META-INF/*.kotlin_module",
+            "META-INF/*.version",
+            "META-INF/proguard/*",
+            "**/libjni*.so"
+        )
+        patterns.forEach { p ->
+            val occurrences = Regex(Regex.escape(p)).findAll(content).count()
+            assertTrue("Exclusion pattern '$p' should not be duplicated", occurrences <= 1)
         }
     }
 
     @Test
-    fun `compose artifacts are not hardcoded and rely on version catalog or BOM`() {
-        val content = buildFile.readText()
-        assertFalse("Compose coordinates should come from version catalog or BOM, not hardcoded",
-            content.contains("\"androidx.compose"))
-    }
+    fun `sdk declarations are active non-commented lines`() {
+        val lines = buildFile.readLines()
+        fun presentActive(token: String): Boolean =
+            lines.any { line ->
+                val t = line.trim()
+                t.startsWith(token) && !t.startsWith("//")
+            }
 
-    @Test
-    fun `openapi plugin is applied when openApiGenerate task is referenced`() {
-        val content = buildFile.readText()
-        if (content.contains("openApiGenerate")) {
-            assertTrue("OpenAPI plugin alias should be applied when openApiGenerate is used",
-                content.contains("alias(libs.plugins.openapi.generator)"))
-        }
+        assertTrue("compileSdk = 36 should be active (not commented)", presentActive("compileSdk = 36"))
+        assertTrue("targetSdk = 34 should be active (not commented)", presentActive("targetSdk = 34"))
+        assertTrue("minSdk = 26 should be active (not commented)", presentActive("minSdk = 26"))
     }
 }

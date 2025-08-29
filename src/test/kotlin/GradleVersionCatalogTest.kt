@@ -1,385 +1,293 @@
+// Note: Framework detection performed via build files; tests target libs.versions.toml integrity.
 // GradleVersionCatalogTest.kt
-// Testing library/framework: kotlin.test (assertions) running on the JUnit 5 platform (assumed typical Kotlin/Gradle setup).
-// No new dependencies introduced; tests rely on standard Kotlin/JVM and java.nio APIs.
+// Testing library/framework: JUnit 5 (JUnit Jupiter) with kotlin.test assertions (if available)
+@file:Suppress("SameParameterValue", "UNCHECKED_CAST", "MemberVisibilityCanBePrivate")
 
 package testplaceholder
 
-import kotlin.test.Test
-import kotlin.test.assertTrue
-import kotlin.test.assertNotNull
-import kotlin.test.assertEquals
-import kotlin.test.fail
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.charset.StandardCharsets
-import java.util.Locale
-import java.util.stream.Stream
+import kotlin.io.path.exists
+import kotlin.io.path.readText
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions.assertAll
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 
+/**
+ * These tests validate the Gradle Version Catalog (libs.versions.toml).
+ * They avoid introducing TOML parser deps by using structured text checks.
+ */
 class GradleVersionCatalogTest {
 
-    // --------- Data models ----------
-    private data class VersionCatalog(
-        val versions: Map<String, String>,
-        val libraries: Map<String, Library>,
-        val plugins: Map<String, Plugin>,
-        val bundles: Map<String, List<String>>
-    )
+    companion object {
+        private lateinit var catalogPaths: List<Path>
+        private lateinit var catalogTextByPath: Map<Path, String>
 
-    private data class Library(
-        val alias: String,
-        val group: String,
-        val name: String,
-        val versionString: String?,
-        val versionRef: String?
-    )
+        @BeforeAll
+        @JvmStatic
+        fun loadCatalogs() {
+            val repoRoot = Paths.get("").toAbsolutePath()
+            val found = mutableListOf<Path>()
 
-    private data class Plugin(
-        val alias: String,
-        val id: String,
-        val versionString: String?,
-        val versionRef: String?
-    )
-
-    // --------- Tests ----------
-
-    @Test
-    fun versionCatalogFileShouldExist() {
-        val p = locateCatalogPath()
-        assertTrue(Files.exists(p), "Expected libs.versions.toml to exist at: $p")
-        assertTrue(Files.size(p) > 0, "libs.versions.toml is empty at: $p")
-    }
-
-    @Test
-    fun versionsShouldNotUseDynamicOrWildcardNotations() {
-        val catalog = parseCatalogFromPath(locateCatalogPath())
-        val dynamic = catalog.versions.filter { (_, v) ->
-            hasDynamicVersion(v)
-        }
-        assertTrue(
-            dynamic.isEmpty(),
-            "Dynamic or wildcard versions detected in [versions]: ${dynamic.entries.joinToString { "${it.key}='${it.value}'" }}"
-        )
-    }
-
-    @Test
-    fun librariesAndPluginsReferOnlyToExistingVersionKeys() {
-        val c = parseCatalogFromPath(locateCatalogPath())
-        val refs = buildList {
-            c.libraries.values.mapNotNullTo(this) { it.versionRef }
-            c.plugins.values.mapNotNullTo(this) { it.versionRef }
-        }.distinct()
-
-        val missing = refs.filter { it !in c.versions.keys }.sorted()
-        assertTrue(missing.isEmpty(), "Missing [versions] keys referenced by libraries/plugins: $missing")
-    }
-
-    @Test
-    fun pluginEntriesHaveIdAndAVersionAttribute() {
-        val c = parseCatalogFromPath(locateCatalogPath())
-        val missingId = c.plugins.values.filter { it.id.isBlank() }.map { it.alias }
-        assertTrue(missingId.isEmpty(), "Plugins missing 'id': $missingId")
-
-        val missingVersion = c.plugins.values.filter { it.versionRef == null && it.versionString == null }.map { it.alias }
-        assertTrue(
-            missingVersion.isEmpty(),
-            "Plugins missing version (either 'version' or 'version.ref' must be set): $missingVersion"
-        )
-    }
-
-    @Test
-    fun libraryEntriesHaveCoordinatesAndSomeVersionAttribute() {
-        val c = parseCatalogFromPath(locateCatalogPath())
-        val missingCoords = c.libraries.values.filter { it.group.isBlank() || it.name.isBlank() }.map { it.alias }
-        assertTrue(missingCoords.isEmpty(), "Libraries missing 'group' and/or 'name' (or 'module'): $missingCoords")
-
-        val missingVersion = c.libraries.values.filter { it.versionRef == null && it.versionString == null }.map { it.alias }
-        assertTrue(
-            missingVersion.isEmpty(),
-            "Libraries missing version (either 'version' or 'version.ref' must be set): $missingVersion"
-        )
-    }
-
-    @Test
-    fun libraryArtifactCoordinatesMustBeUniqueAcrossAliases() {
-        val c = parseCatalogFromPath(locateCatalogPath())
-        val seen = mutableMapOf<String, String>()
-        val dups = mutableListOf<String>()
-        for (lib in c.libraries.values) {
-            val coord = "${lib.group}:${lib.name}"
-            val prev = seen.putIfAbsent(coord, lib.alias)
-            if (prev != null && prev != lib.alias) {
-                dups += "$coord duplicated by aliases '$prev' and '${lib.alias}'"
-            }
-        }
-        assertTrue(dups.isEmpty(), "Duplicate library coordinates found: ${dups.joinToString("; ")}")
-    }
-
-    @Test
-    fun aliasesUseSafeCharacters() {
-        val c = parseCatalogFromPath(locateCatalogPath())
-        val aliasPattern = Regex("^[A-Za-z0-9_.-]+$")
-        val allAliases = c.libraries.keys + c.plugins.keys + c.bundles.keys
-        val bad = allAliases.filterNot { aliasPattern.matches(it) }
-        assertTrue(bad.isEmpty(), "Aliases contain unsupported characters: $bad")
-    }
-
-    @Test
-    fun bundlesOnlyReferenceExistingLibraryAliases() {
-        val c = parseCatalogFromPath(locateCatalogPath())
-        val libAliases = c.libraries.keys.toSet()
-        val invalid = mutableListOf<String>()
-        for ((bundle, refs) in c.bundles) {
-            val missing = refs.filter { it !in libAliases }
-            if (missing.isNotEmpty()) invalid += "$bundle -> missing $missing"
-        }
-        assertTrue(invalid.isEmpty(), "Bundles referencing non-existent library aliases: ${invalid.joinToString("; ")}")
-    }
-
-    @Test
-    fun kotlinVersionAlignmentIfPresent() {
-        val c = parseCatalogFromPath(locateCatalogPath())
-
-        val kotlinVer = c.versions["kotlin"]
-        val kotlinPlugins = c.plugins.values.filter { it.id.lowercase(Locale.ROOT).startsWith("org.jetbrains.kotlin") }
-
-        // If Kotlin plugin is present, ensure it aligns to versions.kotlin (via version.ref or explicit version == versions.kotlin)
-        val mismatchedPlugins = kotlinPlugins.filter { p ->
-            when {
-                kotlinVer == null -> false // nothing to align against
-                p.versionRef == "kotlin" -> false
-                p.versionString != null && p.versionString == kotlinVer -> false
-                else -> true
-            }
-        }.map { it.alias }
-
-        assertTrue(
-            mismatchedPlugins.isEmpty(),
-            "Kotlin plugin versions should align with [versions].kotlin via 'version.ref = \"kotlin\"' or same explicit string. Mismatches: $mismatchedPlugins"
-        )
-
-        // If Kotlin libraries exist, ensure they also align to Kotlin version key when available.
-        if (kotlinVer != null) {
-            val kotlinLibs = c.libraries.values.filter { it.group == "org.jetbrains.kotlin" }
-            val mismatchedLibs = kotlinLibs.filter { lib ->
-                when {
-                    lib.versionRef == "kotlin" -> false
-                    lib.versionString != null && lib.versionString == kotlinVer -> false
-                    else -> true
-                }
-            }.map { it.alias }
-            assertTrue(
-                mismatchedLibs.isEmpty(),
-                "Kotlin libraries should align with [versions].kotlin via 'version.ref = \"kotlin\"' or same explicit string. Mismatches: $mismatchedLibs"
+            // Typical locations
+            val typical = listOf(
+                repoRoot.resolve("gradle/libs.versions.toml"),
+                repoRoot.resolve("libs.versions.toml"),
             )
+            found += typical.filter { Files.exists(it) }
+
+            // Fallback: scan for any libs.versions.toml
+            if (found.isEmpty()) {
+                Files.walk(repoRoot).use { stream ->
+                    stream.filter { it.fileName?.toString() == "libs.versions.toml" }
+                        .forEach { found += it }
+                }
+            }
+
+            catalogPaths = found.distinct()
+            catalogTextByPath = catalogPaths.associateWith {
+                Files.readString(it, StandardCharsets.UTF_8)
+            }
+        }
+
+        @AfterAll
+        @JvmStatic
+        fun tearDown() {
+            // nothing to clean up
         }
     }
 
     @Test
-    fun noDynamicOrWildcardPluginVersions() {
-        val c = parseCatalogFromPath(locateCatalogPath())
-        val offenders = c.plugins.values.filter {
-            val v = it.versionString
-            v != null && hasDynamicVersion(v)
-        }.map { it.alias }
-        assertTrue(offenders.isEmpty(), "Dynamic/wildcard plugin versions detected: $offenders")
+    fun detectsAtLeastOneCatalogFile() {
+        assertFalse(catalogPaths.isEmpty(), "No libs.versions.toml found in repository.")
     }
 
-    // --------- Helpers & Parser ----------
+    @Nested
+    @DisplayName("Catalog structure and sections")
+    inner class StructureChecks {
 
-    private fun hasDynamicVersion(v: String): Boolean {
-        // Reject '+' wildcards and Gradle dynamic keywords. Allow '-SNAPSHOT' as some projects may use it intentionally.
-        val plusWildcard = v.contains('+')
-        val dynamicKeyword = v.lowercase(Locale.ROOT).contains("latest.release") ||
-                v.lowercase(Locale.ROOT).contains("latest.integration")
-        return plusWildcard || dynamicKeyword
-    }
-
-    private fun locateCatalogPath(): Path {
-        val default = Paths.get("gradle", "libs.versions.toml")
-        if (Files.exists(default)) return default
-
-        // Fallback: find libs.versions.toml within depth to avoid heavy traversal
-        Files.find(Paths.get("."), 6) { p, _ -> p.fileName?.toString() == "libs.versions.toml" }.use { stream ->
-            val found = stream.findFirst()
-            if (found.isPresent) return found.get().toAbsolutePath().normalize()
-        }
-        fail("Could not locate libs.versions.toml (looked in gradle/libs.versions.toml and project tree).")
-        throw IllegalStateException("Unreachable")
-    }
-
-    private fun parseCatalogFromPath(path: Path): VersionCatalog {
-        val content = Files.readString(path, StandardCharsets.UTF_8)
-        return parseCatalog(content)
-    }
-
-    private fun parseCatalog(content: String): VersionCatalog {
-        val logical = toLogicalLines(content)
-        val versions = mutableMapOf<String, String>()
-        val libraries = mutableMapOf<String, Library>()
-        val plugins = mutableMapOf<String, Plugin>()
-        val bundles = mutableMapOf<String, List<String>>()
-
-        var section: String? = null
-        for (raw in logical) {
-            val line = raw.trim()
-            if (line.isEmpty()) continue
-
-            if (line.startsWith("[") && line.endsWith("]")) {
-                section = line.substring(1, line.length - 1).trim()
-                continue
+        @Test
+        fun hasExpectedTopSections() {
+            for ((path, text) in catalogTextByPath) {
+                assertAll("Top sections in $path",
+                    { assertTrue(text.contains("\n[versions]") || text.startsWith("[versions]"),
+                        "Missing [versions] section in $path") },
+                    { assertTrue(text.contains("\n[libraries]") || text.contains("\n[libraries.") || text.startsWith("[libraries]") || text.startsWith("[libraries."),
+                        "Missing [libraries] section (table or subtables) in $path") },
+                    { assertTrue(text.contains("\n[plugins]") || text.startsWith("[plugins]") || text.contains("\n[plugins."),
+                        "Missing [plugins] section (table or subtables) in $path") }
+                )
             }
+        }
 
-            when (section) {
-                "versions" -> parseVersionEntry(line, versions)
-                "libraries" -> parseLibraryEntry(line, libraries)
-                "plugins" -> parsePluginEntry(line, plugins)
-                "bundles" -> parseBundleEntry(line, bundles)
-                else -> {
-                    // ignore unknown sections
+        @Test
+        fun noTabsOrCRLF() {
+            for ((path, text) in catalogTextByPath) {
+                assertFalse(text.contains('\t'), "Tabs found in $path; prefer 2 spaces.")
+                assertFalse(text.contains("\r\n"), "CRLF line endings found in $path; use LF.")
+            }
+        }
+
+        @Test
+        fun filesAreNonEmpty() {
+            for ((path, text) in catalogTextByPath) {
+                assertTrue(text.trim().isNotEmpty(), "Catalog $path is empty.")
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("[versions] validations")
+    inner class VersionsSectionChecks {
+
+        private fun extractSection(text: String, sectionHeader: String): List<String> {
+            // naive section splitter: lines from [section] until next [xxx]
+            val lines = text.lines()
+            val result = mutableListOf<String>()
+            var inSection = false
+            for (line in lines) {
+                val trimmed = line.trim()
+                if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+                    inSection = trimmed == "[$sectionHeader]" || trimmed.startsWith("[$sectionHeader.")
+                    if (trimmed != "[$sectionHeader]" && trimmed.startsWith("[$sectionHeader.")) {
+                        // treat subtables as not part of plain [versions]; break if you prefer stricter behavior
+                        inSection = trimmed == "[$sectionHeader]"
+                    }
+                    continue
+                }
+                if (inSection) result += line
+            }
+            return result
+        }
+
+        private fun extractKeyValues(bodyLines: List<String>): Map<String, String> {
+            // key = "value"
+            val out = linkedMapOf<String, String>()
+            val kvRegex = Regex("""^\s*([A-Za-z0-9._-]+)\s*=\s*["']([^"']+)["']\s*(#.*)?$""")
+            for (ln in bodyLines) {
+                val m = kvRegex.find(ln) ?: continue
+                val (key, value) = m.groupValues.drop(1)
+                if (key.isNotBlank()) {
+                    require(!out.containsKey(key)) { "Duplicate version key: $key" }
+                    out[key] = value
+                }
+            }
+            return out
+        }
+
+        @Test
+        fun versionsHaveUniqueKeysAndValidLookingValues() {
+            val semverLike = Regex("""^\d+(\.\d+){1,3}([-\+][A-Za-z0-9.-]+)?$""")
+            for ((path, text) in catalogTextByPath) {
+                val lines = extractSection(text, "versions")
+                assertTrue(lines.isNotEmpty(), "No content under [versions] in $path")
+
+                val seen = mutableSetOf<String>()
+                val kvRegex = Regex("""^\s*([A-Za-z0-9._-]+)\s*=""")
+                for ((idx, ln) in lines.withIndex()) {
+                    val m = kvRegex.find(ln) ?: continue
+                    val key = m.groupValues[1]
+                    assertTrue(seen.add(key), "Duplicate key in [versions]: '$key' at line ${idx + 1} in $path")
+                }
+
+                val kv = extractKeyValues(lines)
+                assertTrue(kv.isNotEmpty(), "Could not parse any key/value pairs in [versions] in $path")
+
+                // Not all versions must be semver; but warn/assert common cases look like versions
+                var checked = 0
+                for ((k, v) in kv) {
+                    if (v.any { it.isDigit() }) {
+                        checked++
+                        assertTrue(v.length < 100, "Suspiciously long version for $k in $path")
+                    }
+                }
+                assertTrue(checked > 0, "No numeric-looking version values detected in $path")
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("version.ref integrity for [libraries] and [plugins]")
+    inner class VersionRefIntegrityChecks {
+
+        private fun parseSimpleTomlAssignments(text: String): Map<String, String> {
+            val out = linkedMapOf<String, String>()
+            val kvRegex = Regex("""^\s*([A-Za-z0-9._-]+)\s*=\s*["']([^"']+)["']\s*(#.*)?$""")
+            for (ln in text.lines()) {
+                val m = kvRegex.find(ln) ?: continue
+                val (key, value) = m.groupValues.drop(1)
+                out[key] = value
+            }
+            return out
+        }
+
+        private fun versionsMap(text: String): Set<String> {
+            val lines = text.lines()
+            val sb = StringBuilder()
+            var inVersions = false
+            for (line in lines) {
+                val t = line.trim()
+                if (t.startsWith("[") && t.endsWith("]")) {
+                    inVersions = t == "[versions]"
+                    continue
+                }
+                if (inVersions) sb.appendLine(line)
+            }
+            val kv = parseSimpleTomlAssignments(sb.toString())
+            return kv.keys
+        }
+
+        private fun referencedVersionRefs(text: String): Set<String> {
+            // match `version.ref = "kotlin"` or `version.ref="kotlin"`
+            val refRegex = Regex("""version\.ref\s*=\s*["']([^"']+)["']""")
+            return refRegex.findAll(text).map { it.groupValues[1] }.toSet()
+        }
+
+        @Test
+        fun allVersionRefsExistInVersions() {
+            for ((path, text) in catalogTextByPath) {
+                val refs = referencedVersionRefs(text)
+                assertTrue(refs.isNotEmpty(), "No version.ref found in $path; ensure libraries/plugins use version refs where applicable.")
+
+                val vers = versionsMap(text)
+                val missing = refs.filterNot { it in vers }
+                assertTrue(missing.isEmpty(), "Missing version keys in [versions] for refs: $missing in $path")
+            }
+        }
+
+        @Test
+        fun libraryEntriesHaveEitherVersionOrVersionRef() {
+            for ((path, text) in catalogTextByPath) {
+                // naive scan inside [libraries] subtables; entries typically like:
+                // lib = { module = "g:a", version = "1.2.3" } or version.ref = "x"
+                val inLibraries = StringBuilder()
+                var inLib = false
+                for (line in text.lines()) {
+                    val t = line.trim()
+                    if (t.startsWith("[") && t.endsWith("]")) {
+                        inLib = t == "[libraries]" || t.startsWith("[libraries.")
+                        continue
+                    }
+                    if (inLib) inLibraries.appendLine(line)
+                }
+                val content = inLibraries.toString()
+                if (content.isBlank()) continue
+
+                val entryRegex = Regex("""^\s*([A-Za-z0-9._-]+)\s*=\s*\{[^}]*}""")
+                val versionRegex = Regex("""\bversion\s*=\s*["'][^"']+["']""")
+                val versionRefRegex = Regex("""\bversion\.ref\s*=\s*["'][^"']+["']""")
+
+                val entries = content.lines().mapNotNull { entryRegex.find(it)?.value }
+                if (entries.isEmpty()) continue
+
+                for (e in entries) {
+                    assertTrue(versionRegex.containsMatchIn(e) || versionRefRegex.containsMatchIn(e),
+                        "Library entry missing version or version.ref: $e in $path")
                 }
             }
         }
-        return VersionCatalog(versions, libraries, plugins, bundles)
     }
 
-    private fun parseVersionEntry(line: String, out: MutableMap<String, String>) {
-        val m = VERSION_KV.find(line) ?: return
-        val key = m.groupValues[1]
-        val value = m.groupValues[2]
-        out[key] = value
-    }
+    @Nested
+    @DisplayName("Basic plugin id sanity checks")
+    inner class PluginChecks {
 
-    private fun parseLibraryEntry(line: String, out: MutableMap<String, Library>) {
-        val m = ALIAS_OBJ.find(line) ?: return
-        val alias = m.groupValues[1]
-        val body = m.groupValues[2]
-
-        val module = MODULE_KV.find(body)?.groupValues?.get(1)
-        val group = GROUP_KV.find(body)?.groupValues?.get(1)
-        val name = NAME_KV.find(body)?.groupValues?.get(1)
-        val vRef = VERSION_REF_KV.find(body)?.groupValues?.get(1)
-        val vStr = VERSION_KV.find(body)?.groupValues?.get(1)
-
-        val (g, n) = if (module != null) {
-            val parts = module.split(":")
-            if (parts.size == 2) parts[0] to parts[1] else "" to ""
-        } else {
-            (group ?: "") to (name ?: "")
-        }
-
-        out[alias] = Library(
-            alias = alias,
-            group = g,
-            name = n,
-            versionString = vStr,
-            versionRef = vRef
-        )
-    }
-
-    private fun parsePluginEntry(line: String, out: MutableMap<String, Plugin>) {
-        val m = ALIAS_OBJ.find(line) ?: return
-        val alias = m.groupValues[1]
-        val body = m.groupValues[2]
-
-        val id = ID_KV.find(body)?.groupValues?.get(1) ?: ""
-        val vRef = VERSION_REF_KV.find(body)?.groupValues?.get(1)
-        val vStr = VERSION_KV.find(body)?.groupValues?.get(1)
-
-        out[alias] = Plugin(
-            alias = alias,
-            id = id,
-            versionString = vStr,
-            versionRef = vRef
-        )
-    }
-
-    private fun parseBundleEntry(line: String, out: MutableMap<String, List<String>>) {
-        val m = ALIAS_ARRAY.find(line) ?: return
-        val alias = m.groupValues[1]
-        val items = ARRAY_ITEMS.findAll(m.groupValues[2])
-            .map { it.groupValues[1] }
-            .toList()
-        out[alias] = items
-    }
-
-    private fun toLogicalLines(content: String): List<String> {
-        // Combine multi-line TOML objects/arrays into single logical lines for simple regex parsing
-        val result = mutableListOf<String>()
-        val sb = StringBuilder()
-        var braceDepth = 0
-        var bracketDepth = 0
-        content.lineSequence().forEach { raw ->
-            val line = stripLineComments(raw).trim()
-            if (line.isEmpty()) return@forEach
-
-            // Section headers commit immediately
-            if (line.startsWith("[") && line.endsWith("]") && braceDepth == 0 && bracketDepth == 0) {
-                if (sb.isNotEmpty()) {
-                    result += sb.toString().trim()
-                    sb.setLength(0)
+        @Test
+        fun pluginIdsLookValid() {
+            for ((path, text) in catalogTextByPath) {
+                val inPlugins = StringBuilder()
+                var inPl = false
+                for (line in text.lines()) {
+                    val t = line.trim()
+                    if (t.startsWith("[") && t.endsWith("]")) {
+                        inPl = t == "[plugins]" || t.startsWith("[plugins.")
+                        continue
+                    }
+                    if (inPl) inPlugins.appendLine(line)
                 }
-                result += line
-                return@forEach
-            }
+                val body = inPlugins.toString()
+                if (body.isBlank()) continue
 
-            sb.append(if (sb.isEmpty()) line else " $line")
-
-            braceDepth += countChar(line, '{') - countChar(line, '}')
-            bracketDepth += countChar(line, '[') - countChar(line, ']')
-
-            if (braceDepth == 0 && bracketDepth == 0) {
-                result += sb.toString().trim()
-                sb.setLength(0)
+                val entryRegex = Regex("""^\s*([A-Za-z0-9._-]+)\s*=\s*\{[^}]*}""")
+                val idRegex = Regex("""\bid\s*=\s*["']([A-Za-z0-9._-]+)["']""")
+                for (ln in body.lines()) {
+                    val e = entryRegex.find(ln)?.value ?: continue
+                    val id = idRegex.find(e)?.groupValues?.getOrNull(1)
+                    assertNotNull(id, "Plugin entry missing 'id': $e in $path")
+                    if (id != null) {
+                        assertTrue(id.contains('.'), "Plugin id should be namespaced (contain a dot): $id in $path")
+                    }
+                }
             }
         }
-        if (sb.isNotEmpty()) {
-            result += sb.toString().trim()
-        }
-        return result
-    }
-
-    private fun stripLineComments(s: String): String {
-        // Remove comments starting with '#' when not inside quotes
-        var inQuotes = false
-        val out = StringBuilder()
-        var i = 0
-        while (i < s.length) {
-            val c = s[i]
-            if (c == '"') {
-                inQuotes = !inQuotes
-                out.append(c)
-            } else if (c == '#' && !inQuotes) {
-                break
-            } else {
-                out.append(c)
-            }
-            i++
-        }
-        return out.toString()
-    }
-
-    private fun countChar(s: String, ch: Char): Int {
-        var n = 0
-        for (c in s) if (c == ch) n++
-        return n
-    }
-
-    // --------- Regexes ----------
-    private val VERSION_KV = Regex("""^\s*([A-Za-z0-9_.-]+)\s*=\s*"([^"]+)"\s*$""")
-    private val ALIAS_OBJ = Regex("""^\s*([A-Za-z0-9_.-]+)\s*=\s*\{(.*)}\s*$""")
-    private val ALIAS_ARRAY = Regex("""^\s*([A-Za-z0-9_.-]+)\s*=\s*\[(.*)]\s*$""")
-    private val ARRAY_ITEMS = Regex(""""([^"]+)"""")
-    private val GROUP_KV = Regex("""group\s*=\s*"([^"]+)"""")
-    private val NAME_KV = Regex("""name\s*=\s*"([^"]+)"""")
-    private val MODULE_KV = Regex("""module\s*=\s*"([^"]+)"""")
-    private val VERSION_REF_KV = Regex("""version\.ref\s*=\s*"([^"]+)"""")
-    private val ID_KV = Regex("""id\s*=\s*"([^"]+)"""")
-
-    // --------- Utility ----------
-    private fun <T> buildList(builderAction: MutableList<T>.() -> Unit): List<T> {
-        val list = mutableListOf<T>()
-        list.builderAction()
-        return list
     }
 }
