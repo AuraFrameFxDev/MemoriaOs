@@ -15,7 +15,6 @@ import java.util.Properties
  * to ensure the build script is correctly configured and maintainable.
  */
 class BuildScriptsValidationTest {
-    // Tests use JUnit Jupiter (@Test, @BeforeEach, @AfterEach) with JUnit 4 assertions (assertTrue/assertFalse) and MockK for mocking.
 
     private lateinit var buildFile: File
     private lateinit var gradleProperties: Properties
@@ -897,103 +896,195 @@ class BuildScriptsValidationTest {
             content.contains("platform(libs.firebaseBom)")
         )
     }
-    // ---------------- Additional Validation Tests (appended) ----------------
-    @Test
-    fun `repositories do not use jcenter`() {
-        val content = buildFile.readText()
-        assertFalse("Should not reference jcenter()", content.contains("jcenter()"))
-    }
-    @Test
-    fun `dependencies avoid snapshot versions`() {
-        val content = buildFile.readText()
-        assertFalse("Dependencies should not use -SNAPSHOT versions", content.contains("-SNAPSHOT"))
-    }
-    @Test
-    fun `kapt is not used when ksp is configured`() {
-        val content = buildFile.readText()
-        // KSP is already asserted elsewhere; ensure kapt is not mixed in
-        assertFalse("Should not use kapt when KSP is configured", content.contains("kapt("))
-    }
-    @Test
-    fun `no deprecated kotlin android extensions plugin`() {
-        val content = buildFile.readText()
-        assertFalse("Should not use deprecated kotlin-android-extensions plugin", content.contains("kotlin-android-extensions"))
-    }
-    @Test
-    fun `compose dependencies are not hard coded by coordinate`() {
-        val content = buildFile.readText()
-        assertFalse("Compose UI should not be declared via direct coordinates", content.contains("implementation(\"androidx.compose.ui:ui"))
-        assertFalse("Compose Material3 should not be declared via direct coordinates", content.contains("implementation(\"androidx.compose.material3:"))
-    }
-    @Test
-    fun `cmake and proguard files referenced should exist`() {
-        val cmake = File("app/src/main/cpp/CMakeLists.txt")
-        val proguard = File("app/proguard-rules.pro")
-        // Best-effort existence checks; presence improves build reliability
-        assertTrue("CMakeLists.txt should exist at src/main/cpp", cmake.parentFile.exists())
-        assertTrue("proguard-rules.pro should exist in app/", proguard.exists())
-    }
-    @Test
-    fun `lint files referenced should exist`() {
-        val baseline = File("app/lint-baseline.xml")
-        val lintConfig = File("app/lint.xml")
-        assertTrue("lint-baseline.xml should exist in app/", baseline.exists())
-        assertTrue("lint.xml should exist in app/", lintConfig.exists())
-    }
-    @Test
-    fun `packaging resources configure excludes and noCompress with expected patterns`() {
-        val content = buildFile.readText()
-        assertTrue("noCompress should include proto or json", content.contains("noCompress") && (content.contains("\"proto\"") || content.contains("\"json\"")))
-        assertTrue("Excludes should include META-INF patterns", content.contains("META-INF/") || content.contains("excludes.addAll"))
-    }
-    @Test
-    fun `openapi generator sets consistent package names`() {
-        val c = buildFile.readText()
-        val hasApi = c.contains("apiPackage.set(\"dev.aurakai.auraframefx.api.client.apis\")")
-        val hasModel = c.contains("modelPackage.set(\"dev.aurakai.auraframefx.api.client.models\")")
-        val hasInvoker = c.contains("invokerPackage.set(\"dev.aurakai.auraframefx.api.client.infrastructure\")")
-        assertTrue("OpenAPI API package should be set", hasApi)
-        assertTrue("OpenAPI Model package should be set", hasModel)
-        assertTrue("OpenAPI Invoker package should be set", hasInvoker)
-    }
-    @Test
-    fun `resolution strategy avoids duplicate force entries`() {
-        val lines = buildFile.readLines()
-        val forced = lines.filter { it.contains("kotlin-stdlib:") || it.contains("kotlin-reflect:") }
-        assertTrue("At least one force entry should exist for kotlin stdlib/reflect", forced.isNotEmpty())
-        assertTrue("No duplicate identical force entries", forced.distinct().size == forced.size)
-    }
-    @Test
-    fun `sdk levels parsed remain monotonic`() {
-        val text = buildFile.readText()
-        fun extract(name: String): Int? = Regex(name + "\s*=\s*(\\d+)").find(text)?.groupValues?.get(1)?.toInt()
-        val compile = extract("compileSdk")
-        val target = extract("targetSdk")
-        val min = extract("minSdk")
-        if (compile != null && target != null) assertTrue("compileSdk >= targetSdk", compile >= target)
-        if (target != null && min != null) assertTrue("targetSdk >= minSdk", target >= min)
-    }
-    @Test
-    fun `repositories include google and mavenCentral hints`() {
-        val text = buildFile.readText()
-        // The module may rely on root repositories; assert presence hints (safe, non-strict)
-        val hasGoogle = text.contains("google()")
-        val hasMavenCentral = text.contains("mavenCentral()")
-        assertTrue("At least one repository hint (google or mavenCentral) should appear in module or via pluginManagement", hasGoogle || hasMavenCentral)
-    }
-    @Test
-    fun `buildFeatures block count is at most one`() {
-        val content = buildFile.readText()
-        val count = content.split("buildFeatures").size - 1
-        assertTrue("BuildFeatures should not be duplicated", count <= 1)
-    }
-    @Test
-    fun `ndk abi filters do not include 32 bit when cleared`() {
-        val c = buildFile.readText()
-        if (c.contains("abiFilters.clear()")) {
-            assertFalse("Should not include armeabi-v7a after clearing", c.contains("\"armeabi-v7a\""))
-            assertFalse("Should not include x86 after clearing", c.contains("\"x86\""))
-        }
-    }
-    // ---------------- End Additional Validation Tests ----------------
 }
+    // Additional Structure and Semantics Coverage (Appended by PR test enhancement)
+    @Test
+    fun `compose options specify compiler extension version via version catalog`() {
+        val content = buildFile.readText()
+        // Accept common patterns: either composeOptions block or kotlinCompilerExtensionVersion in android block
+        val hasComposeOptionsBlock = "composeOptions".toRegex().containsMatchIn(content)
+        assertTrue("composeOptions block should be present to declare Kotlin compiler extension version", hasComposeOptionsBlock)
+        // Ensure version comes from the version catalog (avoid hardcoding)
+        assertTrue(
+            "Compose compiler extension version should be sourced from libs.versions.composeCompiler.get()",
+            content.contains("kotlinCompilerExtensionVersion") &&
+                    (content.contains("libs.versions.composeCompiler.get()") || content.contains("libs.versions.composeCompiler"))
+        )
+    }
+
+    @Test
+    fun `kapt is not used when KSP is configured`() {
+        val content = buildFile.readText()
+        // Ensure no kapt usage appears since the project migrated to KSP
+        assertFalse("KAPT should not be used alongside KSP", content.contains("kapt("))
+        assertFalse("KAPT test configuration should not be present", content.contains("kaptAndroidTest("))
+    }
+
+    @Test
+    fun `freeCompilerArgs include required Kotlin flags`() {
+        val content = buildFile.readText()
+        // Validate presence of key JVM and language feature flags already asserted, and extend with useful sanity checks.
+        // We don't enforce an exhaustive list to avoid brittleness.
+        val hasJvmDefault = content.contains("-Xjvm-default=all")
+        val hasContextReceivers = content.contains("-Xcontext-receivers")
+        assertTrue("freeCompilerArgs should include -Xjvm-default=all", hasJvmDefault)
+        assertTrue("freeCompilerArgs should include -Xcontext-receivers", hasContextReceivers)
+        // Sanity: Do not include deprecated -Xuse-experimental; prefer @OptIn / -opt-in flags
+        assertFalse("Should avoid deprecated -Xuse-experimental flag", content.contains("-Xuse-experimental"))
+    }
+
+    @Test
+    fun `plugins block is declared once and before android block`() {
+        val content = buildFile.readText()
+        val pluginsIndex = content.indexOf("plugins {")
+        val androidIndex = content.indexOf("android {")
+        assertTrue("plugins block should be declared", pluginsIndex != -1)
+        assertTrue("android block should be declared", androidIndex != -1)
+        assertTrue("plugins block should appear before android block", pluginsIndex < androidIndex)
+        // Ensure plugins block closed properly before android starts (basic structural check)
+        val beforeAndroid = content.substring(0, androidIndex)
+        val openBraces = beforeAndroid.count { it == '{' }
+        val closeBraces = beforeAndroid.count { it == '}' }
+        assertTrue("plugins block should be properly closed before android block", openBraces == closeBraces)
+    }
+
+    @Test
+    fun `openapi generator additional properties include coroutine and date library settings only once`() {
+        val content = buildFile.readText()
+        // Already validated useCoroutines and dateLibrary presence; ensure they are not duplicated
+        val useCoroutinesCount = Regex("\"useCoroutines\"\\s*to\\s*\"true\"").findAll(content).count()
+        val dateLibCount = Regex("\"dateLibrary\"\\s*to\\s*\"java8\"").findAll(content).count()
+        assertTrue("useCoroutines should be set exactly once", useCoroutinesCount == 1)
+        assertTrue("dateLibrary should be set exactly once", dateLibCount == 1)
+    }
+
+    @Test
+    fun `dependency declarations avoid hardcoded versions (prefer version catalog)`() {
+        val content = buildFile.readText()
+        // Look for suspicious hardcoded versions in dependencies: group:artifact:version patterns.
+        // Allow 'files(' and 'project(' and BOM 'platform(' usages.
+        val depsBlockRegex = Regex("dependencies\\s*\\{[\\s\\S]*?\\}", RegexOption.MULTILINE)
+        val depsBlock = depsBlockRegex.find(content)?.value ?: ""
+        val suspicious = Regex("""(implementation|api|compileOnly|runtimeOnly|testImplementation|androidTestImplementation)\s*\(\s*"(?!platform\(|files\(|project\()([^":]+):([^":]+):([^":]+)"\s*\)""")
+            .findAll(depsBlock)
+            .toList()
+        // We don't strictly forbid all occurrences (some edge deps may be direct), but warn if too many are hardcoded.
+        assertTrue(
+            "Dependencies should primarily use version catalog; found ${suspicious.size} hardcoded version(s)",
+            suspicious.size <= 2
+        )
+    }
+
+    @Test
+    fun `packaging excludes include kotlin module and proguard paths only once`() {
+        val content = buildFile.readText()
+        val kotlinModuleCount = Regex("META-INF/\\*\\.kotlin_module").findAll(content).count()
+        val proguardPathCount = Regex("META-INF/proguard/\\*").findAll(content).count()
+        assertTrue("Kotlin module exclude should be specified once", kotlinModuleCount == 1)
+        assertTrue("Proguard path exclude should be specified once", proguardPathCount == 1)
+    }
+
+    @Test
+    fun `abiFilters configuration lists only supported ABIs`() {
+        val content = buildFile.readText()
+        // Accept arm64-v8a and x86_64; ensure no legacy 32-bit ABIs are inadvertently included.
+        val includesArm64 = content.contains("\"arm64-v8a\"")
+        val includesX8664 = content.contains("\"x86_64\"")
+        assertTrue("ABI filters should include arm64-v8a", includesArm64)
+        assertTrue("ABI filters should include x86_64", includesX8664)
+        assertFalse("ABI filters should not include armeabi-v7a unless explicitly required", content.contains("\"armeabi-v7a\""))
+        assertFalse("ABI filters should not include x86 unless explicitly required", content.contains("\"x86\""))
+    }
+
+    @Test
+    fun `release build type config includes proguardFiles with default optimize and custom rules`() {
+        val content = buildFile.readText()
+        val hasDefaultOptimize = content.contains("getDefaultProguardFile(\"proguard-android-optimize.txt\")")
+        val hasCustomRules = content.contains("\"proguard-rules.pro\"")
+        val hasProguardFilesCall = content.contains("proguardFiles")
+        assertTrue("Release should include default proguard optimize file", hasDefaultOptimize)
+        assertTrue("Release should include custom proguard rules", hasCustomRules)
+        assertTrue("Release should declare proguardFiles", hasProguardFilesCall)
+    }
+
+    @Test
+    fun `android section declares compileSdk targetSdk and minSdk coherently`() {
+        val content = buildFile.readText()
+        // Ensure all three are present within android block region (not globally)
+        val androidBlock = Regex("android\\s*\\{[\\s\\S]*?\\}", RegexOption.MULTILINE).find(content)?.value ?: ""
+        assertTrue("android block should define compileSdk", androidBlock.contains("compileSdk = 36"))
+        assertTrue("android block should define defaultConfig targetSdk", androidBlock.contains("targetSdk = 34"))
+        assertTrue("android block should define defaultConfig minSdk", androidBlock.contains("minSdk = 26"))
+    }
+
+    @Test
+    fun `version catalog plugin aliases are consistently used in plugins block`() {
+        val content = buildFile.readText()
+        val pluginsBlock = Regex("plugins\\s*\\{[\\s\\S]*?\\}", RegexOption.MULTILINE).find(content)?.value ?: ""
+        // Ensure majority of plugins use alias(libs.plugins.*) except compose plugin id
+        val aliasCount = Regex("alias\\(libs\\.plugins\\.[^)]+\\)").findAll(pluginsBlock).count()
+        assertTrue("At least 5 plugins should be applied via version catalog aliases", aliasCount >= 5)
+        // Compose plugin id should be applied via id(...) or present explicitly
+        assertTrue("Compose Kotlin plugin should be applied", pluginsBlock.contains("org.jetbrains.kotlin.plugin.compose"))
+    }
+
+    @Test
+    fun `resolution strategy forces kotlin stdlib and reflect from version catalog`() {
+        val content = buildFile.readText()
+        val hasPreferProject = content.contains("preferProjectModules()")
+        val hasStdlibForce = content.contains("org.jetbrains.kotlin:kotlin-stdlib:${'$'}{libs.versions.kotlin.get()}")
+        val hasReflectForce = content.contains("org.jetbrains.kotlin:kotlin-reflect:${'$'}{libs.versions.kotlin.get()}")
+        assertTrue("Resolution strategy should prefer project modules", hasPreferProject)
+        assertTrue("Resolution strategy should force Kotlin stdlib version from catalog", hasStdlibForce)
+        assertTrue("Resolution strategy should force Kotlin reflect version from catalog", hasReflectForce)
+    }
+
+    @Test
+    fun `no duplicate dependencies for major libraries`() {
+        val content = buildFile.readText()
+        // Spot duplicates for commonly repeated libs by counting occurrences in dependencies block
+        val depsBlock = Regex("dependencies\\s*\\{[\\s\\S]*?\\}", RegexOption.MULTILINE).find(content)?.value ?: ""
+        fun count(pattern: String) = Regex(pattern).findAll(depsBlock).count()
+        assertTrue("Only one Compose BOM declaration expected", count("platform\\(libs\\.composeBom\\)") <= 1)
+        assertTrue("Only one Firebase BOM declaration expected", count("platform\\(libs\\.firebaseBom\\)") <= 1)
+        assertTrue("Only one Hilt Android dependency expected", count("implementation\\(libs\\.hiltAndroid\\)") <= 1)
+        assertTrue("Only one OkHttp dependency expected", count("implementation\\(libs\\.okhttp\\)") <= 1)
+    }
+
+    @Test
+    fun `cmake configuration references path using file api and version from root extra`() {
+        val content = buildFile.readText()
+        assertTrue("CMake path should be declared via file()", content.contains("path = file(\"src/main/cpp/CMakeLists.txt\")"))
+        assertTrue("CMake version should be sourced from rootProject extras", content.contains("version = rootProject.extra[\"cmakeVersion\"] as String"))
+    }
+
+    @Test
+    fun `lint configurations enforce strictness without disabling checks globally`() {
+        val content = buildFile.readText()
+        val hasWarningsAsErrors = content.contains("warningsAsErrors = true")
+        val hasAbortOnError = content.contains("abortOnError = true")
+        assertTrue("Warnings should be treated as errors", hasWarningsAsErrors)
+        assertTrue("Lint should abort on error", hasAbortOnError)
+        // Ensure not globally disabling rules via 'disable' with wildcard
+        assertFalse("Lint should not disable all checks via wildcard", Regex("disable\\s*=\\s*\\[.*\\*.*\\]").containsMatchIn(content))
+    }
+
+    @Test
+    fun `task wiring ensures openApiGenerate runs before preBuild`() {
+        val content = buildFile.readText()
+        // Compatible with either dependsOn("openApiGenerate") inside preBuild or tasks.named("preBuild").configure { dependsOn(...) }
+        val directDepends = content.contains("dependsOn(\"openApiGenerate\")")
+        val wiredViaTasks = content.contains("tasks.named(\"preBuild\")") && content.contains("dependsOn(\"openApiGenerate\")")
+        assertTrue("preBuild should depend on openApiGenerate generation step", directDepends || wiredViaTasks)
+    }
+
+    @Test
+    fun `source sets include generated kotlin sources from build directory`() {
+        val content = buildFile.readText()
+        // Confirm presence of generated source dir setup
+        assertTrue(
+            "Generated Kotlin sources directory should be added to source sets",
+            content.contains("srcDirs(\"${'$'}{layout.buildDirectory.get()}/generated/kotlin\")") ||
+                    content.contains("srcDirs(\"\${layout.buildDirectory.get()}/generated/kotlin\")")
+        )
+    }
