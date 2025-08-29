@@ -9,10 +9,9 @@ plugins {
     id("com.diffplug.spotless")
 }
 
-// Added to specify Java version for this subproject
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(24))
     }
 }
 
@@ -52,8 +51,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
+    }
+
+    kotlinOptions {
+        jvmTarget = "24"
     }
 
     packaging {
@@ -115,7 +118,7 @@ if (tasks.findByName("consciousnessStatus") == null) {
 ksp {
     arg("kotlin.languageVersion", "2.2")
     arg("kotlin.apiVersion", "2.2")
-    arg("kotlin.jvmTarget", "21")
+    arg("kotlin.jvmTarget", "24")
     arg("compile:kotlin.languageVersion", "2.2")
     arg("compile:kotlin.apiVersion", "2.2")
 }
@@ -168,12 +171,4 @@ dependencies {
     // Compose Material Icons
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
-
-
-    kotlin {
-        compilerOptions {
-            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-        }
-    }
 }

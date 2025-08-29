@@ -9,6 +9,12 @@ plugins {
     alias(libs.plugins.kover)
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
+}
+
 ksp {
     arg("kotlin.languageVersion", "2.2") // Match main Kotlin compiler
     arg("kotlin.apiVersion", "2.2")    // Match main Kotlin compiler
@@ -38,6 +44,15 @@ android {
         compose = false
         buildConfig = true
         viewBinding = false
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
+    }
+
+    kotlinOptions {
+        jvmTarget = "24"
     }
 
     packaging {
@@ -86,6 +101,7 @@ dependencies {
 
     // Enhanced Security Stack (Android compatible)
     implementation(libs.androidxSecurity)
+    implementation(libs.bouncycastle)
 
     // Utilities
     implementation(libs.gson)

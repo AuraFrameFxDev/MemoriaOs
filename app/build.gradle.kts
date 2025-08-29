@@ -8,6 +8,12 @@ plugins {
     id("com.google.gms.google-services")
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
+}
+
 android {
     namespace = "dev.aurakai.auraframefx"
     compileSdk = 36
@@ -89,6 +95,10 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_24
         targetCompatibility = JavaVersion.VERSION_24
+    }
+
+    kotlinOptions {
+        jvmTarget = "24"
     }
 }
 

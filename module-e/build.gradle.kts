@@ -45,6 +45,15 @@ android {
         viewBinding = false  // Genesis Protocol - Compose only
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
+    }
+
+    kotlinOptions {
+        jvmTarget = "24"
+    }
+
     // REMOVED: composeOptions - AGP 8.13.0-rc01 auto-detects from version catalog!
     packaging {
         resources {

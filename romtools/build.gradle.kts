@@ -9,6 +9,12 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
+}
+
 android {
     namespace = "dev.aurakai.auraframefx.romtools"
     compileSdk = 36
@@ -40,6 +46,15 @@ android {
         compose = true
         buildConfig = true
         viewBinding = false
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
+    }
+
+    kotlinOptions {
+        jvmTarget = "24"
     }
 
 
