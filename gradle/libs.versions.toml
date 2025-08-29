@@ -8,9 +8,8 @@ junitVersion = "1.3.0"
 kotlin = "2.2.20-RC"
 kotlinReflect = "2.2.20-RC"
 kotlinStdlib = "2.2.20-RC"
-
 ksp = "2.2.20-RC-2.0.2"
-
+material3Version = "1.2.1"
 materialVersion = "1.12.0"
 protobufLitePlugin = "0.9.3"
 googleServices = "4.4.3"
@@ -22,8 +21,8 @@ bouncycastle = "1.81"
 runtime = "1.9.0"
 runtimeLivedata = "1.9.0"
 symbolProcessingGradlePlugin = "2.2.20-RC-2.0.2"
-tink = "1.18.0" # Make sure 'lottie' has a version if it's a library
-lottie = "6.6.7" # Assuming lottie version based on lottieCompose
+tink = "1.18.0"
+lottie = "6.6.7"
 material3 = "1.3.2"
 
 # ===== CODE QUALITY & DOCUMENTATION =====
@@ -33,16 +32,16 @@ ktlint = "1.0.1"
 detekt = "1.23.8"
 
 # ===== COMPOSE & UI - FIXED BOM VERSION =====
-composeBom = "2025.08.00"  # Compatible with Compose Compiler 1.5.14
+composeBom = "2025.08.00"
 activityCompose = "1.10.1"
 navigationCompose = "2.9.3"
-composeCompiler = "1.9.4"  # Should be same as runtime version
+composeCompiler = "1.9.4"
 androidxComposeCompiler = "1.9.4"
 
 # ===== GOOGLE SERVICES =====
 firebaseBom = "34.1.0"
 firebaseCrashlytics = "3.0.6"
-firebasePerf = "2.0.1"  # DISABLED: Not compatible with AGP 9.0.0-alpha02
+firebasePerf = "2.0.1"
 firebaseAnalyticsKtx = "22.5.0"
 firebaseCrashlyticsKtx = "19.4.4"
 
@@ -55,12 +54,14 @@ lifecycle = "2.9.2"
 workManager = "2.10.3"
 paging = "3.3.6"
 biometric = "1.4.0-alpha04"
+
 # ===== NETWORKING =====
 retrofit = "3.0.0"
 okhttp = "5.1.0"
 xposed = "82"
 lsposed = "6.4"
 yuki = "1.3.0"
+
 # ===== AI/ML FRAMEWORKS =====
 tensorflowLite = "2.17.0"
 litert = "1.4.0"
@@ -125,14 +126,13 @@ googleAuthApiPhone = "18.2.0"
 xposedApi = "82"
 xposedHelpers = "82"
 
-
-
 # ===== LEGACY COMPATIBILITY =====
 appcompat = "1.7.1"
 coreKtx = "1.17.0"
 animatedVectorDrawable = "1.2.0"
 material = "1.12.0"
 agp = "9.0.0-alpha02"
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
@@ -158,6 +158,8 @@ androidx-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-espresso-core-v340 = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
+androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3Version" }
+androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-junit-v113 = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
@@ -166,17 +168,10 @@ androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecy
 androidx-lifecycle-viewmodel-savedstate = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version = "1.2.0" }
-androidx-activity = { module = "androidx.activity:activity", version = "1.5.1" }
-androidx-annotation-experimental = { module = "androidx.annotation:annotation-experimental", version = "1.3.1" }
-androidx-fragment = { module = "androidx.fragment:fragment", version = "1.5.1" }
-androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version = "2.5.1" }
-androidx-savedstate = { module = "androidx.savedstate:savedstate", version = "1.2.0" }
 timber = { module = "com.jakewharton.timber:timber", version = "5.0.1" }
 
-# ===== COMPOSE BOM AND UI
+# ===== COMPOSE BOM AND UI =====
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-# ===== COMPOSE BOM AND UI
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -193,8 +188,6 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 # ===== WORKMANAGER =====
 androidx-work-runtime = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workManager" }
 
-
-
 # ===== CAMERAX =====
 aura-backend-api-generator = { module = "dev.aurakai.aura:aura-backend-api-generator", version.ref = "auraBackendApiGenerator" }
 bcprov-jdk18on-v177 = { module = "org.bouncycastle:bcprov-jdk24on", version.ref = "bcprovJdk18on" }
@@ -207,7 +200,7 @@ hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testi
 
 # ===== NETWORKING =====
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflect" }
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version = "2.2.20-RC" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlinStdlib" }
 material-v140 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-converter-kotlinx-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
@@ -226,25 +219,11 @@ tink = { group = "com.google.crypto.tink", name = "tink-android", version.ref = 
 androidxSecurity = { group = "androidx.security", name = "security-crypto", version.ref = "androidxSecurity" }
 conscrypt-android = { group = "org.conscrypt", name = "conscrypt-android", version = "2.5.3" }
 animated-vector-drawable = { group = "androidx.vectordrawable", name = "vectordrawable-animated", version.ref = "animatedVectorDrawable" }
-commons-io = { group = "commons-io", name = "commons-io", version = "2.20.0" }
+commons-io = { group = "commons-io", name = "commons-io", version.ref = "commonsIo" }
 commons-compress = { group = "org.apache.commons", name = "commons-compress", version.ref = "commonsCompress" }
 xz = { group = "org.tukaani", name = "xz", version.ref = "xz" }
 
-# ===== Testing =====
-androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version = "1.9.0" }
-androidx-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTesting" }
-androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
-androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestJunit" }
-hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
-
-# ===== ROOM =====
-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomVersion" }
-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomVersion" }
-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVersion" }
-
 # ===== TESTING =====
- main
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 junit-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitJupiter" }
@@ -256,6 +235,11 @@ turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine
 androidx-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTesting" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 
+# ===== ROOM =====
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomVersion" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomVersion" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVersion" }
+
 # ===== CODE QUALITY & DOCUMENTATION =====
 ktlint = { group = "com.pinterest", name = "ktlint", version.ref = "ktlint" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
@@ -263,10 +247,9 @@ detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-form
 # ===== DEBUG TOOLS =====
 leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" }
 
-
 # ===== FIREBASE =====
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx", version = "22.5.0" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx", version.ref = "firebaseAnalyticsKtx" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebaseCrashlyticsKtx" }
 
 # ===== GOOGLE PLAY SERVICES =====
@@ -327,7 +310,7 @@ testing = [
     "kotlinx-coroutines-test"
 ]
 
-# ===== ANDROIDX CORE (bundle used by modules) =====
+# ===== ANDROIDX CORE =====
 androidx-core = [
     "androidx-core-ktx",
     "androidx-appcompat",
@@ -335,7 +318,7 @@ androidx-core = [
     "androidx-material"
 ]
 
-# ===== UTILITIES (bundle used by modules) =====
+# ===== UTILITIES =====
 utilities = [
     "timber",
     "coil-compose",
@@ -345,13 +328,13 @@ utilities = [
     "xz"
 ]
 
-# ===== ROOM (bundle used by modules) =====
+# ===== ROOM =====
 room = [
     "room-runtime",
     "room-ktx"
 ]
 
-# ===== SECURITY (bundle used by modules) =====
+# ===== SECURITY =====
 security = [
     "androidxSecurity",
     "tink",

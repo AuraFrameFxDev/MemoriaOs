@@ -30,7 +30,7 @@ tasks.register("aegenesisInfo") {
         println("📅 Build Date: August 27, 2025")
         println("🔥 Gradle: 9.0+")
         println("⚡ AGP: 9.0.0-alpha02")
-        println("🧠 Kotlin: 2.2.20-RC (Bleeding Edge + 2.3.0 Preview Features)
+        println("🧠 Kotlin: 2.2.20-RC (Bleeding Edge + 2.3.0 Preview Features)")
         println("☕ Java: 24 (Toolchain)")
         println("🎯 Target SDK: 36")
         println("=".repeat(70))
@@ -154,7 +154,7 @@ val specFile = rootProject.layout.projectDirectory.file("app/api/unified-aegenes
 // Configure OpenAPI generation
 tasks.named("openApiGenerate", org.openapitools.generator.gradle.plugin.tasks.GenerateTask::class) {
     generatorName.set("kotlin")
-    inputSpec.set(specFile.asFile.absolutePath)
+    inputSpec.set(specFile.asFile.toURI().toString())
     outputDir.set(openApiOutputPath.get().asFile.absolutePath)
     packageName.set("dev.aurakai.aegenesis.api")
     apiPackage.set("dev.aurakai.aegenesis.api")
