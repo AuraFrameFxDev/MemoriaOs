@@ -124,28 +124,31 @@ dependencies {
     kspAndroidTest(libs.hilt.compiler)
 }
 
+// Define a shared directory property for ROM tools output
+val romToolsOutputDirectory: org.gradle.api.file.DirectoryProperty = project.objects.directoryProperty().convention(layout.buildDirectory.dir("rom-tools"))
+
 // ROM Tools specific tasks
 tasks.register<Copy>("copyRomTools") {
     from("src/main/resources")
-    val destDir = layout.buildDirectory.dir("rom-tools").get()
-    into(destDir)
+    into(romToolsOutputDirectory) // Use the shared property with into()
     include("**/*.so", "**/*.bin", "**/*.img", "**/*.jar")
     includeEmptyDirs = false
     
     doFirst {
-        destDir.asFile.mkdirs()
-        logger.lifecycle("📁 Creating ROM tools directory: ${destDir.asFile.absolutePath}")
+        val dirFile = romToolsOutputDirectory.get().asFile
+        // The Copy task's into() will handle directory creation
+        logger.lifecycle("📁 ROM tools directory: ${dirFile.absolutePath}")
     }
     
     doLast {
-        logger.lifecycle("✅ ROM tools copied to: ${destDir.asFile.absolutePath}")
+        logger.lifecycle("✅ ROM tools copied to: ${romToolsOutputDirectory.get().asFile.absolutePath}")
     }
 }
 
 abstract class VerifyRomToolsTask : DefaultTask() {
     @get:InputDirectory
     @get:Optional
-    abstract val romToolsDir: DirectoryProperty
+    abstract val romToolsDir: org.gradle.api.file.DirectoryProperty
 
     @TaskAction
     fun verify() {
@@ -159,8 +162,9 @@ abstract class VerifyRomToolsTask : DefaultTask() {
 }
 
 tasks.register<VerifyRomToolsTask>("verifyRomTools") {
-    romToolsDir.set(layout.buildDirectory.dir("rom-tools"))
-    dependsOn("copyRomTools")
+    romToolsDir.set(romToolsOutputDirectory) // Set to the same shared property
+    // Gradle should infer the dependency on copyRomTools because romToolsOutputDirectory
+    // is an output of copyRomTools (via 'into') and an input here.
 }
 
 tasks.named("build") {

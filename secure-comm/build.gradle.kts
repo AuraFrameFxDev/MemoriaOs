@@ -86,6 +86,7 @@ dependencies {
 
     // Enhanced Security Stack (Android compatible)
     implementation(libs.androidxSecurity)
+    implementation(libs.bouncycastle)
 
     // Utilities
     implementation(libs.gson)
@@ -102,5 +103,5 @@ dependencies {
     testRuntimeOnly(libs.junit.engine)
 
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.test.core)
 }
