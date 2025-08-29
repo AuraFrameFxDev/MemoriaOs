@@ -148,8 +148,8 @@ yuki-ksp-xposed = { module = "com.highcapable.yukihookapi:ksp-xposed-pioneer", v
 
 # ===== Security & Crypto =====
 androidxSecurity = { group = "androidx.security", name = "security-crypto", version.ref = "androidxSecurity" }
-bcprov-jdk18on-v177 = { module = "org.bouncycastle:bcprov-jdk24on", version.ref = "bcprovJdk18on" }
-bouncycastle = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
+bcprov-jdk18on = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bcprovJdk18on" }
+# Optional alias for the same lib; avoid duplicates if unnecessary.
 conscrypt-android = { group = "org.conscrypt", name = "conscrypt-android", version = "2.5.3" }
 tink = { group = "com.google.crypto.tink", name = "tink-android", version.ref = "tink" }
 
