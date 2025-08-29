@@ -50,7 +50,6 @@ dependencies {
     implementation(libs.gson)
 
     // Security
-    implementation(libs.bouncycastle)
 
     // Testing
     testImplementation(libs.junit)

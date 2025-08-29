@@ -230,12 +230,21 @@ commons-io = { group = "commons-io", name = "commons-io", version = "2.20.0" }
 commons-compress = { group = "org.apache.commons", name = "commons-compress", version.ref = "commonsCompress" }
 xz = { group = "org.tukaani", name = "xz", version.ref = "xz" }
 
+# ===== Testing =====
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version = "1.9.0" }
+androidx-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTesting" }
+androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestJunit" }
+hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
+
 # ===== ROOM =====
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomVersion" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomVersion" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVersion" }
 
 # ===== TESTING =====
+ main
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 junit-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitJupiter" }
