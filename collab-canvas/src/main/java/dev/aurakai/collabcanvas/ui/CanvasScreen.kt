@@ -63,6 +63,21 @@ import kotlinx.coroutines.launch
  * selected tool/color/stroke, animation state, scale and offset). Committing a completed path
  * adds a PluckablePath to the internal lists and creates an animated copy for playback.
  */
+/**
+ * Full-screen composable providing an interactive collaborative drawing canvas.
+ *
+ * Supports freehand drawing (PATH) plus rectangle and oval tools, pinch-to-zoom and pan, tap/drag gestures
+ * to create strokes, and animated playback of committed paths. The UI includes a top app bar with clear
+ * and save actions (save is a placeholder), floating tool buttons to switch between PATH/RECTANGLE/OVAL,
+ * and an on-screen toolbar for selecting color, stroke width, and clearing animated paths.
+ *
+ * Internal state owned by this composable includes the list of committed PluckablePath objects (`paths`),
+ * a list of drawable CanvasElement objects (`elements`), the in-progress `currentPath`, current color and
+ * stroke width, the selected tool and element, animation state for progressive rendering (`animatedPaths`),
+ * and transform state for zoom (`scale`) and pan (`offset`). Committed paths are added to `paths` when a
+ * drawing gesture ends and the current path has non-empty bounds. Clearing actions remove paths, elements,
+ * and their animated copies.
+ */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CanvasScreen() {
