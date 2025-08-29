@@ -59,7 +59,7 @@ dependencies {
     // SACRED RULE #5: DEPENDENCY HIERARCHY
     implementation(project(":core-module"))
     implementation(project(":app"))
-    implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.material3)
     // Core Android bundles
     implementation(libs.bundles.androidx.core)
     implementation(libs.bundles.compose)

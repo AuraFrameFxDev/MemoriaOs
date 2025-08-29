@@ -63,7 +63,7 @@ dependencies {
     implementation(libs.bundles.androidx.core)
     implementation(libs.bundles.compose)
     implementation(libs.bundles.coroutines)
-    implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.material3)
 
     // Hilt Dependency Injection
     implementation(libs.hilt.android)
