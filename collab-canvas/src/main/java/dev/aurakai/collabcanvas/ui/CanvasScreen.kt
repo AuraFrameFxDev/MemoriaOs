@@ -47,6 +47,7 @@ import kotlinx.coroutines.launch
  * - The top-bar "Clear Canvas" and toolbar "Clear" actions remove stored paths and animated paths.
  * - The "Save" action is a placeholder and does not persist the canvas in this implementation.
  */
+
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CanvasScreen() {
