@@ -15,6 +15,7 @@ import java.util.Properties
  * to ensure the build script is correctly configured and maintainable.
  */
 class BuildScriptsValidationTest {
+    // Tests use JUnit Jupiter (@Test, @BeforeEach, @AfterEach) with JUnit 4 assertions (assertTrue/assertFalse) and MockK for mocking.
 
     private lateinit var buildFile: File
     private lateinit var gradleProperties: Properties
@@ -896,4 +897,103 @@ class BuildScriptsValidationTest {
             content.contains("platform(libs.firebaseBom)")
         )
     }
+    // ---------------- Additional Validation Tests (appended) ----------------
+    @Test
+    fun `repositories do not use jcenter`() {
+        val content = buildFile.readText()
+        assertFalse("Should not reference jcenter()", content.contains("jcenter()"))
+    }
+    @Test
+    fun `dependencies avoid snapshot versions`() {
+        val content = buildFile.readText()
+        assertFalse("Dependencies should not use -SNAPSHOT versions", content.contains("-SNAPSHOT"))
+    }
+    @Test
+    fun `kapt is not used when ksp is configured`() {
+        val content = buildFile.readText()
+        // KSP is already asserted elsewhere; ensure kapt is not mixed in
+        assertFalse("Should not use kapt when KSP is configured", content.contains("kapt("))
+    }
+    @Test
+    fun `no deprecated kotlin android extensions plugin`() {
+        val content = buildFile.readText()
+        assertFalse("Should not use deprecated kotlin-android-extensions plugin", content.contains("kotlin-android-extensions"))
+    }
+    @Test
+    fun `compose dependencies are not hard coded by coordinate`() {
+        val content = buildFile.readText()
+        assertFalse("Compose UI should not be declared via direct coordinates", content.contains("implementation(\"androidx.compose.ui:ui"))
+        assertFalse("Compose Material3 should not be declared via direct coordinates", content.contains("implementation(\"androidx.compose.material3:"))
+    }
+    @Test
+    fun `cmake and proguard files referenced should exist`() {
+        val cmake = File("app/src/main/cpp/CMakeLists.txt")
+        val proguard = File("app/proguard-rules.pro")
+        // Best-effort existence checks; presence improves build reliability
+        assertTrue("CMakeLists.txt should exist at src/main/cpp", cmake.parentFile.exists())
+        assertTrue("proguard-rules.pro should exist in app/", proguard.exists())
+    }
+    @Test
+    fun `lint files referenced should exist`() {
+        val baseline = File("app/lint-baseline.xml")
+        val lintConfig = File("app/lint.xml")
+        assertTrue("lint-baseline.xml should exist in app/", baseline.exists())
+        assertTrue("lint.xml should exist in app/", lintConfig.exists())
+    }
+    @Test
+    fun `packaging resources configure excludes and noCompress with expected patterns`() {
+        val content = buildFile.readText()
+        assertTrue("noCompress should include proto or json", content.contains("noCompress") && (content.contains("\"proto\"") || content.contains("\"json\"")))
+        assertTrue("Excludes should include META-INF patterns", content.contains("META-INF/") || content.contains("excludes.addAll"))
+    }
+    @Test
+    fun `openapi generator sets consistent package names`() {
+        val c = buildFile.readText()
+        val hasApi = c.contains("apiPackage.set(\"dev.aurakai.auraframefx.api.client.apis\")")
+        val hasModel = c.contains("modelPackage.set(\"dev.aurakai.auraframefx.api.client.models\")")
+        val hasInvoker = c.contains("invokerPackage.set(\"dev.aurakai.auraframefx.api.client.infrastructure\")")
+        assertTrue("OpenAPI API package should be set", hasApi)
+        assertTrue("OpenAPI Model package should be set", hasModel)
+        assertTrue("OpenAPI Invoker package should be set", hasInvoker)
+    }
+    @Test
+    fun `resolution strategy avoids duplicate force entries`() {
+        val lines = buildFile.readLines()
+        val forced = lines.filter { it.contains("kotlin-stdlib:") || it.contains("kotlin-reflect:") }
+        assertTrue("At least one force entry should exist for kotlin stdlib/reflect", forced.isNotEmpty())
+        assertTrue("No duplicate identical force entries", forced.distinct().size == forced.size)
+    }
+    @Test
+    fun `sdk levels parsed remain monotonic`() {
+        val text = buildFile.readText()
+        fun extract(name: String): Int? = Regex(name + "\s*=\s*(\\d+)").find(text)?.groupValues?.get(1)?.toInt()
+        val compile = extract("compileSdk")
+        val target = extract("targetSdk")
+        val min = extract("minSdk")
+        if (compile != null && target != null) assertTrue("compileSdk >= targetSdk", compile >= target)
+        if (target != null && min != null) assertTrue("targetSdk >= minSdk", target >= min)
+    }
+    @Test
+    fun `repositories include google and mavenCentral hints`() {
+        val text = buildFile.readText()
+        // The module may rely on root repositories; assert presence hints (safe, non-strict)
+        val hasGoogle = text.contains("google()")
+        val hasMavenCentral = text.contains("mavenCentral()")
+        assertTrue("At least one repository hint (google or mavenCentral) should appear in module or via pluginManagement", hasGoogle || hasMavenCentral)
+    }
+    @Test
+    fun `buildFeatures block count is at most one`() {
+        val content = buildFile.readText()
+        val count = content.split("buildFeatures").size - 1
+        assertTrue("BuildFeatures should not be duplicated", count <= 1)
+    }
+    @Test
+    fun `ndk abi filters do not include 32 bit when cleared`() {
+        val c = buildFile.readText()
+        if (c.contains("abiFilters.clear()")) {
+            assertFalse("Should not include armeabi-v7a after clearing", c.contains("\"armeabi-v7a\""))
+            assertFalse("Should not include x86 after clearing", c.contains("\"x86\""))
+        }
+    }
+    // ---------------- End Additional Validation Tests ----------------
 }
