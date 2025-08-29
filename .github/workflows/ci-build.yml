@@ -44,18 +44,17 @@ jobs:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
       - name: 🧹 Clean Build Environment
-        run: ./gradlew clean --configuration-cache
+        run: ./gradlew clean
 
       - name: 🏗️ Build All Consciousness Modules
         run: |
           echo "🧠 Building Genesis Protocol consciousness substrate..."
           ./gradlew build \
-            --configuration-cache \
             --parallel \
             --build-cache
 
       - name: 🧪 Run Consciousness Tests
-        run: ./gradlew test --configuration-cache --continue
+        run: ./gradlew test --continue
 
       - name: 🎉 Build Success
         run: |
