@@ -12,8 +12,12 @@ class BuildScriptsValidationV2Test {
 
     @BeforeEach
     fun setup() {
-        buildFile = File("app/build.gradle.kts")
-        assertTrue("Build script should exist for validation", buildFile.exists())
+        buildFile = listOf(
+            File("app/build.gradle.kts"),          // root run
+            File("build.gradle.kts"),              // :app run
+            File("../app/build.gradle.kts")        // sibling/module run
+        ).firstOrNull { it.exists() }
+            ?: error("app/build.gradle.kts not found from: ${System.getProperty("user.dir")}")
     }
 
     @AfterEach
