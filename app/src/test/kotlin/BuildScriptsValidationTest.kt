@@ -1,5 +1,7 @@
 import io.mockk.clearAllMocks
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -895,5 +897,197 @@ class BuildScriptsValidationTest {
             "Should use Firebase BOM for version management",
             content.contains("platform(libs.firebaseBom)")
         )
+    }
+    // ===== Additional tests appended by PR test generator (JUnit + MockK) =====
+    @Test
+    fun `repositories or version catalogs are referenced correctly`() {
+        val content = buildFile.readText()
+        // Prefer validating version catalog usage in module build files
+        assertTrue("Module should reference version catalogs (libs)", content.contains("libs."))
+        // Repositories are often declared at settings/buildSrc, but if present here ensure common repositories are referenced
+        val hasReposBlock = content.contains("repositories {")
+        if (hasReposBlock) {
+            assertTrue("Should include Google repo when repositories block exists", content.contains("google()"))
+            assertTrue("Should include Maven Central when repositories block exists", content.contains("mavenCentral()"))
+        }
+    }
+    @Test
+    fun `compose compiler configuration is declared when compose is enabled`() {
+        val content = buildFile.readText()
+        if (content.contains("compose = true")) {
+            val hasComposeOptions = content.contains("composeOptions {") || content.contains("composeCompiler {")
+            assertTrue("Compose options/compose compiler block should be declared when Compose is enabled", hasComposeOptions)
+        }
+    }
+    @Test
+    fun `kotlin jvm toolchain is aligned with java 21 when specified`() {
+        val content = buildFile.readText()
+        val declaresToolchain = content.contains("jvmToolchain(")
+        if (declaresToolchain) {
+            assertTrue("Kotlin toolchain should target 21 when declared", content.contains("jvmToolchain(21)"))
+        }
+    }
+    @Test
+    fun `proguard configuration references default or custom files appropriately`() {
+        val content = buildFile.readText()
+        assertTrue("Should reference optimized default proguard file in release", content.contains("proguard-android-optimize.txt"))
+        // If consumer rules are declared, ensure the file reference is non-empty
+        val hasConsumer = content.contains("consumerProguardFiles")
+        if (hasConsumer) {
+            assertFalse("consumerProguardFiles should not be empty", content.contains("consumerProguardFiles()"))
+        }
+    }
+    @Test
+    fun `google services plugin is applied when firebase dependencies are present`() {
+        val content = buildFile.readText()
+        val hasFirebase = content.contains("libs.firebase") || content.contains("platform(libs.firebaseBom)")
+        if (hasFirebase) {
+            assertTrue("Google Services plugin should be applied with Firebase", content.contains("alias(libs.plugins.google.services)"))
+        }
+    }
+    @Test
+    fun `openapi generator has non-empty config options when block exists`() {
+        val content = buildFile.readText()
+        val hasBlock = content.contains("openApiGenerate") && content.contains("generatorName.set(")
+        if (hasBlock) {
+            assertTrue("OpenAPI additional properties should be configured", content.contains("additionalProperties.set(") || content.contains("configOptions.set(") )
+        }
+    }
+    @Test
+    fun `resource packaging excludes and no-compress lists are sensible`() {
+        val content = buildFile.readText()
+        // If noCompress configured, ensure it lists at least one extension
+        if (content.contains("noCompress")) {
+            assertFalse("noCompress should not be empty list", content.contains("noCompress = listOf()"))
+        }
+        // Excludes should target common metadata patterns if block present
+        if (content.contains("packaging {") || content.contains("resources {") ) {
+            assertTrue("Packaging should exclude common META-INF noise", content.contains("META-INF/"))
+        }
+    }
+    @Test
+    fun `ndk abiFilters include 64-bit architectures when specified`() {
+        val content = buildFile.readText()
+        if (content.contains("abiFilters")) {
+            val hasArm64 = content.contains("\"arm64-v8a\"")
+            val hasX8664 = content.contains("\"x86_64\"")
+            assertTrue("NDK should include arm64-v8a and/or x86_64", hasArm64 || hasX8664)
+        }
+    }
+    @Test
+    fun `junit jupiter usage aligns with declared test dependencies`() {
+        val usingJupiterAnnotations = true // This test file imports org.junit.jupiter.api.*
+        val moduleBuild = File("app/build.gradle.kts").readText()
+        if (usingJupiterAnnotations) {
+            assertTrue("Module should declare JUnit (platform or jupiter) test dependency via catalog", moduleBuild.contains("testImplementation") )
+        }
+    }
+    @Test
+    fun `gradle properties include useful flags when file exists`() {
+        val rootProps = File("gradle.properties")
+        if (rootProps.exists()) {
+            val text = rootProps.readText()
+            assertTrue("gradle.properties should enable AndroidX when present", text.contains("android.useAndroidX=true") || text.contains("android.useAndroidX = true"))
+            assertTrue("gradle.properties should configure JVM args when present", text.contains("org.gradle.jvmargs"))
+        }
+    }
+
+    // ===== Additional tests appended by PR test generator (JUnit 5 + MockK) — batch 2 =====
+    // Testing library and framework: JUnit 5 (Jupiter) with MockK
+
+    @Test
+    fun `does not use kapt or annotationProcessor`() {
+        val content = buildFile.readText()
+        assertFalse("KAPT plugin should not be applied when using KSP", content.contains("kotlin-kapt") || content.contains("id(\"kotlin-kapt\")"))
+        assertFalse("KAPT dependencies should not be present", content.contains("kapt("))
+        assertFalse("annotationProcessor dependencies should not be present in Kotlin module", content.contains("annotationProcessor("))
+    }
+
+    @Test
+    fun `namespace matches applicationId`() {
+        val content = buildFile.readText()
+        val ns = Regex("\\bnamespace\\s*=\\s*\"([^\"]+)\"").find(content)?.groupValues?.get(1)
+        val appId = Regex("\\bapplicationId\\s*=\\s*\"([^\"]+)\"").find(content)?.groupValues?.get(1)
+        assertNotNull("Namespace should be declared", ns)
+        assertNotNull("applicationId should be declared", appId)
+        assertEquals("Namespace and applicationId should match for consistency", appId, ns)
+    }
+
+    @Test
+    fun `uses Kotlin DSL terms not Groovy equivalents`() {
+        val content = buildFile.readText()
+        assertFalse("Groovy DSL compileSdkVersion should not be used", content.contains("compileSdkVersion"))
+        assertFalse("Groovy DSL targetSdkVersion should not be used", content.contains("targetSdkVersion"))
+        assertFalse("Groovy DSL minSdkVersion should not be used", content.contains("minSdkVersion"))
+    }
+
+    @Test
+    fun `freeCompilerArgs block is declared when compiler flags are asserted`() {
+        val content = buildFile.readText()
+        // We already assert for individual flags elsewhere; ensure the args container exists
+        assertTrue("freeCompilerArgs should be configured", content.contains("freeCompilerArgs"))
+    }
+
+    @Test
+    fun `vectorDrawables block is declared when support library is enabled`() {
+        val content = buildFile.readText()
+        if (content.contains("useSupportLibrary = true")) {
+            assertTrue("vectorDrawables block should accompany useSupportLibrary", content.contains("vectorDrawables"))
+        }
+    }
+
+    @Test
+    fun `compose compiler metrics or reports configured when composeCompiler block exists`() {
+        val content = buildFile.readText()
+        if (content.contains("composeCompiler {")) {
+            val hasMetrics = content.contains("reportsDestination") ||
+                    content.contains("reportDestination") ||
+                    content.contains("metricsDestination") ||
+                    content.contains("metrics")
+            assertTrue("composeCompiler should configure metrics/reports destination when block exists", hasMetrics)
+        }
+    }
+
+    @Test
+    fun `abiFilters is not declared multiple times`() {
+        val content = buildFile.readText()
+        val count = Regex("\\babiFilters\\b").findAll(content).count()
+        assertTrue("abiFilters should not be duplicated", count <= 1)
+    }
+
+    @Test
+    fun `plugins block is declared exactly once`() {
+        val content = buildFile.readText()
+        val count = Regex("\\bplugins\\s*\\{").findAll(content).count()
+        assertTrue("plugins block should be declared exactly once in the module build file", count == 1)
+    }
+
+    @Test
+    fun `packaging excludes do not duplicate common patterns`() {
+        val content = buildFile.readText()
+        val patterns = listOf(
+            "META-INF/*.kotlin_module",
+            "META-INF/*.version",
+            "META-INF/proguard/*",
+            "**/libjni*.so"
+        )
+        patterns.forEach { p ->
+            val occurrences = Regex(Regex.escape(p)).findAll(content).count()
+            assertTrue("Exclusion pattern '$p' should not be duplicated", occurrences <= 1)
+        }
+    }
+
+    @Test
+    fun `sdk declarations are active non-commented lines`() {
+        val lines = buildFile.readLines()
+        fun presentActive(token: String): Boolean =
+            lines.any { line ->
+                val t = line.trim()
+                t.startsWith(token) && !t.startsWith("//")
+            }
+
+        assertTrue("compileSdk = 36 should be active (not commented)", presentActive("compileSdk = 36"))
+        assertTrue("targetSdk = 34 should be active (not commented)", presentActive("targetSdk = 34"))
+        assertTrue("minSdk = 26 should be active (not commented)", presentActive("minSdk = 26"))
     }
 }
