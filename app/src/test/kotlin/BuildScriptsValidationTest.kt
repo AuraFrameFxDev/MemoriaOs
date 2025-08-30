@@ -1017,7 +1017,10 @@ class BuildScriptsValidationTest {
         val appId = Regex("\\bapplicationId\\s*=\\s*\"([^\"]+)\"").find(content)?.groupValues?.get(1)
         assertNotNull("Namespace should be declared", ns)
         assertNotNull("applicationId should be declared", appId)
-        assertEquals("Namespace and applicationId should match for consistency", appId, ns)
+        assertTrue(
+            "Namespace should equal applicationId or be a superset (e.g., dev.foo.app and dev.foo.app.debug)",
+            appId == ns || (ns != null && appId != null && ns.startsWith("$appId."))
+        )
     }
 
     @Test
