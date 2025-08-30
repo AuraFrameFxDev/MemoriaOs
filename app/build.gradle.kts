@@ -70,8 +70,7 @@ android {
                 "/META-INF/NOTICE",
                 "/META-INF/NOTICE.txt",
                 "META-INF/*.kotlin_module",
-                "**/kotlin/**",
-                "**/*.txt"
+                "**/kotlin/**"
             )
         }
         jniLibs {
