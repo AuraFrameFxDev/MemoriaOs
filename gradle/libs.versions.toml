@@ -7,12 +7,12 @@ hilt = "2.57.1"
 junitVersion = "1.3.0"
 kotlin = "2.2.20-RC"
 kotlinReflect = "2.2.20-RC"
-kotlinStdlib = "2.2.20-RC"
+# kotlinStdlib = "2.2.20-RC" # REMOVED: Unused in build scripts
 
 ksp = "2.2.20-RC-2.0.2"
 
 materialVersion = "1.12.0"
-protobufLitePlugin = "0.9.3"
+# protobufLitePlugin = "0.9.3" # REMOVED: Unused in build scripts
 googleServices = "4.4.3"
 openApiGenerator = "7.14.0"
 kover = "0.9.1"
@@ -23,8 +23,8 @@ runtime = "1.9.0"
 runtimeLivedata = "1.9.0"
 symbolProcessingGradlePlugin = "2.2.20-RC-2.0.2"
 tink = "1.18.0" # Make sure 'lottie' has a version if it's a library
-lottie = "6.6.7" # Assuming lottie version based on lottieCompose
-material3 = "1.3.2"
+# lottie = "6.6.7" # REMOVED: Unused in build scripts
+# material3 = "1.3.2" # REMOVED: Unused - handled by BOM
 
 # ===== CODE QUALITY & DOCUMENTATION =====
 dokka = "2.0.0"
@@ -33,28 +33,28 @@ ktlint = "1.0.1"
 detekt = "1.23.8"
 
 # ===== COMPOSE & UI - FIXED BOM VERSION =====
-composeBom = "2025.08.01"  # Compatible with Compose Compiler 1.5.14
+composeBom = "2025.08.00"  # Compatible with Compose Compiler managed by Kotlin plugin
 activityCompose = "1.10.1"
 navigationCompose = "2.9.3"
-composeCompiler = "1.9.4"  # Should be same as runtime version
-androidxComposeCompiler = "1.9.4"
+# composeCompiler handled automatically by kotlin-compose plugin
+# androidxComposeCompiler handled automatically by kotlin-compose plugin
 
 # ===== GOOGLE SERVICES =====
 firebaseBom = "34.2.0"
 firebaseCrashlytics = "3.0.6"
 firebasePerf = "2.0.1"  # DISABLED: Not compatible with AGP 9.0.0-alpha02
-firebaseAnalyticsKtx = "22.5.0"
+# firebaseAnalyticsKtx = "22.5.0" # REMOVED: Unused in build scripts
 firebaseCrashlyticsKtx = "19.4.4"
 
 # ===== DATABASE & PERSISTENCE =====
 roomVersion = "2.7.2"
-datastore = "1.1.7"
+# datastore = "1.1.7" # REMOVED: Unused in build scripts
 
 # ===== ANDROID ARCHITECTURE COMPONENTS =====
 lifecycle = "2.9.3"
 workManager = "2.10.3"
-paging = "3.3.6"
-biometric = "1.4.0-alpha04"
+# paging = "3.3.6" # REMOVED: Unused in build scripts
+# biometric = "1.4.0-alpha04" # REMOVED: Unused in build scripts
 # ===== NETWORKING =====
 retrofit = "3.0.0"
 okhttp = "5.1.0"
@@ -93,7 +93,7 @@ fresco = "3.6.0"
 pdfviewer = "2.9.1"
 
 # ===== UTILITIES =====
-timber = "5.0.1"
+# timber = "5.0.1" # REMOVED: Will be moved to libraries section
 coilCompose = "2.7.0"
 gson = "2.13.1"
 commonsIo = "2.20.0"

@@ -74,12 +74,12 @@ allprojects {
         }
     }
     
-    // ✅ CRITICAL: Fix KSP configuration cache compatibility
+    // ✅ CRITICAL: Fix KSP configuration cache compatibility  
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         compilerOptions {
             freeCompilerArgs.addAll(
-                "-Xjsr305=strict",
-                "-P", "plugin:androidx.compose.compiler.plugins.kotlin:stabilityConfigurationPath=${project.rootDir.absolutePath}/compose_compiler_config.conf"
+                "-Xjsr305=strict"
+                // Compose compiler handled automatically by kotlin-compose plugin
             )
         }
     }
