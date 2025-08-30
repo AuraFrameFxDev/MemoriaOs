@@ -25,9 +25,12 @@ android {
     }
 
     lint {
-        abortOnError = false
-        checkReleaseBuilds = false
-        disable += setOf("InvalidPackage", "GradleDependency")
+        checkReleaseBuilds = true
+        abortOnError = true
+        // Keep targeted suppressions if truly needed
+        disable += setOf("InvalidPackage")
+        // Optional: manage known issues via baseline
+        // baseline = file("lint-baseline.xml")
     }
 
     buildTypes {
