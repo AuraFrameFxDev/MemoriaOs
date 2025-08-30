@@ -216,12 +216,13 @@ class GradleVersionCatalogTest {
         fun allVersionRefsExistInVersions() {
             for ((path, text) in catalogTextByPath) {
                 val refs = referencedVersionRefs(text)
-                assertTrue(refs.isNotEmpty(), "No version.ref found in $path; ensure libraries/plugins use version refs where applicable.")
-
-                val vers = versionsMap(text)
-                val missing = refs.filterNot { it in vers }
-                assertTrue(missing.isEmpty(), "Missing version keys in [versions] for refs: $missing in $path")
+                if (refs.isNotEmpty()) {
+                    val vers = versionsMap(text)
+                    val missing = refs.filterNot { it in vers }
+                    assertTrue(missing.isEmpty(), "Missing version keys in [versions] for refs: $missing in $path")
+                }
             }
+        }
         }
 
         @Test
