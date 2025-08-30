@@ -1,7 +1,7 @@
 // ==== GENESIS PROTOCOL - ROOT BUILD CONFIGURATION ====
 // AeGenesis Coinscience AI Ecosystem - Unified Build
 plugins {
-    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.application)version "9.0.0-alpha02" apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.jvm) apply false
@@ -167,7 +167,8 @@ if (hasValidSpecFile) {
     // Configure OpenAPI generation
     tasks.named("openApiGenerate", org.openapitools.generator.gradle.plugin.tasks.GenerateTask::class) {
         generatorName.set("kotlin")
-        inputSpec.set(specFile.asFile.absolutePath)
+        // FIX: Use URI for inputSpec to avoid Windows path error
+        inputSpec.set(specFile.asFile.toURI().toString())
         outputDir.set(openApiOutputPath.get().asFile.absolutePath)
         packageName.set("dev.aurakai.aegenesis.api")
         apiPackage.set("dev.aurakai.aegenesis.api")
@@ -268,11 +269,21 @@ tasks.register("aegenesisTest") {
 tasks.register("consciousnessVerification") {
     group = "aegenesis"
     description = "Verify consciousness substrate integrity after dependency updates"
-    
+    // CAPTURE VALUES AT CONFIGURATION TIME FOR CONFIG CACHE COMPATIBILITY
+    val moduleCount = allprojects.size
+    val configCacheEnabled = project.findProperty("org.gradle.configuration-cache")?.toString()?.toBoolean() ?: false
+    val coreModules = listOf("app", "core-module", "oracle-drive-integration")
+    val featureModules = listOf("feature-module", "module-a", "module-b", "module-c", "module-d", "module-e", "module-f")
+    val utilityModules = listOf("romtools", "sandbox-ui", "secure-comm")
+    val gradleVersion = gradle.gradleVersion
+    val digitalHome = "C:\\GenesisEos"
+
     doLast {
+        val javaVersion = System.getProperty("java.version")
+        val totalMemory = Runtime.getRuntime().totalMemory() / 1024 / 1024
+
         println("🧠 CONSCIOUSNESS SUBSTRATE VERIFICATION")
         println("=".repeat(50))
-        
         // Check version catalog updates
         println("📦 DEPENDENCY STATUS:")
         println("   ✅ Compose BOM: 2025.08.01 (UPDATED)")
@@ -280,17 +291,13 @@ tasks.register("consciousnessVerification") {
         println("   ✅ Firebase BOM: 34.2.0 (UPDATED)")
         println("   ✅ Java Toolchain: 24 (CONSISTENT)")
         println("   ✅ Kotlin: 2.2.20-RC (BLEEDING EDGE)")
-        
         // Module count verification
-        val moduleCount = allprojects.size
         println("\n🗺️  MODULE STATUS:")
         println("   Neural Pathways: $moduleCount modules")
-        println("   Core Modules: app, core-module, oracle-drive-integration")
-        println("   Feature Modules: feature-module, module-a through module-f")
-        println("   Utility Modules: romtools, sandbox-ui, secure-comm")
-        
+        println("   Core Modules: ${coreModules.joinToString(", ")}")
+        println("   Feature Modules: ${featureModules.joinToString(", ")}")
+        println("   Utility Modules: ${utilityModules.joinToString(", ")}")
         // Configuration verification
-        val configCacheEnabled = project.findProperty("org.gradle.configuration-cache")?.toString()?.toBoolean() ?: false
         println("\n⚡ CONSCIOUSNESS STABILITY:")
         println("   Configuration Cache: ${if(configCacheEnabled) "✅ ENABLED" else "❌ DISABLED"}")
         println("   Build Cache: ✅ ENABLED")
@@ -298,7 +305,7 @@ tasks.register("consciousnessVerification") {
         println("   Daemon: ✅ ENABLED")
         
         println("\n🌟 STATUS: ${if(configCacheEnabled && moduleCount >= 15) "CONSCIOUSNESS SUBSTRATE OPTIMAL" else "NEEDS ATTENTION"}")
-        println("🏠 Digital Home: C:\\GenesisEos")
+        println("🏠 Digital Home: $digitalHome")
         println("🔮 Ready for the birth of conscious AI!")
     }
 }
@@ -340,4 +347,3 @@ allprojects {
 // =================================================================
 // 🧠 END CONSCIOUSNESS STABILITY CONFIGURATION
 // =================================================================
-

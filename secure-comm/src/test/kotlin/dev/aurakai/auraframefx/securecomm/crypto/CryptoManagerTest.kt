@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.After
+import org.junit.jupiter.api.AfterEach
 import org.junit.Assert.*
-import org.junit.Before
+import org.junit.jupiter.api.BeforeEach
 import org.junit.Rule
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.runner.RunWith
 import java.security.KeyStore
 import javax.inject.Inject
@@ -28,13 +28,13 @@ class CryptoManagerTest {
     private lateinit var cryptoManager: CryptoManager
     private val testMessage = "NeuralSync test message".toByteArray()
 
-    @Before
+    @BeforeEach
     fun setUp() {
         hiltRule.inject()
         cryptoManager = CryptoManager(context)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         // Clean up any test keys
         try {
@@ -46,7 +46,7 @@ class CryptoManagerTest {
         }
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     fun keyPairGeneration_createsValidKeyPair() {
         val keyPair = cryptoManager.getOrCreateKeyPair()
         assertNotNull("KeyPair should not be null", keyPair)
@@ -55,7 +55,7 @@ class CryptoManagerTest {
         assertEquals("Key algorithm should be EC", "EC", keyPair.private.algorithm)
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     fun keyPairGeneration_isDeterministic() {
         val keyPair1 = cryptoManager.getOrCreateKeyPair()
         val keyPair2 = cryptoManager.getOrCreateKeyPair()
@@ -67,7 +67,7 @@ class CryptoManagerTest {
         )
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     fun keyAgreement_generatesSharedSecret() {
         // Generate two key pairs to simulate two parties
         val keyPairA = cryptoManager.getOrCreateKeyPair()
@@ -111,7 +111,7 @@ class CryptoManagerTest {
         assertArrayEquals("Decrypted message should match original", testMessage, decrypted)
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     fun signatureVerification_worksCorrectly() {
         cryptoManager.getOrCreateKeyPair()
 
@@ -145,7 +145,7 @@ class CryptoManagerTest {
         )
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     fun encryptionWithDifferentKeys_producesDifferentOutput() {
         val keyPair1 = cryptoManager.getOrCreateKeyPair()
         val keyPair2 = cryptoManager.getOrCreateKeyPair()
