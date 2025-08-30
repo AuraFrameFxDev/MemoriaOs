@@ -41,6 +41,19 @@ import dev.aurakai.auraframefx.datavein.model.NodeType
 /**
  * Enhanced Node Info Panel with FFX-style progression details
  */
+/**
+ * Renders a card-style panel showing detailed information about a DataVein node.
+ *
+ * The panel displays the node type (using the type's glow color), a small status dot
+ * (green = activated, yellow = unlocked but not activated, red = locked), identification
+ * rows (Tag, ID, Ring, Level), and the node type description. If the node is unlocked,
+ * an XP row and a horizontal XP progress bar (xp/1000) are shown. If the node has any
+ * data, a Data row is included. A compact status line at the bottom summarizes the
+ * node state with an emoji and short text.
+ *
+ * @param node The DataVeinNode whose properties drive the panel's content and colors.
+ * @param modifier Optional Compose modifier applied to the root Card.
+ */
 @Composable
 fun NodeInfoPanel(
     node: DataVeinNode,
@@ -153,7 +166,12 @@ fun NodeInfoPanel(
 }
 
 /**
- * Enhanced Node Type Legend with categories
+ * Renders a compact legend Card showing DataVein node types grouped by category.
+ *
+ * The legend lists each NodeCategory (skipping categories with no types) and, for each
+ * NodeType in that category, shows a small colored dot (filled with `type.color` and
+ * outlined with a semi-transparent `type.glowColor`) alongside the type's display name.
+ * A short explanatory note at the bottom describes available interactions.
  */
 @Composable
 fun NodeTypeLegend(modifier: Modifier = Modifier) {
@@ -228,7 +246,22 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
 }
 
 /**
- * Enhanced Status Panel with real-time metrics
+ * Displays a status card summarizing real-time DataVein metrics.
+ *
+ * Shows an animated lightning icon and the title "Genesis DataVein", three
+ * metric rows (Active Flows, Active Nodes as "active/total", and Unlocked as
+ * "unlocked/total"), and two horizontal progress bars: Activation (active/total)
+ * and Progression (unlocked/total).
+ *
+ * If `totalNodes` is 0, percentages for both progress bars are treated as 0 to
+ * avoid division-by-zero. The visual accent colors reflect activation and
+ * progression states; the header icon uses a subtle pulsing animation.
+ *
+ * @param activeFlows Number of currently active flows.
+ * @param activeNodes Number of currently active nodes.
+ * @param totalNodes Total number of nodes (used to compute ratios and progress).
+ * @param unlockedNodes Number of nodes that have been unlocked.
+ * @param modifier Optional Compose modifier applied to the outer Card.
  */
 @Composable
 fun StatusPanel(
