@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
  * The UI uses a dark background and Material3 components; the action button's `onClick` is a no-op placeholder.
  *
  * @param modifier Modifier to apply to the outer container for layout and styling overrides.
+
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

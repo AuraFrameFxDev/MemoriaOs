@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.dp
  * @param onStrokeWidthSelected Called with the chosen stroke width (in pixels) when the user selects a width.
  * @param onClear Called when the Clear button is pressed.
  * @param modifier Modifier applied to the outer Column container.
+
  */
 @Composable
 fun CanvasToolbar(

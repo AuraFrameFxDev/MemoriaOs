@@ -55,6 +55,7 @@ import dev.aurakai.auraframefx.datavein.model.NodeType
  *
  * @param node The DataVeinNode to display. Its `type.glowColor` is used for accents and its
  * state (`isUnlocked`, `activated`, `xp`, `data`, etc.) controls conditional content.
+
  */
 @Composable
 fun NodeInfoPanel(
@@ -176,6 +177,7 @@ fun NodeInfoPanel(
  *
  * At the bottom a short legend note explains interactivity: nodes can be clicked to explore
  * paths and are unlocked via progression.
+
  */
 @Composable
 fun NodeTypeLegend(modifier: Modifier = Modifier) {
@@ -260,6 +262,7 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
  * @param activeNodes Number of nodes currently activated.
  * @param totalNodes Total number of nodes in the network; used as the denominator for progress calculations.
  * @param unlockedNodes Number of nodes unlocked via progression.
+
  */
 @Composable
 fun StatusPanel(
