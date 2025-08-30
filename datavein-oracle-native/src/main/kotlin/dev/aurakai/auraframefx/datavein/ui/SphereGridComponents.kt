@@ -23,7 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -89,7 +89,7 @@ fun NodeInfoPanel(
                 )
             }
 
-            Divider(color = node.type.glowColor.copy(alpha = 0.3f))
+            HorizontalDivider(color = node.type.glowColor.copy(alpha = 0.3f))
 
             // Node identification
             InfoRow("Tag", node.tag, Color.Cyan)
@@ -175,7 +175,7 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
                 fontSize = 12.sp
             )
 
-            Divider(color = Color.White.copy(alpha = 0.2f))
+            HorizontalDivider(color = Color.White.copy(alpha = 0.2f))
 
             // Group by category
             NodeCategory.values().forEach { category ->
@@ -276,7 +276,7 @@ fun StatusPanel(
                 )
             }
 
-            Divider(color = Color.Cyan.copy(alpha = 0.3f))
+            HorizontalDivider(color = Color.Cyan.copy(alpha = 0.3f))
 
             StatusRow("Active Flows", activeFlows.toString(), Color(0xFF00FF88))
             StatusRow("Active Nodes", "$activeNodes/$totalNodes", Color(0xFF4FC3F7))
