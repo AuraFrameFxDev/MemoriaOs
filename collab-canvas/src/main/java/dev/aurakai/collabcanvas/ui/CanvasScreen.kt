@@ -63,33 +63,23 @@ import kotlinx.coroutines.launch
  * This composable does not return a value; it manages its own internal Compose state and side effects and composes child UI such as `CanvasToolbar`.
  */
 /**
- * Full-screen, interactive collaborative drawing canvas composable.
+ * Full-screen composable drawing canvas with multi-tool drawing, pan/zoom, and animated replay.
  *
- * Provides a pinch-to-zoom and pan-enabled drawing surface with multiple tools (freehand/path,
- * rectangle, oval), color and stroke-width selection, animated replay of completed strokes,
- * and controls to clear or save the canvas. Maintains local UI state for:
- * - completed drawable items (paths and persisted elements),
- * - the in-progress Path, selected tool, color, stroke width, and drawing flag,
- * - animated copies used for progressive replay,
- * - zoom scale and pan offset as Animatable states.
+ * Provides a collaborative-style canvas that supports three tools (freehand path, rectangle, oval),
+ * pinch-to-zoom and pan, an in-progress drawing surface, and animated copies of completed strokes
+ * for progressive replay. Includes a top app bar with Clear and Save actions, floating tool buttons,
+ * and a toolbar for selecting color and stroke width.
  *
- * User interactions:
- * - Tap/drag gestures draw a freehand path when the PATH tool is selected.
- * - Drag gestures start, extend, and finish the current path; finished non-empty paths are
- *   appended to the internal `paths` list and also copied into `animatedPaths` for replay.
- * - Floating action buttons switch tools; the toolbar controls color, stroke width, and clearing.
+ * Behavior notes:
+ * - Completed freehand strokes are stored as PluckablePath entries and a cloned animated copy is kept
+ *   for replay.
+ * - Pinch-to-zoom and pan are handled via an internal transform state; rendered content (grid,
+ *   elements, in-progress path, animated paths) respects the current scale and offset.
+ * - The Clear action removes in-memory paths, elements, and animated copies; the Save action is a
+ *   placeholder and does not persist state in this implementation.
  *
- * Rendering:
- * - Draws a background grid, persisted canvas elements (paths, rectangles, ovals), the current
- *   in-progress path (scaled to remain visually consistent under zoom), and animated paths
- *   (each with its own scale, offset, and alpha).
- *
- * Side effects:
- * - Mutates local remembered state lists/maps: `paths`, `elements`, and `animatedPaths`.
- * - Updates `scale` and `offset` Animatable states in response to transform gestures.
- *
- * Note: This composable is UI/stateful and intended to be used directly within a Compose hierarchy;
- * it does not persist canvas contents outside its in-memory state.
+ * This composable manages its own UI state (current tool, color, stroke width, in-progress path,
+ * stored elements/paths, animation state) and should be used directly in a Compose UI tree.
  */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable

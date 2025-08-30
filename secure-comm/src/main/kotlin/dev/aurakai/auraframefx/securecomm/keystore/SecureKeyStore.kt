@@ -35,13 +35,13 @@ class SecureKeyStore @Inject constructor(
     }
 
     /**
-     * Encrypts the provided plaintext with a per-entry AES-GCM key and saves the result to app-private SharedPreferences.
+     * Encrypts `data` with a per-entry AES-GCM key and stores the result in app-private SharedPreferences.
      *
-     * The per-entry key alias is derived as `"$KEY_ALIAS_$key"`. The stored value is the IV concatenated with the ciphertext,
-     * encoded as Base64 with NO_WRAP, and written to the "secure_prefs" preference under `key`. If an entry already exists
-     * for `key`, it is replaced.
+     * The per-entry key alias is derived from the class-level KEY_ALIAS and the provided `key`. The encrypted bytes
+     * are Base64-encoded with NO_WRAP and saved to the "secure_prefs" preferences under `key`. Calling this with
+     * an existing `key` replaces the previously stored value.
      *
-     * @param key Identifier used to derive the per-entry keystore alias and as the SharedPreferences entry key.
+     * @param key Identifier used to derive the per-entry encryption key and as the SharedPreferences entry key.
      * @param data Plaintext bytes to encrypt and persist.
      */
     fun storeData(key: String, data: ByteArray) {
@@ -97,13 +97,11 @@ class SecureKeyStore @Inject constructor(
     }
 
     /**
-     * Retrieve or create a SecretKey in the AndroidKeyStore for the given alias.
+     * Retrieve or create a persistent AES-256 GCM SecretKey in the AndroidKeyStore for the given alias.
      *
-     * If a key with the provided alias exists in the AndroidKeyStore, it is returned; otherwise
-     * a new AES-256 key is generated, stored in the AndroidKeyStore, and returned.
-     *
-     * The generated key is configured for AES/GCM/NoPadding with ENCRYPT and DECRYPT purposes,
-     * randomized encryption required, and persistent storage in the AndroidKeyStore.
+     * If a key with the provided alias does not exist, a new AES key (256-bit) is generated and stored
+     * in the AndroidKeyStore with AES/GCM/NoPadding, ENCRYPT/DECRYPT purposes, and randomized encryption
+     * required. If the alias exists, the existing SecretKey is returned.
      *
      * @param keyAlias Alias used to look up or create the key in the AndroidKeyStore.
      * @return The SecretKey associated with the provided alias.
