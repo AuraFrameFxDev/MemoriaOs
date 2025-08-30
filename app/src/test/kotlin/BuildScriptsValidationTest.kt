@@ -979,7 +979,14 @@ class BuildScriptsValidationTest {
         val usingJupiterAnnotations = true // This test file imports org.junit.jupiter.api.*
         val moduleBuild = File("app/build.gradle.kts").readText()
         if (usingJupiterAnnotations) {
-            assertTrue("Module should declare JUnit (platform or jupiter) test dependency via catalog", moduleBuild.contains("testImplementation") )
+            val usesJupiter =
+                moduleBuild.contains("testImplementation(libs.junitJupiter)") ||
+                moduleBuild.contains("org.junit.jupiter:junit-jupiter") ||
+                (moduleBuild.contains("testImplementation(platform(") && moduleBuild.contains("junit-bom"))
+            assertTrue(
+                "Module should declare JUnit Jupiter (or BOM) explicitly via catalog",
+                usesJupiter
+            )
         }
     }
     @Test
