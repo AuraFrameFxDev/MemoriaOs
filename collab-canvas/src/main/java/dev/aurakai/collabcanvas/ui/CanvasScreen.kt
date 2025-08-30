@@ -49,6 +49,23 @@ import kotlinx.coroutines.launch
  */
 
 /**
+ * Composable screen that provides an interactive collaborative drawing canvas.
+ *
+ * Features: freehand drawing, rectangle and oval tools, pan & pinch-zoom gestures, animated replay of
+ * completed paths, a grid background, tool FABs, a top app bar with clear/save actions, and an overlaid
+ * toolbar for color/stroke selection and clearing. The composable maintains internal mutable state for:
+ * - completed pluckable paths and a map of animated copies,
+ * - drawable elements (paths, rectangles, ovals),
+ * - the in-progress Path, current color, stroke width, selected tool, and drawing flag,
+ * - scale and pan offsets as Animatable values.
+ *
+ * Side effects:
+ * - Adds completed paths to the internal `paths` list when a drag ends (if non-empty).
+ * - Creates animated copies for new paths via a LaunchedEffect watching `paths`.
+ * - Clearing actions (top-bar delete and toolbar clear) clear `paths`, `elements` (top-bar), and `animatedPaths`.
+ *
+ * This is a UI entry point and does not take parameters or return a value.
+=======
  * A composable full-screen collaborative drawing canvas with multi-tool support, pan/zoom gestures, and animated replay of completed strokes.
  *
  * This function hosts the UI and state for an interactive drawing surface:
