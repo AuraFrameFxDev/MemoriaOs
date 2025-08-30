@@ -35,13 +35,13 @@ class SecureKeyStore @Inject constructor(
     }
 
     /**
-     * Encrypts the provided plaintext with a per-entry AES-GCM key and saves the result to app-private SharedPreferences.
+     * Encrypts and persists the given plaintext bytes under the provided key.
      *
-     * The per-entry key alias is derived as `"$KEY_ALIAS_$key"`. The stored value is the IV concatenated with the ciphertext,
-     * encoded as Base64 with NO_WRAP, and written to the "secure_prefs" preference under `key`. If an entry already exists
-     * for `key`, it is replaced.
+     * Encrypts `data` with a per-entry AES-256-GCM key (alias derived from this class's KEY_ALIAS and the `key`),
+     * encodes the result with Base64 (NO_WRAP), and stores it in the app-private SharedPreferences named
+     * "secure_prefs" using `key` as the entry name. Calling this with an existing `key` overwrites the stored value.
      *
-     * @param key Identifier used to derive the per-entry keystore alias and as the SharedPreferences entry key.
+     * @param key Identifier used both to derive the per-entry encryption key and as the SharedPreferences entry key.
      * @param data Plaintext bytes to encrypt and persist.
      */
     fun storeData(key: String, data: ByteArray) {
@@ -53,14 +53,14 @@ class SecureKeyStore @Inject constructor(
     }
 
     /**
-     * Retrieves and decrypts data previously stored under the given key.
+     * Retrieves and decrypts bytes previously stored under the given key.
      *
-     * Looks up the Base64-encoded ciphertext in app-private SharedPreferences "secure_prefs",
-     * decodes and decrypts it using the per-entry keystore key. Returns null if the entry
-     * does not exist or decryption fails.
+     * Looks up the Base64-encoded ciphertext in the app-private SharedPreferences "secure_prefs",
+     * decodes it (Base64.NO_WRAP), and decrypts it using the per-entry AndroidKeyStore AES-GCM key.
+     * Returns null if no entry exists for the key or if decryption fails.
      *
-     * @param key The identifier for the stored entry.
-     * @return The decrypted bytes, or null if not found or if decryption fails.
+     * @param key Identifier for the stored entry.
+     * @return Decrypted bytes, or null if the entry is not found or cannot be decrypted.
      */
     fun retrieveData(key: String): ByteArray? {
         val prefs = context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
@@ -97,16 +97,14 @@ class SecureKeyStore @Inject constructor(
     }
 
     /**
-     * Retrieve or create a SecretKey in the AndroidKeyStore for the given alias.
+     * Retrieve or create an AES-256-GCM SecretKey in the AndroidKeyStore for the given alias.
      *
-     * If a key with the provided alias exists in the AndroidKeyStore, it is returned; otherwise
-     * a new AES-256 key is generated, stored in the AndroidKeyStore, and returned.
+     * If a key with the provided alias does not exist, a new persistent AES key is generated and
+     * stored in the AndroidKeyStore with the following properties: AES/GCM/NoPadding, 256-bit key size,
+     * purposes ENCRYPT and DECRYPT, randomized encryption required, and no user authentication required.
      *
-     * The generated key is configured for AES/GCM/NoPadding with ENCRYPT and DECRYPT purposes,
-     * randomized encryption required, and persistent storage in the AndroidKeyStore.
-     *
-     * @param keyAlias Alias used to look up or create the key in the AndroidKeyStore.
-     * @return The SecretKey associated with the provided alias.
+     * @param keyAlias The alias under which the key is stored or will be created in the AndroidKeyStore.
+     * @return The SecretKey associated with the given alias.
      */
     private fun getOrCreateSecretKey(keyAlias: String): SecretKey {
         if (!keyStore.containsAlias(keyAlias)) {
