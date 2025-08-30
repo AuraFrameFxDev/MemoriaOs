@@ -68,6 +68,9 @@ android {
 }
 
 dependencies {
+    // ✅ CRITICAL FIX: Add Compose BOM platform first!
+    implementation(platform(libs.androidx.compose.bom))
+    
     // SACRED RULE #5: DEPENDENCY HIERARCHY
     implementation(project(":core-module"))
     implementation(project(":app"))

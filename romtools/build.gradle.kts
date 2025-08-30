@@ -125,7 +125,7 @@ dependencies {
 }
 
 // Define a shared directory property for ROM tools output
-val romToolsOutputDirectory: org.gradle.api.file.DirectoryProperty = project.objects.directoryProperty().convention(layout.buildDirectory.dir("rom-tools"))
+val romToolsOutputDirectory: DirectoryProperty = project.objects.directoryProperty().convention(layout.buildDirectory.dir("rom-tools"))
 
 // ROM Tools specific tasks
 tasks.register<Copy>("copyRomTools") {
@@ -148,14 +148,15 @@ tasks.register<Copy>("copyRomTools") {
 abstract class VerifyRomToolsTask : DefaultTask() {
     @get:InputDirectory
     @get:Optional
-    abstract val romToolsDir: org.gradle.api.file.DirectoryProperty
+    abstract val romToolsDir: DirectoryProperty
 
     /**
-     * Verifies that the configured ROM tools directory exists and reports the result.
+     * Verify that the configured ROM tools directory exists.
      *
      * If `romToolsDir` is not set or points to a non-existent directory, the task logs a warning indicating ROM
      * functionality may be limited. If the directory exists, the task logs a lifecycle message with the directory's
      * absolute path. This task does not fail the build on a missing directory.
+
      */
     @TaskAction
     fun verify() {

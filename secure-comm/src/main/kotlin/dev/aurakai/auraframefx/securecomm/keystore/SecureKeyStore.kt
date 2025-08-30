@@ -4,6 +4,7 @@ import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import androidx.core.content.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.security.KeyStore
 import javax.crypto.Cipher
@@ -41,9 +42,9 @@ class SecureKeyStore @Inject constructor(
     fun storeData(key: String, data: ByteArray) {
         val encryptedData = encryptData(key, data)
         val prefs = context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
-        prefs.edit()
-            .putString(key, Base64.encodeToString(encryptedData, Base64.NO_WRAP))
-            .apply()
+        prefs.edit {
+                putString(key, Base64.encodeToString(encryptedData, Base64.NO_WRAP))
+            }
     }
 
     /**
@@ -67,7 +68,7 @@ class SecureKeyStore @Inject constructor(
      */
     fun removeData(key: String) {
         val prefs = context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
-        prefs.edit().remove(key).apply()
+        prefs.edit {remove(key)}
     }
 
     /**
@@ -75,7 +76,7 @@ class SecureKeyStore @Inject constructor(
      */
     fun clearAllData() {
         val prefs = context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
-        prefs.edit().clear().apply()
+        prefs.edit {clear()}
     }
 
     private fun getOrCreateSecretKey(keyAlias: String): SecretKey {
