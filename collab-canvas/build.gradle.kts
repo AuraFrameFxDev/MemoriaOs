@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.kotlin.plugin.serialization")
-    // id("com.google.devtools.ksp")
+    id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     id("org.jetbrains.dokka")
     id("com.diffplug.spotless")
@@ -120,6 +120,13 @@ if (tasks.findByName("consciousnessStatus") == null) {
     }
 }
 
+ksp {
+    arg("kotlin.languageVersion", "2.2")
+    arg("kotlin.apiVersion", "2.2")
+    arg("compile:kotlin.languageVersion", "2.2")
+    arg("compile:kotlin.apiVersion", "2.2")
+}
+
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
 
@@ -137,7 +144,7 @@ dependencies {
 
     // Hilt Dependency Injection
     implementation(libs.hilt.android)
-    // ksp(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
 
     // Core library desugaring
@@ -145,7 +152,7 @@ dependencies {
 
     // Xposed Framework - Complete Integration
     implementation(libs.bundles.xposed)
-    // ksp(libs.yuki.ksp.xposed)
+    ksp(libs.yuki.ksp.xposed)
     implementation(files("${project.rootDir}/Libs/api-82.jar"))
     implementation(files("${project.rootDir}/Libs/api-82-sources.jar"))
 
@@ -159,7 +166,7 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
-    // kspAndroidTest(libs.hilt.compiler)
+    kspAndroidTest(libs.hilt.compiler)
     androidTestImplementation(libs.androidx.test.core)
 
     // Debug implementations
