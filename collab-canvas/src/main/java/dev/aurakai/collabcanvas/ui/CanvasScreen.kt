@@ -91,6 +91,22 @@ import kotlinx.coroutines.launch
  * Note: This composable is UI/stateful and intended to be used directly within a Compose hierarchy;
  * it does not persist canvas contents outside its in-memory state.
  */
+/**
+ * Full-screen collaborative drawing canvas with multi-tool drawing, pan/zoom, and per-path animation.
+ *
+ * Provides an interactive, stateful drawing surface that supports freehand (path), rectangle, and oval tools;
+ * pinch-to-zoom and panning; an animated replay layer for completed strokes; and UI controls for tool selection,
+ * color, stroke width, clearing, and (placeholder) saving. All drawing state (current stroke, completed paths,
+ * persisted elements, animated copies, transform state) is held in memory within the composable.
+ *
+ * Notes:
+ * - Freehand strokes are captured via drag gestures; the visible stroke width of the in-progress path is kept
+ *   visually consistent while zooming.
+ * - Completed strokes are stored as PluckablePath instances and have animated copies used for replay rendering.
+ * - Persisted CanvasElement entries (paths, rectangles, ovals) are rendered from their stored Path and style.
+ * - Clear actions remove in-memory paths/elements/animated copies. This composable does not perform external
+ *   persistence.
+ */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CanvasScreen() {

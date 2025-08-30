@@ -35,13 +35,12 @@ class SecureKeyStore @Inject constructor(
     }
 
     /**
-     * Encrypts the provided plaintext with a per-entry AES-GCM key and saves the result to app-private SharedPreferences.
+     * Encrypts plaintext with a per-entry AES-GCM key and stores the result in app-private SharedPreferences.
      *
      * The per-entry key alias is derived as `"$KEY_ALIAS_$key"`. The stored value is the IV concatenated with the ciphertext,
-     * encoded as Base64 with NO_WRAP, and written to the "secure_prefs" preference under `key`. If an entry already exists
-     * for `key`, it is replaced.
+     * Base64-encoded (NO_WRAP), and saved in the "secure_prefs" preferences under `key`. Existing entry for `key` is replaced.
      *
-     * @param key Identifier used to derive the per-entry keystore alias and as the SharedPreferences entry key.
+     * @param key Identifier used to derive the keystore alias and as the SharedPreferences entry key.
      * @param data Plaintext bytes to encrypt and persist.
      */
     fun storeData(key: String, data: ByteArray) {
@@ -97,16 +96,14 @@ class SecureKeyStore @Inject constructor(
     }
 
     /**
-     * Retrieve or create a SecretKey in the AndroidKeyStore for the given alias.
+     * Retrieve an existing SecretKey from the AndroidKeyStore for the given alias, or create and
+     * persist a new AES-256 key if none exists.
      *
-     * If a key with the provided alias exists in the AndroidKeyStore, it is returned; otherwise
-     * a new AES-256 key is generated, stored in the AndroidKeyStore, and returned.
+     * The key is created for AES/GCM/NoPadding with ENCRYPT and DECRYPT purposes, randomized
+     * encryption required, and stored in the AndroidKeyStore under the provided alias.
      *
-     * The generated key is configured for AES/GCM/NoPadding with ENCRYPT and DECRYPT purposes,
-     * randomized encryption required, and persistent storage in the AndroidKeyStore.
-     *
-     * @param keyAlias Alias used to look up or create the key in the AndroidKeyStore.
-     * @return The SecretKey associated with the provided alias.
+     * @param keyAlias The keystore alias to look up or create.
+     * @return The SecretKey associated with the alias.
      */
     private fun getOrCreateSecretKey(keyAlias: String): SecretKey {
         if (!keyStore.containsAlias(keyAlias)) {
