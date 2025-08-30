@@ -79,24 +79,18 @@ import kotlinx.coroutines.launch
  * and their animated copies.
  */
 /**
- * Full-screen interactive drawing canvas composable.
+ * Renders the interactive collaborative drawing surface for creating and animating simple canvas elements.
  *
- * Provides multi-tool drawing (freehand Path, Rectangle, Oval), pinch-to-zoom and pan,
- * tap/drag gestures to create and commit shapes, and animated playback of committed paths.
+ * This full-screen composable provides:
+ * - Multiple drawing tools: freehand PATH, RECTANGLE, and OVAL.
+ * - Pinch-to-zoom and pan support via a transformable state.
+ * - Tap and drag input for creating in-progress strokes (freehand PATH); completed strokes are committed when the gesture ends and the path has non-empty bounds.
+ * - A top app bar with Clear and Save actions and floating tool buttons to switch tools.
+ * - A toolbar for selecting color and stroke width and clearing committed/animated paths.
+ * - Animated playback support: committed paths are stored in `paths` and mirrored into `animatedPaths` for progressive rendering.
  *
- * UI features include a top app bar with Clear (removes all paths, elements, and animated copies)
- * and Save actions, floating tool buttons to switch tools, and an on-screen toolbar for color
- * and stroke-width selection. The toolbar's Clear action removes animated paths only.
- *
- * All canvas state (committed paths, in-progress path, elements, selected tool/color/stroke,
- * zoom/offset and animated copies) is held internally via remember/remember* state helpers.
+ * Visual content (grid, elements, current in-progress path, and animated paths) is drawn under the current scale and offset transforms so zoom and pan affect all canvas content consistently.
 
- * Full-screen collaborative drawing canvas with multi-tool support, pan/zoom gestures, and animated playback of committed strokes.
- *
- * Renders an interactive drawing surface that supports freehand paths, rectangles, and ovals. Handles tap/drag gestures to create shapes (freehand drawing when the PATH tool is selected), pinch-to-zoom and panning via a transformable state, and progressive replay of committed paths using per-path animated state. The UI includes a top app bar (Clear/Save — Save is a placeholder), floating tool buttons (Path, Rectangle, Oval), and an on-screen toolbar for selecting color and stroke width.
- *
- * Internally manages remembered state for committed paths, drawable elements, the in-progress Path, current color, stroke width, selected tool/element, drawing flag, per-path animated copies, and global scale/offset Animatables. Committing a drawn path adds a PluckablePath to the internal list and creates a corresponding animated copy for replay. Clearing actions remove committed and animated paths.
- */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CanvasScreen() {

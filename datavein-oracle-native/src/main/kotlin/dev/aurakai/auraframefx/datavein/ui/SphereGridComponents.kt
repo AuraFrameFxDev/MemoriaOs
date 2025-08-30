@@ -42,19 +42,13 @@ import dev.aurakai.auraframefx.datavein.model.NodeType
  * Enhanced Node Info Panel with FFX-style progression details
  */
 /**
- * Displays a styled information card for a DataVeinNode showing its type, identifiers,
- * status, description and progression details.
+ * Renders a stylized info card displaying a DataVein node's type, identification, progression, description, and current status.
  *
- * The panel renders:
- * - A header with the node type name and a colored status dot (green = activated, yellow = unlocked, red = locked).
- * - A thin divider tinted by the node type's glow color.
- * - Identification rows: tag, id, ring, and level.
- * - If the node is unlocked: XP as "xp/1000" and a horizontal XP progress bar.
- * - The node type description and an optional "Data" row when `node.data` is non-empty.
- * - A concise status line derived from the node's unlocked/activated state.
+ * Shows the node type title with a colored status dot, tag/ID/ring/level rows, and — when unlocked — XP and a horizontal XP bar.
+ * Also displays the node description, optional data row (when present), and a one-line status message reflecting locked, dormant, or active states.
  *
- * @param node The DataVeinNode to display. Its `type.glowColor` is used for accents and its
- * state (`isUnlocked`, `activated`, `xp`, `data`, etc.) controls conditional content.
+ * @param node The DataVeinNode whose details are rendered.
+ * @param modifier Optional Compose modifier applied to the outer Card.
 
  */
 @Composable
@@ -169,14 +163,12 @@ fun NodeInfoPanel(
 }
 
 /**
- * Renders a categorized legend of DataVein node types inside a styled card.
+ * Renders a legend Card listing DataVein node types grouped by category.
  *
- * Displays a header ("🌐 DataVein Node Types"), a translucent divider, and then one section
- * per NodeCategory that contains the NodeType entries for that category. Each entry shows
- * a small colored dot (type.color with a glow border) and the type's display name.
- *
- * At the bottom a short legend note explains interactivity: nodes can be clicked to explore
- * paths and are unlocked via progression.
+ * Displays a titled card that iterates NodeCategory values and shows each NodeType in that
+ * category as a small colored swatch (filled with `type.color` and bordered with `type.glowColor`)
+ * followed by the type's display name. Ends with a short explanatory legend about interaction
+ * and unlocking. Designed as a small, translucent UI panel for quick reference.
 
  */
 @Composable
@@ -252,16 +244,18 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
 }
 
 /**
- * Displays a compact status card showing live metrics and progression for the DataVein network.
+ * Displays a status card summarizing real-time DataVein metrics.
  *
- * Renders a header with a pulsing indicator and title, three metric rows (active flows, active nodes, unlocked nodes),
- * and two progress bars for Activation (activeNodes / totalNodes) and Progression (unlockedNodes / totalNodes).
- * Percentages default to 0 when `totalNodes` is zero to avoid division-by-zero.
+ * Shows a pulsing header, three compact status rows (Active Flows, Active Nodes, Unlocked)
+ * and two horizontal progress indicators for activation and progression. Percentages
+ * are computed relative to `totalNodes`; if `totalNodes` is zero the percentages are treated
+ * as 0 to avoid division by zero.
  *
- * @param activeFlows Number of currently active flows in the network.
- * @param activeNodes Number of nodes currently activated.
- * @param totalNodes Total number of nodes in the network; used as the denominator for progress calculations.
- * @param unlockedNodes Number of nodes unlocked via progression.
+ * @param activeFlows Number of currently active flows.
+ * @param activeNodes Number of currently active nodes.
+ * @param totalNodes Total number of nodes; used to compute percentage values.
+ * @param unlockedNodes Number of unlocked nodes; used to compute percentage values.
+ * @param modifier Optional Compose modifier for the panel.
 
  */
 @Composable
