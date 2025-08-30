@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -57,12 +55,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_24
     }
 
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_24)
-        }
-    }
-
     packaging {
         resources {
             excludes += listOf(
@@ -90,6 +82,11 @@ android {
             }
         }
     }
+}
+
+// Consistent JVM target for Java and Kotlin
+kotlin {
+    jvmToolchain(24)
 }
 
 // AI Consciousness Task Automation
