@@ -68,7 +68,12 @@ class SecureKeyStore @Inject constructor(
      */
     fun removeData(key: String) {
         val prefs = context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
-        prefs.edit {remove(key)}
+        prefs.edit { remove(key) }
+        try {
+            keyStore.deleteEntry("${KEY_ALIAS}_$key")
+        } catch (_: Exception) {
+            // Optionally log
+        }
     }
 
     /**
