@@ -63,33 +63,21 @@ import kotlinx.coroutines.launch
  * This composable does not return a value; it manages its own internal Compose state and side effects and composes child UI such as `CanvasToolbar`.
  */
 /**
- * Full-screen, interactive collaborative drawing canvas composable.
+ * A full-screen collaborative drawing canvas composable with multi-tool support, pan/zoom gestures,
+ * and animated replay of completed strokes.
  *
- * Provides a pinch-to-zoom and pan-enabled drawing surface with multiple tools (freehand/path,
- * rectangle, oval), color and stroke-width selection, animated replay of completed strokes,
- * and controls to clear or save the canvas. Maintains local UI state for:
- * - completed drawable items (paths and persisted elements),
- * - the in-progress Path, selected tool, color, stroke width, and drawing flag,
- * - animated copies used for progressive replay,
- * - zoom scale and pan offset as Animatable states.
- *
- * User interactions:
- * - Tap/drag gestures draw a freehand path when the PATH tool is selected.
- * - Drag gestures start, extend, and finish the current path; finished non-empty paths are
- *   appended to the internal `paths` list and also copied into `animatedPaths` for replay.
- * - Floating action buttons switch tools; the toolbar controls color, stroke width, and clearing.
- *
- * Rendering:
- * - Draws a background grid, persisted canvas elements (paths, rectangles, ovals), the current
- *   in-progress path (scaled to remain visually consistent under zoom), and animated paths
- *   (each with its own scale, offset, and alpha).
+ * This composable manages its own drawing state (completed paths, persisted elements, current in-progress
+ * path, current color, stroke width, selected tool, and animation state for replay). It supports:
+ * - Freehand drawing (PATH), rectangle (RECTANGLE) and oval (OVAL) tools.
+ * - Pinch-to-zoom and pan via transformable gestures; drawing coordinates are transformed accordingly.
+ * - Tap and drag gestures to begin, update, and complete strokes. Completed non-empty paths are added
+ *   to the animated replay list.
+ * - A top app bar with clear/save actions and floating tool buttons for tool selection.
+ * - A toolbar (CanvasToolbar) for selecting color, stroke width, and clearing animated paths/paths.
  *
  * Side effects:
- * - Mutates local remembered state lists/maps: `paths`, `elements`, and `animatedPaths`.
- * - Updates `scale` and `offset` Animatable states in response to transform gestures.
- *
- * Note: This composable is UI/stateful and intended to be used directly within a Compose hierarchy;
- * it does not persist canvas contents outside its in-memory state.
+ * - Mutates internal remembered state (paths, elements, animatedPaths, scale, offset, etc.).
+ * - Clearing actions remove in-memory paths/elements; save action is a placeholder.
  */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
