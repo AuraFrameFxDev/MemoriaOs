@@ -150,11 +150,10 @@ yuki-ksp-xposed = { module = "com.highcapable.yukihookapi:ksp-xposed-pioneer", v
 # File: gradle/libs.versions.toml1
 # Lines 150–155
 
-androidxSecurity = { group = "androidx.security", name = "security-crypto", version.ref = "androidxSecurity" }
-bcprov-jdk18on = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bcprovJdk18on" }
-bouncycastle      = { group  = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
-conscrypt-android = { group  = "org.conscrypt", name = "conscrypt-android", version = "2.5.3" }
-tink              = { group  = "com.google.crypto.tink", name = "tink-android", version.ref = "tink" }
+androidxSecurity   = { group = "androidx.security", name = "security-crypto", version.ref = "androidxSecurity" }
+bcprov-jdk18on     = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bcprovJdk18on" }
+conscrypt-android  = { group = "org.conscrypt",       name = "conscrypt-android", version = "2.5.3" }
+tink               = { group = "com.google.crypto.tink", name = "tink-android",      version.ref = "tink" }
 # ===== Code Quality, Debugging & Build Logic =====
 aura-backend-api-generator = { module = "dev.aurakai.aura:aura-backend-api-generator", version.ref = "auraBackendApiGenerator" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
