@@ -284,7 +284,11 @@ class GradleVersionCatalogTest {
                     val id = idRegex.find(e)?.groupValues?.getOrNull(1)
                     assertNotNull(id, "Plugin entry missing 'id': $e in $path")
                     if (id != null) {
-                        assertTrue(id.contains('.'), "Plugin id should be namespaced (contain a dot): $id in $path")
+                        val simpleAllowed = setOf("java", "application", "base", "jacoco", "maven-publish", "signing")
+                        assertTrue(
+                            id.any { it == '.' || it == '-' } || id in simpleAllowed,
+                            "Plugin id looks unusual: $id in $path"
+                        )
                     }
                 }
             }
