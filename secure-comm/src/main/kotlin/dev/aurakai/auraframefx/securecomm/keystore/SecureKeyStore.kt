@@ -81,7 +81,24 @@ class SecureKeyStore @Inject constructor(
      */
     fun clearAllData() {
         val prefs = context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
-        prefs.edit {clear()}
+// … surrounding method/context …
+
+        // Clear stored preferences
+        prefs.edit { clear() }
+        // Also remove any KeyStore entries created by this class to prevent bloat
+        try {
+            val aliases = keyStore.aliases()
+            while (aliases.hasMoreElements()) {
+                val alias = aliases.nextElement()
+                if (alias.startsWith("${KEY_ALIAS}_")) {
+                    keyStore.deleteEntry(alias)
+                }
+            }
+        } catch (_: Exception) {
+            // Optionally log deletion failures
+        }
+
+ // … continuing code …
     }
 
     private fun getOrCreateSecretKey(keyAlias: String): SecretKey {
