@@ -16,14 +16,6 @@ java {
     }
 }
 
-ksp {
-    arg("kotlin.languageVersion", "2.2")
-    arg("kotlin.apiVersion", "2.2")
-    arg("kotlin.jvmTarget", "21")
-    arg("compile:kotlin.languageVersion", "2.2")
-    arg("compile:kotlin.apiVersion", "2.2")
-}
-
 android {
     namespace = "dev.aurakai.auraframefx.oracledriveintegration"
     compileSdk = 36
