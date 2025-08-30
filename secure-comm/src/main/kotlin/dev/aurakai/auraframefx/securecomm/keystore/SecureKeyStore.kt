@@ -97,13 +97,14 @@ class SecureKeyStore @Inject constructor(
     }
 
     /**
-     * Retrieve a SecretKey from AndroidKeyStore for the given alias, creating and storing a new
-     * AES-256 GCM key if none exists.
+     * Retrieve or create an AES-256 GCM SecretKey in the AndroidKeyStore for a given alias.
      *
-     * The created key is configured for AES/GCM/NoPadding, encryption and decryption purposes,
-     * randomized encryption, and a 256-bit key size, and is persisted in the AndroidKeyStore.
+     * If a key with the provided alias does not exist, a new AES key is generated and persisted
+     * into the AndroidKeyStore configured for AES/GCM/NoPadding, ENCRYPT/DECRYPT purposes,
+     * randomized encryption, and a 256-bit key size. If the alias exists, the stored SecretKey
+     * is returned.
      *
-     * @param keyAlias The alias used to look up or create the key in the AndroidKeyStore.
+     * @param keyAlias Alias used to look up or create the key in the AndroidKeyStore.
      * @return The SecretKey associated with the provided alias.
      */
     private fun getOrCreateSecretKey(keyAlias: String): SecretKey {

@@ -62,6 +62,19 @@ import kotlinx.coroutines.launch
  *
  * This composable does not return a value; it manages its own internal Compose state and side effects and composes child UI such as `CanvasToolbar`.
  */
+/**
+ * Full-screen collaborative drawing canvas with tools, pan/zoom, and animated stroke replay.
+ *
+ * Provides an interactive composable canvas that:
+ * - Supports three tools: freehand path, rectangle, and oval (selectable via floating action buttons).
+ * - Handles drawing gestures for freehand paths (press/drag to draw) and maintains in-progress and completed strokes.
+ * - Maintains mutable state for completed paths and persisted elements, plus animated copies used for progressive replay.
+ * - Supports pinch-to-zoom and panning via a transformable state, driven by internal `scale` and `offset` animatables.
+ * - Renders a background grid, persisted elements (paths, rectangles, ovals), the current in-progress path (stroke width compensates for zoom), and animated playback of completed paths.
+ * - Exposes a top app bar with Clear and Save actions (Clear removes stored paths/elements) and a toolbar for selecting color, stroke width, and clearing animated/state data.
+ *
+ * This composable manages its own UI state (colors, stroke width, selected tool, drawing flag, path lists, animation state) and performs UI-side modifications such as adding completed paths and clearing stored content.
+ */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CanvasScreen() {
