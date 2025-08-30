@@ -924,7 +924,7 @@ class BuildScriptsValidationTest {
         val content = buildFile.readText()
         val declaresToolchain = content.contains("jvmToolchain(")
         if (declaresToolchain) {
-            assertTrue("Kotlin toolchain should target 21 when declared", content.contains("jvmToolchain(21)"))
+            assertTrue("Kotlin toolchain should target 24 when declared", content.contains("jvmToolchain(24)"))
         }
     }
     @Test
