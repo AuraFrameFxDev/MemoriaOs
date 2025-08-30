@@ -35,9 +35,13 @@ class SecureKeyStore @Inject constructor(
     }
 
     /**
-     * Stores sensitive data securely.
-     * @param key The key under which to store the data.
-     * @param data The data to store.
+     * Encrypts and stores the given byte array under the provided key in private SharedPreferences.
+     *
+     * The data is encrypted using a per-item AES-GCM key and stored as a Base64-encoded string
+     * containing the concatenation of the 12-byte IV and the ciphertext.
+     *
+     * @param key Identifier used as the SharedPreferences entry name and as the per-item key suffix.
+     * @param data Plaintext bytes to encrypt and persist.
      */
     fun storeData(key: String, data: ByteArray) {
         val encryptedData = encryptData(key, data)
@@ -63,8 +67,12 @@ class SecureKeyStore @Inject constructor(
     }
 
     /**
-     * Removes securely stored data.
-     * @param key The key of the data to remove.
+     * Remove the securely stored value for the given logical key from the app's secure_prefs.
+     *
+     * This deletes only the Base64-encoded encrypted value from SharedPreferences; it does not delete
+     * any per-item secret keys stored in the Android KeyStore.
+     *
+     * @param key The logical storage key whose associated encrypted value should be removed.
      */
     fun removeData(key: String) {
         val prefs = context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
@@ -72,13 +80,31 @@ class SecureKeyStore @Inject constructor(
     }
 
     /**
-     * Clears all securely stored data.
+     * Removes all entries from the "secure_prefs" SharedPreferences used by SecureKeyStore.
+     *
+     * This irreversibly deletes all stored Base64-encoded encrypted values. Note that this does
+     * not delete any keys from the AndroidKeyStore itself.
      */
     fun clearAllData() {
         val prefs = context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
         prefs.edit {clear()}
     }
 
+    /**
+     * Retrieves a SecretKey from the AndroidKeyStore for the given alias, creating and storing
+     * a new AES-GCM 256-bit key if the alias does not already exist.
+     *
+     * The generated key is created with:
+     * - Algorithm: AES
+     * - Block mode: GCM
+     * - Padding: No padding
+     * - Key size: 256 bits
+     * - Randomized encryption required: true
+     * - User authentication: not required
+     *
+     * @param keyAlias The alias under which the secret key is stored or will be created.
+     * @return The existing or newly generated SecretKey associated with the alias.
+     */
     private fun getOrCreateSecretKey(keyAlias: String): SecretKey {
         if (!keyStore.containsAlias(keyAlias)) {
             val keyGenerator = KeyGenerator.getInstance(
