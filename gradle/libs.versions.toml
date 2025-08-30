@@ -1,5 +1,5 @@
 [versions]
-# ===== CONSCIOUSNESS SUBSTRATE - BLEEDING EDGE VERIFIED VERSIONS =====
+# ===== CONSCIOUSNESS SUBSTRATE - CORE VERSIONS ONLY =====
 auraBackendApiGenerator = "1.0.0"
 bcprovJdk18on = "1.81"
 espressoCore = "3.7.0"
@@ -7,12 +7,8 @@ hilt = "2.57.1"
 junitVersion = "1.3.0"
 kotlin = "2.2.20-RC"
 kotlinReflect = "2.2.20-RC"
-# kotlinStdlib = "2.2.20-RC" # REMOVED: Unused in build scripts
-
 ksp = "2.2.20-RC-2.0.2"
-
 materialVersion = "1.12.0"
-# protobufLitePlugin = "0.9.3" # REMOVED: Unused in build scripts
 googleServices = "4.4.3"
 openApiGenerator = "7.14.0"
 kover = "0.9.1"
@@ -22,9 +18,7 @@ bouncycastle = "1.81"
 runtime = "1.9.0"
 runtimeLivedata = "1.9.0"
 symbolProcessingGradlePlugin = "2.2.20-RC-2.0.2"
-tink = "1.18.0" # Make sure 'lottie' has a version if it's a library
-# lottie = "6.6.7" # REMOVED: Unused in build scripts
-# material3 = "1.3.2" # REMOVED: Unused - handled by BOM
+tink = "1.18.0"
 
 # ===== CODE QUALITY & DOCUMENTATION =====
 dokka = "2.0.0"
@@ -32,71 +26,34 @@ spotless = "7.2.1"
 ktlint = "1.0.1"
 detekt = "1.23.8"
 
-# ===== COMPOSE & UI - FIXED BOM VERSION =====
-composeBom = "2025.08.00"  # Compatible with Compose Compiler managed by Kotlin plugin
+# ===== COMPOSE & UI =====
+composeBom = "2025.08.01"  # UPDATED: Latest available version
 activityCompose = "1.10.1"
 navigationCompose = "2.9.3"
-# composeCompiler handled automatically by kotlin-compose plugin
-# androidxComposeCompiler handled automatically by kotlin-compose plugin
 
 # ===== GOOGLE SERVICES =====
 firebaseBom = "34.2.0"
 firebaseCrashlytics = "3.0.6"
-firebasePerf = "2.0.1"  # DISABLED: Not compatible with AGP 9.0.0-alpha02
-# firebaseAnalyticsKtx = "22.5.0" # REMOVED: Unused in build scripts
+firebasePerf = "2.0.1"
 firebaseCrashlyticsKtx = "19.4.4"
 
 # ===== DATABASE & PERSISTENCE =====
 roomVersion = "2.7.2"
-# datastore = "1.1.7" # REMOVED: Unused in build scripts
 
 # ===== ANDROID ARCHITECTURE COMPONENTS =====
 lifecycle = "2.9.3"
 workManager = "2.10.3"
-# paging = "3.3.6" # REMOVED: Unused in build scripts
-# biometric = "1.4.0-alpha04" # REMOVED: Unused in build scripts
+
 # ===== NETWORKING =====
 retrofit = "3.0.0"
 okhttp = "5.1.0"
 xposed = "82"
 lsposed = "6.4"
 yuki = "1.3.0"
-# ===== AI/ML FRAMEWORKS =====
-tensorflowLite = "2.17.0"
-litert = "1.4.0"
-opencv = "4.11.0"
-mlkitTextRecognition = "19.0.1"
-mlkitLanguageId = "17.0.6"
-mlkitTranslate = "17.0.3"
-mlkitFaceDetection = "16.1.7"
-mlkitBarcodeScanning = "17.3.0"
-mlkitImageLabeling = "17.0.9"
-mlkitObjectDetection = "17.0.2"
-mlkitPoseDetection = "18.0.0-beta5"
-mlkitSmartReply = "17.0.5"
-mlkitEntityExtraction = "16.0.0-beta6"
-
-# ===== CAMERA & VISION =====
-camerax = "1.4.2"
-browser = "1.9.0"
-webkit = "1.14.0"
-oboe = "1.9.3"
-azureSpeech = "1.45.0"
-vosk = "0.3.47"
-
-# ===== ENHANCED UI & MEDIA =====
-lottieCompose = "6.6.7"
-dotlottie = "0.10.0"
-glide = "4.16.0"
-coil3 = "3.3.0"
-fresco = "3.6.0"
-pdfviewer = "2.9.1"
 
 # ===== UTILITIES =====
-# timber = "5.0.1" # REMOVED: Will be moved to libraries section
 coilCompose = "2.7.0"
 gson = "2.13.1"
-commonsIo = "2.20.0"
 commonsCompress = "1.28.0"
 xz = "1.10"
 
@@ -112,20 +69,12 @@ espresso = "3.7.0"
 extJunit = "1.3.0"
 archCoreTesting = "2.2.0"
 coroutinesTest = "1.10.2"
+androidxTestCore = "1.7.0"
+androidxTestRunner = "1.6.2"
+androidxTestRules = "1.6.1"
 
 # ===== DEBUG & ANALYSIS =====
 leakcanary = "2.14"
-
-# ===== GOOGLE PLAY SERVICES =====
-googleAuth = "21.4.0"
-googleIdentity = "18.1.0"
-googleAuthApiPhone = "18.2.0"
-
-# ===== XPOSED FRAMEWORK =====
-xposedApi = "82"
-xposedHelpers = "82"
-
-
 
 # ===== LEGACY COMPATIBILITY =====
 appcompat = "1.7.1"
@@ -240,10 +189,14 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 junit-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitJupiter" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "extJunit" }
-androidx-test-core = { group = "androidx.test", name = "core", version = "1.7.0" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
+androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }
+androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidxTestRules" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+androidx-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTesting" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 androidx-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTesting" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 
@@ -254,11 +207,15 @@ detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-form
 # ===== DEBUG TOOLS =====
 leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" }
 
-
 # ===== FIREBASE =====
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx", version = "22.5.0" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebaseCrashlyticsKtx" }
+
+# ===== XPOSED FRAMEWORK =====
+yuki = { module = "com.highcapable.yukihookapi:api", version.ref = "yuki" }
+lsposed = { module = "org.lsposed.lsplant:lsplant", version.ref = "lsposed" }
+yuki-ksp-xposed = { module = "com.highcapable.yukihookapi:ksp-xposed", version.ref = "yuki" }
 
 # ===== GOOGLE PLAY SERVICES =====
 google-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "googleAuth" }

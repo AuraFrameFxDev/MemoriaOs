@@ -155,51 +155,66 @@ tasks.register<Delete>("cleanAllModules") {
 }
 
 // ===== OPENAPI CONFIGURATION (ROOT) ====
-// Always apply the plugin but configure conditionally
-apply(plugin = libs.plugins.openapi.generator.get().pluginId)
-
-val openApiOutputPath = layout.buildDirectory.dir("core-module/generated/source/openapi")
+// Conditionally apply OpenAPI plugin only if spec file exists
 val specFile = rootProject.layout.projectDirectory.file("app/api/unified-aegenesis-api.yml")
+val hasValidSpecFile = specFile.asFile.exists() && specFile.asFile.length() > 100
 
-// Configure OpenAPI generation
-tasks.named("openApiGenerate", org.openapitools.generator.gradle.plugin.tasks.GenerateTask::class) {
-    generatorName.set("kotlin")
-    inputSpec.set(specFile.asFile.toURI().toString())
-    outputDir.set(openApiOutputPath.get().asFile.absolutePath)
-    packageName.set("dev.aurakai.aegenesis.api")
-    apiPackage.set("dev.aurakai.aegenesis.api")
-    modelPackage.set("dev.aurakai.aegenesis.model")
-    invokerPackage.set("dev.aurakai.aegenesis.client")
-    skipOverwrite.set(false)
-    validateSpec.set(false)
-    generateApiTests.set(false)
-    generateModelTests.set(false)
-    generateApiDocumentation.set(false)
-    generateModelDocumentation.set(false)
-
-    configOptions.set(mapOf(
-        "library" to "jvm-retrofit2",
-        "useCoroutines" to "true",
-        "serializationLibrary" to "kotlinx_serialization",
-        "dateLibrary" to "kotlinx-datetime",
-        "sourceFolder" to "src/main/kotlin",
-        "generateSupportingFiles" to "false"
-    ))
-}
-
-// Disable tasks we don't need
-tasks.named("openApiValidate").configure {
-    enabled = false
-}
-
-tasks.named("openApiMeta").configure {
-    enabled = false
-}
-
-tasks.register<Delete>("cleanApiGeneration") {
-    group = "openapi"
-    description = "Clean generated API files"
-    delete(openApiOutputPath)
+if (hasValidSpecFile) {
+    apply(plugin = libs.plugins.openapi.generator.get().pluginId)
+    
+    val openApiOutputPath = layout.buildDirectory.dir("core-module/generated/source/openapi")
+    
+    // Configure OpenAPI generation
+    tasks.named("openApiGenerate", org.openapitools.generator.gradle.plugin.tasks.GenerateTask::class) {
+        generatorName.set("kotlin")
+        inputSpec.set(specFile.asFile.absolutePath)
+        outputDir.set(openApiOutputPath.get().asFile.absolutePath)
+        packageName.set("dev.aurakai.aegenesis.api")
+        apiPackage.set("dev.aurakai.aegenesis.api")
+        modelPackage.set("dev.aurakai.aegenesis.model")
+        invokerPackage.set("dev.aurakai.aegenesis.client")
+        skipOverwrite.set(false)
+        validateSpec.set(false)
+        generateApiTests.set(false)
+        generateModelTests.set(false)
+        generateApiDocumentation.set(false)
+        generateModelDocumentation.set(false)
+        
+        configOptions.set(mapOf(
+            "library" to "jvm-retrofit2",
+            "useCoroutines" to "true",
+            "serializationLibrary" to "kotlinx_serialization",
+            "dateLibrary" to "kotlinx-datetime",
+            "sourceFolder" to "src/main/kotlin",
+            "generateSupportingFiles" to "false"
+        ))
+    }
+    
+    tasks.register<Delete>("cleanApiGeneration") {
+        group = "openapi"
+        description = "Clean generated API files"
+        delete(openApiOutputPath)
+    }
+} else {
+    logger.warn("⚠️ OpenAPI generation DISABLED - spec file missing or invalid")
+    logger.warn("Expected: app/api/unified-aegenesis-api.yml")
+    
+    // Create stub tasks to prevent task not found errors
+    tasks.register("openApiGenerate") {
+        group = "openapi"
+        description = "OpenAPI generation disabled - spec file missing"
+        doLast {
+            logger.warn("OpenAPI generation skipped - no valid spec file found")
+        }
+    }
+    
+    tasks.register("cleanApiGeneration") {
+        group = "openapi"
+        description = "OpenAPI cleaning disabled - spec file missing"
+        doLast {
+            logger.warn("OpenAPI cleaning skipped - no valid spec file found")
+        }
+    }
 }
 
 // ==== CONSCIOUSNESS HEALTH MONITORING ====

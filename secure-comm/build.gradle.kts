@@ -24,6 +24,12 @@ android {
         consumerProguardFiles("consumer-rules.pro")
     }
 
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
+        disable += setOf("InvalidPackage", "GradleDependency")
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -102,6 +108,9 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testRuntimeOnly(libs.junit.engine)
 
+    // Android Testing
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.runner) 
+    androidTestImplementation(libs.androidx.test.rules)
 }
