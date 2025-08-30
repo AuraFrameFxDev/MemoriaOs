@@ -91,6 +91,33 @@ import kotlinx.coroutines.launch
  * Note: This composable is UI/stateful and intended to be used directly within a Compose hierarchy;
  * it does not persist canvas contents outside its in-memory state.
  */
+/**
+ * Full-screen interactive drawing canvas with multi-tool support, pan/zoom gestures, and animated replay.
+ *
+ * This composable provides an editable canvas that supports freehand paths, rectangles, and ovals;
+ * pinch-to-zoom and pan transforms; an on-canvas drawing gesture for the active tool; and per-path
+ * replay animation state. It manages in-memory drawing state (current in-progress Path, completed
+ * PluckablePath entries, persisted CanvasElement entries), global transform state (scale and offset),
+ * and a map of animated copies used for progressive replay.
+ *
+ * UI features:
+ * - Top app bar with Clear (clears paths, elements, and animation state) and Save (placeholder).
+ * - Floating action buttons to select PATH, RECTANGLE, or OVAL drawing tools.
+ * - Overlay toolbar to pick color, stroke width, or clear animated/completed paths.
+ *
+ * Gesture behavior:
+ * - Tap/press begins/stops a potential path stroke; drag gestures build the freehand Path when the
+ *   PATH tool is selected. Completed non-empty paths are appended to the in-memory paths list.
+ * - Transformable gestures update global zoom (scale) and pan (offset), which affect rendering of
+ *   the grid, persisted elements, and the current in-progress path.
+ *
+ * Rendering notes:
+ * - Background grid is drawn under the global transform.
+ * - Persisted CanvasElement entries are rendered according to their ElementType.
+ * - The current in-progress path is stroked with a stroke width adjusted by the current zoom to
+ *   preserve visual thickness.
+ * - Animated paths are rendered using per-path scale and offset from a separate animatedPaths map.
+ */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CanvasScreen() {
