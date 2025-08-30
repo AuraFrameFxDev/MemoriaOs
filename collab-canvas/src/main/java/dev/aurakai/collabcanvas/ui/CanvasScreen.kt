@@ -48,6 +48,20 @@ import kotlinx.coroutines.launch
  * - The "Save" action is a placeholder and does not persist the canvas in this implementation.
  */
 
+/**
+ * A composable full-screen collaborative drawing canvas with multi-tool support, pan/zoom gestures, and animated replay of completed strokes.
+ *
+ * This function hosts the UI and state for an interactive drawing surface:
+ * - Maintains in-progress drawing state (current path, color, stroke width, selected tool).
+ * - Stores completed drawable items in `paths` and `elements`, and keeps per-path animated copies in `animatedPaths` for progressive rendering.
+ * - Supports three tools (path, rectangle, oval) selectable via floating action buttons; freehand drawing is performed when the PATH tool is active.
+ * - Handles pinch-to-zoom and pan via a transformable state (`scale` and `offset`) and adjusts pointer interactions so strokes and toolbar behave consistently under zoom.
+ * - Detects tap/drag gestures to begin, update, and finish drawings; completed paths are added to `paths`.
+ * - Renders a background grid, persisted elements, the current in-progress path (with stroke scaled to remain visually consistent while zoomed), and animated playback of previous paths.
+ * - Exposes UI actions to clear the canvas (removes `paths`, `elements`, and `animatedPaths`) and a placeholder save action.
+ *
+ * This composable does not return a value; it manages its own internal Compose state and side effects and composes child UI such as `CanvasToolbar`.
+ */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CanvasScreen() {

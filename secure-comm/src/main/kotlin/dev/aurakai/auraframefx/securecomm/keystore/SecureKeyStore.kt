@@ -35,13 +35,13 @@ class SecureKeyStore @Inject constructor(
     }
 
     /**
-     * Encrypts and stores the given byte array under the provided key in application-private SharedPreferences.
+     * Encrypts `data` with a per-entry AES-GCM key and stores the result in app-private SharedPreferences.
      *
-     * The data is encrypted with a key specific to the provided `key` (internal alias derived from KEY_ALIAS and the key),
-     * then Base64-encoded (NO_WRAP) and saved in the "secure_prefs" SharedPreferences. Storing with the same `key`
-     * will replace any previously stored value.
+     * The per-entry key alias is derived from the class-level KEY_ALIAS and the provided `key`. The encrypted bytes
+     * are Base64-encoded with NO_WRAP and saved to the "secure_prefs" preferences under `key`. Calling this with
+     * an existing `key` replaces the previously stored value.
      *
-     * @param key Identifier used both to derive the per-entry encryption key and as the SharedPreferences entry key.
+     * @param key Identifier used to derive the per-entry encryption key and as the SharedPreferences entry key.
      * @param data Plaintext bytes to encrypt and persist.
      */
     fun storeData(key: String, data: ByteArray) {
@@ -53,9 +53,14 @@ class SecureKeyStore @Inject constructor(
     }
 
     /**
-     * Retrieves securely stored data.
-     * @param key The key of the data to retrieve.
-     * @return The decrypted data, or null if not found.
+     * Retrieves and decrypts data previously stored under the given key.
+     *
+     * Looks up the Base64-encoded ciphertext in app-private SharedPreferences "secure_prefs",
+     * decodes and decrypts it using the per-entry keystore key. Returns null if the entry
+     * does not exist or decryption fails.
+     *
+     * @param key The identifier for the stored entry.
+     * @return The decrypted bytes, or null if not found or if decryption fails.
      */
     fun retrieveData(key: String): ByteArray? {
         val prefs = context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
