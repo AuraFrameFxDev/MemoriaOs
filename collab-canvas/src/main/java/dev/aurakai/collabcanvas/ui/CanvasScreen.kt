@@ -58,7 +58,6 @@ fun CanvasScreen() {
     var currentColor by remember { mutableStateOf(Color.Black) }
     var strokeWidth by remember { mutableStateOf(5f) }
     var selectedTool by remember { mutableStateOf<ElementType>(ElementType.PATH) }
-    var selectedElement by remember { mutableStateOf<CanvasElement?>(null) }
     var isDrawing by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
