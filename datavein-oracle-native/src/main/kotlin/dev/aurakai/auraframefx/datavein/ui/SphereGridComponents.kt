@@ -41,6 +41,17 @@ import dev.aurakai.auraframefx.datavein.model.NodeType
 /**
  * Enhanced Node Info Panel with FFX-style progression details
  */
+/**
+ * Renders a compact information panel for a DataVein node.
+ *
+ * Displays the node's type name with a status indicator, identification rows (tag, id, ring, level),
+ * an XP row and progress bar when the node is unlocked, the node type description, optional data row,
+ * and a short status message derived from the node's unlocked/activated state ("Locked", "Dormant", "Active").
+ *
+ * The visual styling (border glow, colors) is derived from the node's NodeType.
+ *
+ * @param node The DataVeinNode whose details are shown.
+ */
 @Composable
 fun NodeInfoPanel(
     node: DataVeinNode,
@@ -153,7 +164,11 @@ fun NodeInfoPanel(
 }
 
 /**
- * Enhanced Node Type Legend with categories
+ * Displays a categorized legend of DataVein node types.
+ *
+ * Renders a compact Card that groups NodeType entries by NodeCategory. For each type it shows a small
+ * colored circular swatch with a subtle glow border and the type's display name. Includes a title,
+ * category headings, and a short explanatory legend at the bottom.
  */
 @Composable
 fun NodeTypeLegend(modifier: Modifier = Modifier) {
@@ -228,7 +243,18 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
 }
 
 /**
- * Enhanced Status Panel with real-time metrics
+ * Renders a compact status card showing real-time metrics and progress for the DataVein system.
+ *
+ * Displays a pulsing header icon and three scalar metrics ("Active Flows", "Active Nodes", "Unlocked")
+ * followed by two progress bars ("Activation" and "Progression"). Activation is computed as
+ * activeNodes / totalNodes and Progression as unlockedNodes / totalNodes; when totalNodes is zero,
+ * percentages are treated as 0 to avoid division by zero.
+ *
+ * @param activeFlows Number of currently active flows to display.
+ * @param activeNodes Number of currently active nodes (used in the "Active Nodes" label and activation progress).
+ * @param totalNodes Total number of nodes (used as the denominator for activation/progression percentages).
+ * @param unlockedNodes Number of unlocked nodes (used in the "Unlocked" label and progression progress).
+ * @param modifier Optional Modifier applied to the outer Card.
  */
 @Composable
 fun StatusPanel(
