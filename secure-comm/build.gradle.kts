@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -7,6 +9,12 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.spotless)
     alias(libs.plugins.kover)
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
 }
 
 ksp {
@@ -38,6 +46,17 @@ android {
         compose = false
         buildConfig = true
         viewBinding = false
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
+    }
+
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_24)
+        }
     }
 
     packaging {
@@ -85,8 +104,8 @@ dependencies {
     implementation(libs.okhttp3.logging.interceptor)
 
     // Enhanced Security Stack (Android compatible)
-    implementation(libs.bouncycastle)
     implementation(libs.androidxSecurity)
+    implementation(libs.bouncycastle)
 
     // Utilities
     implementation(libs.gson)
@@ -101,7 +120,7 @@ dependencies {
     testImplementation(libs.turbine)
     testImplementation(libs.kotlinx.coroutines.test)
     testRuntimeOnly(libs.junit.engine)
-    
+
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.androidx.test.espresso.core)
 }

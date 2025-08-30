@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -44,6 +46,17 @@ android {
         buildConfig = true
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
+    }
+
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_24)
+        }
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -60,6 +73,7 @@ dependencies {
     implementation(libs.bundles.androidx.core)
     implementation(libs.bundles.compose)
     implementation(libs.bundles.coroutines)
+    implementation(libs.androidx.compose.material3)
 
     // Hilt Dependency Injection
     implementation(libs.hilt.android)

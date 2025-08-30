@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -7,6 +9,12 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.spotless)
     alias(libs.plugins.kotlin.compose)
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
 }
 
 android {
@@ -40,6 +48,17 @@ android {
         compose = true
         buildConfig = true
         viewBinding = false
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
+    }
+
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_24)
+        }
     }
 
 
@@ -93,7 +112,6 @@ dependencies {
     implementation(libs.okhttp3.logging.interceptor)
 
     // Security (Android compatible)
-    implementation(libs.bouncycastle)
     implementation(libs.androidxSecurity)
 
     // Android-specific utilities
@@ -120,7 +138,7 @@ dependencies {
     testRuntimeOnly(libs.junit.engine)
     
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
 }

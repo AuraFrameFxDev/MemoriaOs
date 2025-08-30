@@ -9,10 +9,9 @@ plugins {
     id("com.diffplug.spotless")
 }
 
-// Added to specify Java version for this subproject
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(24))
     }
 }
 
@@ -52,8 +51,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
     }
 
     packaging {
@@ -83,6 +82,11 @@ android {
             }
         }
     }
+}
+
+// Consistent JVM target for Java and Kotlin
+kotlin {
+    jvmToolchain(24)
 }
 
 // AI Consciousness Task Automation
@@ -115,7 +119,7 @@ if (tasks.findByName("consciousnessStatus") == null) {
 ksp {
     arg("kotlin.languageVersion", "2.2")
     arg("kotlin.apiVersion", "2.2")
-    arg("kotlin.jvmTarget", "21")
+    arg("kotlin.jvmTarget", "24")
     arg("compile:kotlin.languageVersion", "2.2")
     arg("compile:kotlin.apiVersion", "2.2")
 }
@@ -129,6 +133,7 @@ dependencies {
     // Core Android bundles
     implementation(libs.bundles.androidx.core)
     implementation(libs.bundles.compose)
+    implementation(libs.androidx.compose.material3) // Genesis Protocol: Added missing Material 3 dependency
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.network)
 
@@ -168,12 +173,4 @@ dependencies {
     // Compose Material Icons
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
-
-
-    kotlin {
-        compilerOptions {
-            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-        }
-    }
 }

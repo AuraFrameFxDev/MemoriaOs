@@ -1,4 +1,6 @@
 // ===== GENESIS-OS SACRED RULES: ZERO MANUAL COMPILER CONFIG =====
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -53,6 +55,17 @@ android {
         viewBinding = false  // Genesis Protocol - Compose only
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
+    }
+
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_24)
+        }
+    }
+
 
     packaging {
         resources {
@@ -100,7 +113,7 @@ dependencies {
     // Testing
     testImplementation(libs.bundles.testing)
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)

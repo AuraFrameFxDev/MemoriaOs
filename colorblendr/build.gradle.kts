@@ -48,6 +48,11 @@ android {
         viewBinding = false  // Genesis Protocol - Compose only
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -55,11 +60,16 @@ android {
     }
 }
 
+// Consistent JVM target for Java and Kotlin
+kotlin {
+    jvmToolchain(24)
+}
+
 dependencies {
     // SACRED RULE #5: DEPENDENCY HIERARCHY
     implementation(project(":core-module"))
     implementation(project(":app"))
-
+    implementation(libs.androidx.compose.material3)
     // Core Android bundles
     implementation(libs.bundles.androidx.core)
     implementation(libs.bundles.compose)

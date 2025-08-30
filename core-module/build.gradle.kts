@@ -8,6 +8,12 @@ plugins {
     alias(libs.plugins.kover)
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
+}
+
 android {
     namespace = "dev.aurakai.auraframefx.core"
     compileSdk = 36
@@ -17,13 +23,13 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
     }
 
     kotlin {
         compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
         }
     }
 
@@ -50,7 +56,6 @@ dependencies {
     implementation(libs.gson)
 
     // Security
-    implementation(libs.bouncycastle)
 
     // Testing
     testImplementation(libs.junit)

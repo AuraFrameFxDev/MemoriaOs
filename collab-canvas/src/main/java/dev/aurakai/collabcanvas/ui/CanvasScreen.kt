@@ -47,10 +47,36 @@ import kotlinx.coroutines.launch
  * - The top-bar "Clear Canvas" and toolbar "Clear" actions remove stored paths and animated paths.
  * - The "Save" action is a placeholder and does not persist the canvas in this implementation.
  */
+
 /**
- * Composable screen that provides an interactive collaborative drawing canvas.
+ * Renders the collaborative drawing canvas screen with tools, gestures, and animated rendering.
  *
- * The canvas supports freehand drawing (PATH tool), basic rectangle and oval elements, pinch-to-zoom and pan, per-path animated rendering, and a small toolbar for color/stroke selection. User strokes are accumulated in an in-memory list of PluckablePath and rendered with optional per-path animation state; completed strokes are only added when the stroke bounds are non-empty. The top app bar exposes a clear action (clears paths, elements, and animated state) and a placeholder save action. Experimental Compose APIs are used for gesture handling and material components.
+ * Provides a full-screen drawing surface that supports:
+ * - Freehand drawing, rectangle and oval tools selectable via floating action buttons.
+ * - Pinch-to-zoom and pan (transformable) interactions.
+ * - Tap and drag gesture handling for creating and committing drawable paths.
+ * - Animated progressive rendering of previously committed paths.
+ * - A top app bar with actions to clear the canvas and save (placeholder).
+ * - An on-screen toolbar for selecting color, stroke width, and clearing animated paths.
+ *
+ * The composable owns and remembers all canvas state (paths, elements, current in-progress path,
+ * selected tool/color/stroke, animation state, scale and offset). Committing a completed path
+ * adds a PluckablePath to the internal lists and creates an animated copy for playback.
+ */
+/**
+ * Full-screen composable providing an interactive collaborative drawing canvas.
+ *
+ * Supports freehand drawing (PATH) plus rectangle and oval tools, pinch-to-zoom and pan, tap/drag gestures
+ * to create strokes, and animated playback of committed paths. The UI includes a top app bar with clear
+ * and save actions (save is a placeholder), floating tool buttons to switch between PATH/RECTANGLE/OVAL,
+ * and an on-screen toolbar for selecting color, stroke width, and clearing animated paths.
+ *
+ * Internal state owned by this composable includes the list of committed PluckablePath objects (`paths`),
+ * a list of drawable CanvasElement objects (`elements`), the in-progress `currentPath`, current color and
+ * stroke width, the selected tool and element, animation state for progressive rendering (`animatedPaths`),
+ * and transform state for zoom (`scale`) and pan (`offset`). Committed paths are added to `paths` when a
+ * drawing gesture ends and the current path has non-empty bounds. Clearing actions remove paths, elements,
+ * and their animated copies.
  */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable

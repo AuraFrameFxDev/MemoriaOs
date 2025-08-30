@@ -90,6 +90,11 @@ android {
     }
 }
 
+// Consistent JVM target for Java and Kotlin
+kotlin {
+    jvmToolchain(24)
+}
+
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     // Project modules
@@ -103,6 +108,7 @@ dependencies {
     // Compose - Genesis UI System
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
+    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
 
     // Hilt Dependency Injection
@@ -136,7 +142,7 @@ dependencies {
     testImplementation(libs.bundles.testing)
     testRuntimeOnly(libs.junit.engine)
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)

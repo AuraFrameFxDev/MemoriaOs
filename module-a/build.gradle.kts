@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -43,6 +45,17 @@ android {
         compose = true
         buildConfig = true
         viewBinding = false  // Genesis Protocol - Compose only
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
+    }
+
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_24)
+        }
     }
 
     // REMOVED: composeOptions - AGP 8.13.0-rc01 auto-detects from version catalog!
