@@ -108,6 +108,7 @@ dependencies {
     // Compose - Genesis UI System
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
+    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
 
     // Hilt Dependency Injection
