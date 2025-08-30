@@ -80,7 +80,8 @@ dependencies {
     // Hilt Dependency Injection (Android version)
     implementation(libs.hilt.android)
     testImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.junit.ktx)
+    // Use direct dependency notation due to unresolved alias issue
+    androidTestImplementation("androidx.test.ext:junit-ktx:1.3.0")
     ksp(libs.hilt.compiler)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)

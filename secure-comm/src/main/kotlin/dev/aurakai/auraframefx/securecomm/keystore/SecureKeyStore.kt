@@ -29,9 +29,9 @@ class SecureKeyStore @Inject constructor(
     companion object {
         const val KEY_ALIAS = "aura_secure_key"
         private const val KEYSTORE_PROVIDER = "AndroidKeyStore"
-        private const val KEY_SIZE = 256
         private const val GCM_IV_LENGTH = 12
         private const val GCM_TAG_LENGTH = 128
+        private const val KEY_SIZE = 256
     }
 
     /**
@@ -67,7 +67,7 @@ class SecureKeyStore @Inject constructor(
         val encryptedData = prefs.getString(key, null) ?: return null
         return try {
             decryptData(key, Base64.decode(encryptedData, Base64.NO_WRAP))
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }
@@ -79,6 +79,7 @@ class SecureKeyStore @Inject constructor(
      * the underlying SecretKey stored in the AndroidKeyStore for that key alias.
      *
      * @param key The preferences key identifying the stored encrypted value.
+     */
     fun removeData(key: String) {
         val prefs = context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
         prefs.edit {remove(key)}
