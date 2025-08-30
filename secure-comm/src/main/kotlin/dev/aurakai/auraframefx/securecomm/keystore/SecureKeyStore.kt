@@ -116,6 +116,8 @@ class SecureKeyStore @Inject constructor(
     }
 
     /**
+     * Retrieve an existing SecretKey from the AndroidKeyStore or create and store a new AES-256 key for the given alias.
+
      * Retrieves a SecretKey from the AndroidKeyStore for the given alias, creating and storing
      * a new AES-GCM 256-bit key if the alias does not already exist.
      *
@@ -132,11 +134,9 @@ class SecureKeyStore @Inject constructor(
 
      * Retrieve or create a SecretKey in the AndroidKeyStore for the given alias.
      *
-     * If a key with the provided alias exists in the AndroidKeyStore, it is returned; otherwise
-     * a new AES-256 key is generated, stored in the AndroidKeyStore, and returned.
-     *
-     * The generated key is configured for AES/GCM/NoPadding with ENCRYPT and DECRYPT purposes,
-     * randomized encryption required, and persistent storage in the AndroidKeyStore.
+     * If the alias is present in the AndroidKeyStore the associated SecretKey is returned. Otherwise a new key is
+     * generated and persisted with AES/GCM/NoPadding, 256-bit size, ENCRYPT and DECRYPT purposes, randomized
+     * encryption required, and no user authentication.
      *
      * @param keyAlias Alias used to look up or create the key in the AndroidKeyStore.
      * @return The SecretKey associated with the provided alias.
