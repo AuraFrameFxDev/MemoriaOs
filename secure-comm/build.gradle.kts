@@ -79,8 +79,8 @@ dependencies {
 
     // Hilt Dependency Injection (Android version)
     implementation(libs.hilt.android)
-    implementation(libs.androidx.junit.ktx)
     testImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.junit.ktx)
     ksp(libs.hilt.compiler)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)

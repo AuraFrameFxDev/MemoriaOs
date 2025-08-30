@@ -181,7 +181,7 @@ firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashly
 yuki = { module = "com.highcapable.yukihookapi:api", version.ref = "yuki" }
 lsposed = { module = "org.lsposed.lsplant:lsplant", version.ref = "lsposed" }
 yuki-ksp-xposed = { module = "com.highcapable.yukihookapi:ksp-xposed", version.ref = "yuki" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version = "1.3.0" }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 
 [bundles]
