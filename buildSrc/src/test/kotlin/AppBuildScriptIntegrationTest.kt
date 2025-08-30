@@ -26,15 +26,22 @@ class AppBuildScriptIntegrationTest {
         ).filter { it.exists() && it.isFile && it.readText().contains(marker) }.toList()
         if (candidates.isNotEmpty()) return candidates.first()
 
-        // Fallback: search all *.gradle.kts files
-        val matches = Files.walk(File(".").toPath())
-            .filter { it.toString().endsWith(".gradle.kts") }
+// Add at top of file alongside other imports
+import java.nio.file.Files
+import kotlin.streams.toList
+
+// …
+
+    // Fallback: search all *.gradle.kts files
+    val matches = Files.walk(File(".").toPath()).use { stream ->
+        stream.filter { it.toString().endsWith(".gradle.kts") }
             .map { it.toFile() }
             .filter { it.isFile && it.readText().contains(marker) }
             .toList()
-        return matches.firstOrNull()
-            ?: error("Could not find build.gradle.kts containing '$marker'")
     }
+    return matches.firstOrNull()
+        ?: error("Could not find build.gradle.kts containing '$marker'")
+}
 
     private fun text(): String = locateBuildScript().readText()
 
