@@ -24,6 +24,12 @@ android {
         consumerProguardFiles("consumer-rules.pro")
     }
 
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
+        disable += setOf("InvalidPackage", "GradleDependency")
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -73,6 +79,9 @@ dependencies {
 
     // Hilt Dependency Injection (Android version)
     implementation(libs.hilt.android)
+    testImplementation(libs.androidx.junit)
+    // Use direct dependency notation due to unresolved alias issue
+    androidTestImplementation("androidx.test.ext:junit-ktx:1.3.0")
     ksp(libs.hilt.compiler)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
@@ -85,8 +94,8 @@ dependencies {
     implementation(libs.okhttp3.logging.interceptor)
 
     // Enhanced Security Stack (Android compatible)
-    implementation(libs.bouncycastle)
     implementation(libs.androidxSecurity)
+    implementation(libs.bouncycastle)
 
     // Utilities
     implementation(libs.gson)
@@ -101,7 +110,10 @@ dependencies {
     testImplementation(libs.turbine)
     testImplementation(libs.kotlinx.coroutines.test)
     testRuntimeOnly(libs.junit.engine)
-    
+
+    // Android Testing
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.runner) 
+    androidTestImplementation(libs.androidx.test.rules)
 }

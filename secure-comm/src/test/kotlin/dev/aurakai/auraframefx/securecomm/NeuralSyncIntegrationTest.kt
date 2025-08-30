@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.Assert.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.Rule
+import org.junit.jupiter.api.Test
 import org.junit.runner.RunWith
 import javax.inject.Inject
 
@@ -57,7 +58,7 @@ class NeuralSyncIntegrationTest {
         }
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun secureCommunication_worksEndToEnd() {
         // Initialize secure channels (simulating two devices)
         val publicKey1 = secureChannel1.initialize()
@@ -87,7 +88,7 @@ class NeuralSyncIntegrationTest {
         assertArrayEquals("Second message should be decrypted correctly", message2, decrypted2)
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun secureKeyStore_persistsDataSecurely() {
         val testKey = "secure_storage_test"
         val testData = "Sensitive data to store securely".toByteArray()
@@ -103,7 +104,7 @@ class NeuralSyncIntegrationTest {
         assertArrayEquals("Retrieved data should match stored data", testData, retrievedData)
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun cryptoManager_providesSecureCryptographicOperations() {
         // Generate key pair
         val keyPair = cryptoManager.getOrCreateKeyPair()
@@ -124,7 +125,7 @@ class NeuralSyncIntegrationTest {
         assertArrayEquals("Decrypted message should match original", testMessage, decrypted)
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun secureChannel_resistsReplayAttacks() {
         // Initialize secure channels
         val publicKey1 = secureChannel1.initialize()
@@ -144,7 +145,7 @@ class NeuralSyncIntegrationTest {
         assertNull("Replayed message should be rejected", decrypted2)
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun secureChannel_detectsTampering() {
         // Initialize secure channels
         val publicKey1 = secureChannel1.initialize()
@@ -164,7 +165,7 @@ class NeuralSyncIntegrationTest {
         assertNull("Tampered message should be rejected", decrypted)
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun secureChannel_handlesMultipleMessages() {
         // Initialize secure channels
         val publicKey1 = secureChannel1.initialize()

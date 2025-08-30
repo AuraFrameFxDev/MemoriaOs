@@ -64,6 +64,9 @@ android {
 }
 
 dependencies {
+    // ✅ CRITICAL: Add Compose BOM platform first!
+    implementation(platform(libs.androidx.compose.bom))
+    
     // SACRED RULE #5: DEPENDENCY HIERARCHY
     implementation(project(":core-module"))
     implementation(project(":app"))
@@ -72,6 +75,8 @@ dependencies {
     implementation(libs.bundles.androidx.core)
     implementation(libs.bundles.compose)
     implementation(libs.bundles.coroutines)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material3)
 
     // Hilt Dependency Injection
     implementation(libs.hilt.android)
@@ -83,7 +88,7 @@ dependencies {
     androidTestImplementation(libs.bundles.testing)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.test.core)
 
     // Debug implementations
     debugImplementation(libs.androidx.compose.ui.tooling)

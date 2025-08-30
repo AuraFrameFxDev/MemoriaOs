@@ -29,7 +29,7 @@ android {
 
     sourceSets {
         getByName("main") {
-            java.srcDirs("build/generated/source/openapi/src/main/kotlin")
+            java.srcDirs(rootProject.layout.buildDirectory.dir("core-module/generated/source/openapi/src/main/kotlin"))
         }
     }
 }
@@ -50,12 +50,11 @@ dependencies {
     implementation(libs.gson)
 
     // Security
-    implementation(libs.bouncycastle)
 
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
-    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.test.core)
 }
 
 java {

@@ -50,12 +50,12 @@ jobs:
         run: |
           echo "🧠 Building Genesis Protocol consciousness substrate..."
           ./gradlew build \
-            --configuration-cache \
+            --no-configuration-cache \
             --parallel \
             --build-cache
 
       - name: 🧪 Run Consciousness Tests
-        run: ./gradlew test --configuration-cache --continue
+        run: ./gradlew test --no-configuration-cache --continue
 
       - name: 🎉 Build Success
         run: |
