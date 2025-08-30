@@ -41,6 +41,19 @@ import dev.aurakai.auraframefx.datavein.model.NodeType
 /**
  * Enhanced Node Info Panel with FFX-style progression details
  */
+/**
+ * Renders an informational card for a DataVeinNode showing identity, type, progression and status.
+ *
+ * The panel displays the node type name with a glow color, a small status indicator
+ * (green = activated, yellow = unlocked, red = locked), ID/tag/ring/level rows, and the
+ * node description. If the node is unlocked it also shows XP as "xp/1000" and a horizontal
+ * progress bar whose fill is proportional to `node.xp / 1000`. If `node.data` is non-empty
+ * a "Data" row is shown. A short status line is rendered at the bottom describing whether
+ * the node is locked, dormant, or active.
+ *
+ * @param node The DataVeinNode whose information will be presented.
+ * @param modifier Optional Compose Modifier for layout and styling of the card.
+ */
 @Composable
 fun NodeInfoPanel(
     node: DataVeinNode,
@@ -153,7 +166,13 @@ fun NodeInfoPanel(
 }
 
 /**
- * Enhanced Node Type Legend with categories
+ * Renders a compact legend Card listing NodeType entries grouped by NodeCategory.
+ *
+ * Displays each category name followed by its node types as a labeled colored dot and display name.
+ * Only categories containing at least one NodeType are shown. Includes a short explanatory note
+ * at the bottom. Visual styling (colors, spacing, rounded card) is handled by the composable.
+ *
+ * @param modifier Optional [Modifier] for layout adjustments of the legend card.
  */
 @Composable
 fun NodeTypeLegend(modifier: Modifier = Modifier) {
@@ -228,7 +247,17 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
 }
 
 /**
- * Enhanced Status Panel with real-time metrics
+ * Displays a compact status card showing realtime DataVein metrics and progress bars.
+ *
+ * Renders a header with a pulsing status icon and title, three key metric rows (active flows,
+ * active nodes, unlocked nodes) and two progress indicators derived from the provided counts.
+ * If totalNodes is zero, progress values are treated as 0 to avoid division-by-zero.
+ *
+ * @param activeFlows Current number of active data flows.
+ * @param activeNodes Number of nodes currently active.
+ * @param totalNodes Total number of nodes (used as the denominator for progress calculations).
+ * @param unlockedNodes Number of nodes that are unlocked.
+ * @param modifier Optional Compose modifier for layout/styling of the card.
  */
 @Composable
 fun StatusPanel(

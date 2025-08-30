@@ -27,6 +27,15 @@ import androidx.compose.ui.unit.sp
  * Simple DataVein Screen for testing basic Compose setup
  * This serves as a fallback while we resolve KSP issues
  */
+/**
+ * Composable screen that renders a centered, card-based test UI for the "DataVein Sphere Grid".
+ *
+ * The layout is a full‑screen dark background with a translucent card containing header and subheader
+ * text, a cyan horizontal divider, a system status line, three compact status chips, a multi-line
+ * status overview, an action button (currently a no-op), and a small note about KSP compilation.
+ *
+ * @param modifier Modifier applied to the root container (Box) of the screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimpleDataVeinScreen(
