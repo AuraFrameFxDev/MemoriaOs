@@ -107,9 +107,16 @@ class BuildScriptsValidationV2Test {
         val hasJvmToolchainBlock24 = content.contains(Regex("""kotlin\s*\{\s*jvmToolchain\s*\{\s*.*24.*\}\s*\}""", RegexOption.DOT_MATCHES_ALL))
         assertTrue("Kotlin jvmToolchain should be configured to 24", hasJvmToolchain24Direct || hasJvmToolchainBlock24)
 
-        // kotlinOptions target (string or without quotes depending on style)
-        val hasJvmTarget24 = content.contains(Regex("""kotlinOptions\s*\{\s*[^\}]*jvmTarget\s*=\s*["']?24["']?""", RegexOption.DOT_MATCHES_ALL))
-        assertTrue("kotlinOptions.jvmTarget should be 24", hasJvmTarget24)
+        // jvmTarget via compilerOptions or kotlinOptions (string or without quotes depending on style)
+        val hasCompilerOptions24 = content.contains(Regex(
+            """compilerOptions\s*\{\s*[^}]*jvmTarget\.set\s*\(\s*JvmTarget\.JVM_24\s*\)""",
+            RegexOption.DOT_MATCHES_ALL
+        ))
+        val hasKotlinOptions24 = content.contains(Regex(
+            """kotlinOptions\s*\{\s*[^\}]*jvmTarget\s*=\s*["']?24["']?""",
+            RegexOption.DOT_MATCHES_ALL
+        ))
+        assertTrue("jvmTarget should be 24 via compilerOptions or kotlinOptions", hasCompilerOptions24 || hasKotlinOptions24)
     }
 
     @Test
