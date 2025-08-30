@@ -28,13 +28,14 @@ import androidx.compose.ui.unit.sp
  * This serves as a fallback while we resolve KSP issues
  */
 /**
- * Renders a full-screen, stylized DataVein test UI for previewing status and launch actions.
+ * Renders a centered, full-screen Jetpack Compose card displaying a DataVein test UI:
+ * title, subtitle, status divider, system status, three status chips, an oracle/AI status block,
+ * an action button (placeholder), and a small note.
  *
- * The composable displays a centered card containing a header, subheader, a cyan divider,
- * system status, three small status chips (Core Nodes, Active Flows, Data Streams),
- * a multi-line status summary, a launch button (currently a placeholder), and an implementation note.
+ * The UI uses a dark background and Material3 components; the action button's `onClick` is a no-op placeholder.
  *
- * @param modifier Optional [Modifier] to adjust layout or appearance of the root container.
+ * @param modifier Modifier to apply to the outer container for layout and styling overrides.
+
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

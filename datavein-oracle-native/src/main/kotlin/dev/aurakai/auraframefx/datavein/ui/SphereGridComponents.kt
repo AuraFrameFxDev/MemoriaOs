@@ -42,15 +42,20 @@ import dev.aurakai.auraframefx.datavein.model.NodeType
  * Enhanced Node Info Panel with FFX-style progression details
  */
 /**
- * Renders a compact information panel for a DataVein node.
+ * Displays a styled information card for a DataVeinNode showing its type, identifiers,
+ * status, description and progression details.
  *
- * Displays the node's type name with a status indicator, identification rows (tag, id, ring, level),
- * an XP row and progress bar when the node is unlocked, the node type description, optional data row,
- * and a short status message derived from the node's unlocked/activated state ("Locked", "Dormant", "Active").
+ * The panel renders:
+ * - A header with the node type name and a colored status dot (green = activated, yellow = unlocked, red = locked).
+ * - A thin divider tinted by the node type's glow color.
+ * - Identification rows: tag, id, ring, and level.
+ * - If the node is unlocked: XP as "xp/1000" and a horizontal XP progress bar.
+ * - The node type description and an optional "Data" row when `node.data` is non-empty.
+ * - A concise status line derived from the node's unlocked/activated state.
  *
- * The visual styling (border glow, colors) is derived from the node's NodeType.
- *
- * @param node The DataVeinNode whose details are shown.
+ * @param node The DataVeinNode to display. Its `type.glowColor` is used for accents and its
+ * state (`isUnlocked`, `activated`, `xp`, `data`, etc.) controls conditional content.
+
  */
 @Composable
 fun NodeInfoPanel(
@@ -164,11 +169,15 @@ fun NodeInfoPanel(
 }
 
 /**
- * Displays a categorized legend of DataVein node types.
+ * Renders a categorized legend of DataVein node types inside a styled card.
  *
- * Renders a compact Card that groups NodeType entries by NodeCategory. For each type it shows a small
- * colored circular swatch with a subtle glow border and the type's display name. Includes a title,
- * category headings, and a short explanatory legend at the bottom.
+ * Displays a header ("🌐 DataVein Node Types"), a translucent divider, and then one section
+ * per NodeCategory that contains the NodeType entries for that category. Each entry shows
+ * a small colored dot (type.color with a glow border) and the type's display name.
+ *
+ * At the bottom a short legend note explains interactivity: nodes can be clicked to explore
+ * paths and are unlocked via progression.
+
  */
 @Composable
 fun NodeTypeLegend(modifier: Modifier = Modifier) {
@@ -243,18 +252,17 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
 }
 
 /**
- * Renders a compact status card showing real-time metrics and progress for the DataVein system.
+ * Displays a compact status card showing live metrics and progression for the DataVein network.
  *
- * Displays a pulsing header icon and three scalar metrics ("Active Flows", "Active Nodes", "Unlocked")
- * followed by two progress bars ("Activation" and "Progression"). Activation is computed as
- * activeNodes / totalNodes and Progression as unlockedNodes / totalNodes; when totalNodes is zero,
- * percentages are treated as 0 to avoid division by zero.
+ * Renders a header with a pulsing indicator and title, three metric rows (active flows, active nodes, unlocked nodes),
+ * and two progress bars for Activation (activeNodes / totalNodes) and Progression (unlockedNodes / totalNodes).
+ * Percentages default to 0 when `totalNodes` is zero to avoid division-by-zero.
  *
- * @param activeFlows Number of currently active flows to display.
- * @param activeNodes Number of currently active nodes (used in the "Active Nodes" label and activation progress).
- * @param totalNodes Total number of nodes (used as the denominator for activation/progression percentages).
- * @param unlockedNodes Number of unlocked nodes (used in the "Unlocked" label and progression progress).
- * @param modifier Optional Modifier applied to the outer Card.
+ * @param activeFlows Number of currently active flows in the network.
+ * @param activeNodes Number of nodes currently activated.
+ * @param totalNodes Total number of nodes in the network; used as the denominator for progress calculations.
+ * @param unlockedNodes Number of nodes unlocked via progression.
+
  */
 @Composable
 fun StatusPanel(

@@ -79,6 +79,18 @@ import kotlinx.coroutines.launch
  * and their animated copies.
  */
 /**
+ * Full-screen interactive drawing canvas composable.
+ *
+ * Provides multi-tool drawing (freehand Path, Rectangle, Oval), pinch-to-zoom and pan,
+ * tap/drag gestures to create and commit shapes, and animated playback of committed paths.
+ *
+ * UI features include a top app bar with Clear (removes all paths, elements, and animated copies)
+ * and Save actions, floating tool buttons to switch tools, and an on-screen toolbar for color
+ * and stroke-width selection. The toolbar's Clear action removes animated paths only.
+ *
+ * All canvas state (committed paths, in-progress path, elements, selected tool/color/stroke,
+ * zoom/offset and animated copies) is held internally via remember/remember* state helpers.
+
  * Full-screen collaborative drawing canvas with multi-tool support, pan/zoom gestures, and animated playback of committed strokes.
  *
  * Renders an interactive drawing surface that supports freehand paths, rectangles, and ovals. Handles tap/drag gestures to create shapes (freehand drawing when the PATH tool is selected), pinch-to-zoom and panning via a transformable state, and progressive replay of committed paths using per-path animated state. The UI includes a top app bar (Clear/Save — Save is a placeholder), floating tool buttons (Path, Rectangle, Oval), and an on-screen toolbar for selecting color and stroke width.
