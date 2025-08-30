@@ -49,6 +49,7 @@ import dev.aurakai.auraframefx.datavein.model.NodeType
  *
  * @param node The DataVeinNode whose details are rendered.
  * @param modifier Optional Compose modifier applied to the outer Card.
+
  */
 @Composable
 fun NodeInfoPanel(
@@ -168,6 +169,7 @@ fun NodeInfoPanel(
  * category as a small colored swatch (filled with `type.color` and bordered with `type.glowColor`)
  * followed by the type's display name. Ends with a short explanatory legend about interaction
  * and unlocking. Designed as a small, translucent UI panel for quick reference.
+
  */
 @Composable
 fun NodeTypeLegend(modifier: Modifier = Modifier) {
@@ -254,6 +256,7 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
  * @param totalNodes Total number of nodes; used to compute percentage values.
  * @param unlockedNodes Number of unlocked nodes; used to compute percentage values.
  * @param modifier Optional Compose modifier for the panel.
+
  */
 @Composable
 fun StatusPanel(

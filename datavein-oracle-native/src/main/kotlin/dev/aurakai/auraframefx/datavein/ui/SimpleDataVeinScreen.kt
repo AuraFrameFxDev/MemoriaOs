@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
  * - and an informational note about KSP compilation.
  *
  * The composable accepts a Modifier to customize its outer container.
+
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

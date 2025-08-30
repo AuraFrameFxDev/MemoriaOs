@@ -90,7 +90,7 @@ import kotlinx.coroutines.launch
  * - Animated playback support: committed paths are stored in `paths` and mirrored into `animatedPaths` for progressive rendering.
  *
  * Visual content (grid, elements, current in-progress path, and animated paths) is drawn under the current scale and offset transforms so zoom and pan affect all canvas content consistently.
- */
+
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CanvasScreen() {

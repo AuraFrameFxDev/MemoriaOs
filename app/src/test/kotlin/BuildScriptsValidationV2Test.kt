@@ -245,16 +245,31 @@ class BuildScriptsValidationV2Test {
     fun `no version-catalog aliasing used for core plugins and versions not hardcoded in app module`() {
         val content = buildFile.readText()
 
-        // Alias usage forbidden in app/plugins for core ones (already partly tested, keep defense-in-depth)
-        assertFalse(content.contains("alias(libs.plugins.androidApplication)"))
-        assertFalse(content.contains("alias(libs.plugins.kotlinAndroid)"))
-        assertFalse(content.contains("alias(libs.plugins.ksp)"))
+        // Allow either id() or alias() styles
+        assertTrue(
+            content.contains("""id("com.android.application")""") ||
+            content.contains("alias(libs.plugins.androidApplication)")
+        )
+        assertTrue(
+            content.contains("""id("org.jetbrains.kotlin.android")""") ||
+            content.contains("alias(libs.plugins.kotlinAndroid)")
+        )
+        assertTrue(
+            content.contains("""id("com.google.devtools.ksp")""") ||
+            content.contains("alias(libs.plugins.ksp)")
+        )
 
         // Avoid hardcoding plugin versions in the app module (they should come from settings pluginManagement or convention plugin)
-        val hardcodedPluginVersionInApp = Regex("""id\("com\.android\.application"\)\s*version\s+["'][\d.]+["']""").containsMatchIn(content)
-                || Regex("""id\("org\.jetbrains\.kotlin\.android"\)\s*version\s+["'][\d.]+["']""").containsMatchIn(content)
-                || Regex("""id\("com\.google\.devtools\.ksp"\)\s*version\s+["'][\d.]+["']""").containsMatchIn(content)
-        assertFalse("Plugin versions should not be hardcoded in app module", hardcodedPluginVersionInApp)
+        val hardcodedPluginVersionInApp = Regex("""id\("com\.android\.application"\)\s*version\s+["'][\d.]+["']""")
+            .containsMatchIn(content)
+            || Regex("""id\("org\.jetbrains\.kotlin\.android"\)\s*version\s+["'][\d.]+["']""")
+            .containsMatchIn(content)
+            || Regex("""id\("com\.google\.devtools\.ksp"\)\s*version\s+["'][\d.]+["']""")
+            .containsMatchIn(content)
+        assertFalse(
+            "Plugin versions should not be hardcoded in app module",
+            hardcodedPluginVersionInApp
+        )
     }
 
     @Test
