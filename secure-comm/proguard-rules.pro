@@ -22,13 +22,8 @@
 -keepattributes Signature,RuntimeVisibleAnnotations,AnnotationDefault,EnclosingMethod,InnerClasses
 
 # 6. Preserve OkHttp, Retrofit, Cipher (if used)
--keep class okhttp3.** { *; }
--keep class retrofit2.** { *; }
--keep class javax.crypto.** { *; }
--keep class java.security.** { *; }
+## Rely on library-provided consumer rules; keep only what reflection requires here.
+# (Remove blanket keeps; add targeted rules only if you have concrete reflection use-cases.)
 
 # 7. General best practices for Android
--keep class android.support.** { *; }
--keep class androidx.** { *; }
-
 # --- End Secure Comms ProGuard Rules (Scoped) ---
