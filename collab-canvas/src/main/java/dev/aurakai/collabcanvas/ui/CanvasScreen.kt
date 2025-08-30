@@ -49,34 +49,12 @@ import kotlinx.coroutines.launch
  */
 
 /**
- * Renders the collaborative drawing canvas screen with tools, gestures, and animated rendering.
+ * Full-screen collaborative drawing canvas with PATH/RECTANGLE/OVAL tools, pinch-to-zoom, pan,
+ * tap/drag drawing, and animated playback of committed paths. Includes top app bar actions
+ * (clear, save placeholder) and an on-screen toolbar (color, stroke width, clear).
  *
- * Provides a full-screen drawing surface that supports:
- * - Freehand drawing, rectangle and oval tools selectable via floating action buttons.
- * - Pinch-to-zoom and pan (transformable) interactions.
- * - Tap and drag gesture handling for creating and committing drawable paths.
- * - Animated progressive rendering of previously committed paths.
- * - A top app bar with actions to clear the canvas and save (placeholder).
- * - An on-screen toolbar for selecting color, stroke width, and clearing animated paths.
- *
- * The composable owns and remembers all canvas state (paths, elements, current in-progress path,
- * selected tool/color/stroke, animation state, scale and offset). Committing a completed path
- * adds a PluckablePath to the internal lists and creates an animated copy for playback.
- */
-/**
- * Full-screen composable providing an interactive collaborative drawing canvas.
- *
- * Supports freehand drawing (PATH) plus rectangle and oval tools, pinch-to-zoom and pan, tap/drag gestures
- * to create strokes, and animated playback of committed paths. The UI includes a top app bar with clear
- * and save actions (save is a placeholder), floating tool buttons to switch between PATH/RECTANGLE/OVAL,
- * and an on-screen toolbar for selecting color, stroke width, and clearing animated paths.
- *
- * Internal state owned by this composable includes the list of committed PluckablePath objects (`paths`),
- * a list of drawable CanvasElement objects (`elements`), the in-progress `currentPath`, current color and
- * stroke width, the selected tool and element, animation state for progressive rendering (`animatedPaths`),
- * and transform state for zoom (`scale`) and pan (`offset`). Committed paths are added to `paths` when a
- * drawing gesture ends and the current path has non-empty bounds. Clearing actions remove paths, elements,
- * and their animated copies.
+ * Owns canvas state (paths/elements/currentPath, color, stroke, selected tool/element),
+ * animated copies (`animatedPaths`), and transform state (`scale`, `offset`).
  */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
