@@ -41,6 +41,17 @@ import dev.aurakai.auraframefx.datavein.model.NodeType
 /**
  * Enhanced Node Info Panel with FFX-style progression details
  */
+/**
+ * Displays a stylized card with detailed information for a DataVeinNode.
+ *
+ * Shows the node type header with a colored status indicator (Green = activated, Yellow = unlocked, Red = locked),
+ * identification rows (Tag, ID, Ring, Level), the node description, and an optional Data row.
+ * If the node is unlocked, displays XP as "xp/1000" and a horizontal progress bar filled proportionally to xp/1000.
+ * A short status line is shown at the bottom with one of:
+ *  - "🔒 Locked - Requires Path Progression" (not unlocked)
+ *  - "💤 Dormant - Click to Activate" (unlocked but not activated)
+ *  - "⚡ Active - Processing Data Flow" (activated)
+ */
 @Composable
 fun NodeInfoPanel(
     node: DataVeinNode,
@@ -153,7 +164,14 @@ fun NodeInfoPanel(
 }
 
 /**
- * Enhanced Node Type Legend with categories
+ * Displays a categorized legend of DataVein node types.
+ *
+ * Renders a compact card listing NodeType values grouped by their NodeCategory.
+ * Each entry shows a small color dot (filled with the type's color and bordered
+ * by its glow color) and the type's display name. A short explanatory note
+ * about interactions is shown at the bottom.
+ *
+ * @param modifier Optional modifier applied to the outer Card container.
  */
 @Composable
 fun NodeTypeLegend(modifier: Modifier = Modifier) {
@@ -228,7 +246,16 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
 }
 
 /**
- * Enhanced Status Panel with real-time metrics
+ * Displays a compact status card showing real-time-like metrics and progress for the DataVein.
+ *
+ * Shows an animated glyph with a title, three metric rows (Active Flows, Active Nodes, Unlocked),
+ * and two progress bars for "Activation" and "Progression" computed as ratios against totalNodes.
+ *
+ * @param activeFlows Current number of active data flows.
+ * @param activeNodes Number of nodes currently active.
+ * @param totalNodes Total number of nodes; used as the denominator for percentage calculations (safe-divide: 0 if zero).
+ * @param unlockedNodes Number of nodes that have been unlocked.
+ * @param modifier Modifier to apply to the root Card composable.
  */
 @Composable
 fun StatusPanel(
