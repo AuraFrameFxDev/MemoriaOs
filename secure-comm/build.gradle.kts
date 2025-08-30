@@ -120,7 +120,7 @@ dependencies {
     testImplementation(libs.turbine)
     testImplementation(libs.kotlinx.coroutines.test)
     testRuntimeOnly(libs.junit.engine)
+    testImplementation(libs.androidx.test.ext.junit)
 
-    androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
 }
