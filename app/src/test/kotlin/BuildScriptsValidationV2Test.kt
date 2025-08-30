@@ -38,6 +38,7 @@ class BuildScriptsValidationV2Test {
         assertTrue(hasAny("""id("org.jetbrains.kotlin.plugin.compose")"""))
         assertTrue(hasAny("""id("org.jetbrains.kotlin.plugin.serialization")""", "alias(libs.plugins.kotlin.serialization)"))
         assertTrue(hasAny("""id("com.google.devtools.ksp")""", "alias(libs.plugins.ksp)"))
+    }
 
     @Test
     fun `compile options are set to Java 24`() {
