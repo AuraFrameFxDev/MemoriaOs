@@ -124,9 +124,12 @@ dependencies {
     kspAndroidTest(libs.hilt.compiler)
 }
 
-// Define a shared directory property for ROM tools output
-val romToolsOutputDirectory: DirectoryProperty = project.objects.directoryProperty().convention(layout.buildDirectory.dir("rom-tools"))
-
+tasks.register<VerifyRomToolsTask>("verifyRomTools") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = "Verifies ROM tools were copied to ${romToolsOutputDirectory.get().asFile}"
+    romToolsDir.set(romToolsOutputDirectory)
+    dependsOn(tasks.named("copyRomTools"))
+}
 // ROM Tools specific tasks
 tasks.register<Copy>("copyRomTools") {
     from("src/main/resources")
