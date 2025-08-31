@@ -145,7 +145,7 @@ val hasValidSpecFile = specFile.asFile.exists() && specFile.asFile.length() > 10
 if (hasValidSpecFile) {
     apply(plugin = libs.plugins.openapi.generator.get().pluginId)
     
-    val openApiOutputPath = layout.buildDirectory.dir("core-module/generated/source/openapi")
+    val openApiOutputPath = layout.buildDirectory.dir("generated/source/openapi")
     
     tasks.named("openApiGenerate", org.openapitools.generator.gradle.plugin.tasks.GenerateTask::class) {
         generatorName.set("kotlin")
