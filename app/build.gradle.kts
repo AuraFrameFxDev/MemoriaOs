@@ -115,6 +115,19 @@ java {
 }
 
 
+// ===== ENSURE API GENERATION BEFORE COMPILATION =====
+// This ensures that all compilation and processing tasks wait for OpenAPI generation
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    dependsOn(":openApiGenerate")
+    dependsOn(":fixGeneratedApiCode")
+}
+
+// Critical: Ensure KSP waits for API generation since it needs the generated types
+tasks.withType<com.google.devtools.ksp.gradle.KspTask>().configureEach {
+    dependsOn(":openApiGenerate")
+    dependsOn(":fixGeneratedApiCode")
+}
+
 // ===== SIMPLIFIED CLEAN TASKS =====
 tasks.register<Delete>("cleanKspCache") {
     group = "build setup"
