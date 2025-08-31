@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.android.library) version "9.0.0-alpha02"
   //  alias(libs.plugins.kotlin.compose)
