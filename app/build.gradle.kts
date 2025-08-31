@@ -107,6 +107,13 @@ kotlin {
     jvmToolchain(24)
 }
 
+// Explicit Java toolchain for AGP compatibility
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
+}
+
 
 // ===== SIMPLIFIED CLEAN TASKS =====
 tasks.register<Delete>("cleanKspCache") {

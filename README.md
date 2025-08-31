@@ -1,4 +1,4 @@
-# 🚀 Genesis-Os: AI-Driven Android Consciousness Framework
+# 🚀 Memoria-os: AI-Driven Android Consciousness Framework
 
 <div align="center">
 

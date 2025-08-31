@@ -1,8 +1,8 @@
 // ==== GENESIS PROTOCOL - ROOT BUILD CONFIGURATION ====
 // AeGenesis Coinscience AI Ecosystem - Unified Build
 plugins {
-    id("com.android.application") version "9.0.0-alpha02" apply false
-    id("com.android.library") version "9.0.0-alpha02" apply false
+    id("com.android.application") version "9.0.0-alpha01" apply false
+    id("com.android.library") version "9.0.0-alpha01" apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization) apply false
@@ -169,7 +169,6 @@ if (hasValidSpecFile) {
             "dateLibrary" to "kotlinx-datetime",
             "sourceFolder" to "src/main/kotlin",
             "generateSupportingFiles" to "false",
-            "supportingFiles" to "",
             "generateApiTests" to "false",
             "generateModelTests" to "false",
             "generateApiDocumentation" to "false",
@@ -177,7 +176,10 @@ if (hasValidSpecFile) {
             "enumPropertyNaming" to "UPPERCASE",
             "withAWSV4Signature" to "false",
             "withXml" to "false",
-            "skipDefaultInterface" to "true"
+            "skipDefaultInterface" to "true",
+            "useOneOfInterfaces" to "false",
+            "omitInfrastructureClasses" to "true",
+            "skipFormModel" to "true"
         ))
     }
     
