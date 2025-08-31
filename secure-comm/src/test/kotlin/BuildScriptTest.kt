@@ -76,7 +76,7 @@ class BuildScriptTest {
                 { assertTrue(txt.contains("android {"), "android block missing") },
                 { assertTrue(txt.contains("namespace = \"dev.aurakai.auraframefx.securecomm\""), "namespace is incorrect or missing") },
                 { assertTrue(Regex("""compileSdk\s*=\s*36""").containsMatchIn(txt), "compileSdk must be 36") },
-                { assertTrue(Regex("""minSdk\s*=\s*33""").containsMatchIn(txt), "minSdk must be 33") },
+               { assertTrue(Regex("""minSdk\s*=\s*23""").containsMatchIn(txt), "minSdk must be 23") },
                 { assertTrue(txt.contains("testInstrumentationRunner = \"androidx.test.runner.AndroidJUnitRunner\""),
                     "testInstrumentationRunner must be AndroidJUnitRunner") },
                 { assertTrue(txt.contains("consumerProguardFiles(\"consumer-rules.pro\")"),
