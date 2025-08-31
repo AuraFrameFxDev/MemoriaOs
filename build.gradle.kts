@@ -326,7 +326,7 @@ tasks.register("ensureResourceStructure") {
                     resourceFile.writeText("""
                         <?xml version="1.0" encoding="utf-8"?>
                         <resources>
-                            <string name="${module.replace("-", "_")}_${variant}_name">${module.replace("-", " ").replaceFirstChar { it.uppercase() }}</string>
+                            <string name="${module.replace(Regex("[^A-Za-z0-9]"), "_")}_${variant}_name">${module.replace("-", " ").replaceFirstChar { it.uppercase() }}</string>
                         </resources>
                     """.trimIndent())
                 }
