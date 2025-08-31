@@ -145,12 +145,12 @@ val hasValidSpecFile = specFile.asFile.exists() && specFile.asFile.length() > 10
 if (hasValidSpecFile) {
     apply(plugin = libs.plugins.openapi.generator.get().pluginId)
     
-    val openApiOutputPath = layout.buildDirectory.dir("generated/source/openapi")
+    val openApiOutputPath = file("core-module/build/generated/source/openapi")
     
     tasks.named("openApiGenerate", org.openapitools.generator.gradle.plugin.tasks.GenerateTask::class) {
         generatorName.set("kotlin")
         inputSpec.set(specFile.asFile.toURI().toString())
-        outputDir.set(openApiOutputPath.get().asFile.absolutePath)
+        outputDir.set(openApiOutputPath.absolutePath)
         packageName.set("dev.aurakai.aegenesis.api")
         apiPackage.set("dev.aurakai.aegenesis.api")
         modelPackage.set("dev.aurakai.aegenesis.model")
@@ -168,7 +168,16 @@ if (hasValidSpecFile) {
             "serializationLibrary" to "kotlinx_serialization",
             "dateLibrary" to "kotlinx-datetime",
             "sourceFolder" to "src/main/kotlin",
-            "generateSupportingFiles" to "false"
+            "generateSupportingFiles" to "false",
+            "supportingFiles" to "",
+            "generateApiTests" to "false",
+            "generateModelTests" to "false",
+            "generateApiDocumentation" to "false",
+            "generateModelDocumentation" to "false",
+            "enumPropertyNaming" to "UPPERCASE",
+            "withAWSV4Signature" to "false",
+            "withXml" to "false",
+            "skipDefaultInterface" to "true"
         ))
     }
     
@@ -176,6 +185,7 @@ if (hasValidSpecFile) {
         group = "openapi"
         description = "Clean generated API files"
         delete(openApiOutputPath)
+        delete("core-module/build/generated")
     }
 } else {
     logger.warn("⚠️ OpenAPI generation DISABLED - spec file missing or invalid")

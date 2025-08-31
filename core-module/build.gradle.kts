@@ -56,11 +56,17 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.bundles.coroutines)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.datetime)
 
     // Networking (for the generated Retrofit client)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.kotlinx.serialization)
+    implementation(libs.retrofit.converter.scalars)
     implementation(libs.okhttp3.logging.interceptor)
+    
+    // Apache Oltu OAuth (required by generated OAuth classes)
+    implementation(libs.apache.oltu.oauth2.client)
+    implementation(libs.apache.oltu.oauth2.common)
 
     // Utilities
     implementation(libs.gson)

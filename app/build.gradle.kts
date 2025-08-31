@@ -129,6 +129,15 @@ tasks.named("preBuild") {
     dependsOn("cleanKspCache")
     dependsOn(":cleanApiGeneration")
     dependsOn(":openApiGenerate")
+    dependsOn(":core-module:compileDebugKotlin")
+    dependsOn(":core-module:compileReleaseKotlin")
+}
+
+// Ensure KSP waits for generated sources
+tasks.withType<com.google.devtools.ksp.gradle.KspTask>().configureEach {
+    dependsOn(":openApiGenerate")
+    dependsOn(":core-module:compileDebugKotlin")
+    dependsOn(":core-module:compileReleaseKotlin")
 }
 
 // ===== AEGENESIS APP STATUS =====
