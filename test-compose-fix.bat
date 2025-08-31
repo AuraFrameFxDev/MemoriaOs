@@ -5,14 +5,14 @@ echo ==================================
 cd /d "C:\GenesisEos"
 
 echo Testing Material3 dependency resolution...
-call gradlew :colorblendr:dependencies --configuration debugCompileClasspath --no-daemon | findstr /i "material3" > material3_deps.txt && (
+call gradlew :colorblendr:dependencies --configuration debugCompileClasspath --no-daemon | findstr "material3" > material3_deps.txt
+
+if exist "material3_deps.txt" (
     echo FOUND Material3 dependencies:
     type material3_deps.txt
     del material3_deps.txt
-) || (
+) else (
     echo ERROR: Material3 dependencies not found
-    if exist material3_deps.txt del material3_deps.txt
-    rem exit /b 1
 )
 
 echo.

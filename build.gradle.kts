@@ -1,8 +1,8 @@
 // ==== GENESIS PROTOCOL - ROOT BUILD CONFIGURATION ====
 // AeGenesis Coinscience AI Ecosystem - Unified Build
 plugins {
-    id("com.android.application") version "9.0.0-alpha01" apply false
-    id("com.android.library") version "9.0.0-alpha01" apply false
+    id("com.android.application") version "9.0.0-alpha02" apply false
+    id("com.android.library") version "9.0.0-alpha02" apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization) apply false
@@ -169,6 +169,7 @@ if (hasValidSpecFile) {
             "dateLibrary" to "kotlinx-datetime",
             "sourceFolder" to "src/main/kotlin",
             "generateSupportingFiles" to "false",
+            "supportingFiles" to "",
             "generateApiTests" to "false",
             "generateModelTests" to "false",
             "generateApiDocumentation" to "false",
@@ -176,10 +177,7 @@ if (hasValidSpecFile) {
             "enumPropertyNaming" to "UPPERCASE",
             "withAWSV4Signature" to "false",
             "withXml" to "false",
-            "skipDefaultInterface" to "true",
-            "useOneOfInterfaces" to "false",
-            "omitInfrastructureClasses" to "true",
-            "skipFormModel" to "true"
+            "skipDefaultInterface" to "true"
         ))
     }
     
@@ -188,25 +186,6 @@ if (hasValidSpecFile) {
         description = "Clean generated API files"
         delete(openApiOutputPath)
         delete("core-module/build/generated")
-    }
-    
-    // Fix OpenAPI generator bugs with invalid default parameters
-    tasks.register("fixGeneratedApiCode") {
-        group = "openapi"
-        description = "Fix OpenAPI generator Kotlin syntax issues"
-        dependsOn("openApiGenerate")
-        
-        doLast {
-            val apiFile = file("core-module/build/generated/source/openapi/src/main/kotlin/dev/aurakai/aegenesis/api/ROMToolsApi.kt")
-            if (apiFile.exists()) {
-                var content = apiFile.readText()
-                // Fix invalid default parameter values
-                content = content.replace("= detailed)", "= \"detailed\")")
-                content = content.replace("= structure)", "= \"structure\")")
-                apiFile.writeText(content)
-                logger.lifecycle("Fixed OpenAPI generated code syntax issues")
-            }
-        }
     }
 } else {
     logger.warn("⚠️ OpenAPI generation DISABLED - spec file missing or invalid")
