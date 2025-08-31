@@ -56,6 +56,30 @@ import kotlinx.coroutines.launch
  * Owns canvas state (paths/elements/currentPath, color, stroke, selected tool/element),
  * animated copies (`animatedPaths`), and transform state (`scale`, `offset`).
  */
+/**
+ * Full-screen interactive drawing canvas with tools, gestures, and animated playback.
+ *
+ * Provides freehand (path), rectangle, and oval drawing tools, pinch-to-zoom and pan,
+ * tap/drag input to create shapes, an on-canvas current-stroke preview, and animated
+ * playback of committed paths. Composable maintains local mutable state for:
+ * - committed drawable paths and elements,
+ * - the in-progress Path, current color, stroke width, selected tool/element and drawing flag,
+ * - per-path animated copies, and global scale/offset animatables for transform.
+ *
+ * Side effects:
+ * - Mutates internal lists of paths and elements when the user finishes a stroke or clears the canvas.
+ * - Adds animated copies of newly committed paths for playback.
+ *
+ * UI features:
+ * - Top app bar with Clear (removes paths, elements, and animated playback state) and Save (placeholder).
+ * - Floating action buttons to select PATH, RECTANGLE, or OVAL tools.
+ * - A toolbar for selecting color and stroke width and clearing the canvas.
+ *
+ * Gestures:
+ * - Single-tap initializes a point in the current path.
+ * - Drag gestures build the current path (when PATH tool is selected) and finalize it on drag end.
+ * - Transform gestures (pinch/drag) update zoom (scale) and pan (offset).
+ */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CanvasScreen() {

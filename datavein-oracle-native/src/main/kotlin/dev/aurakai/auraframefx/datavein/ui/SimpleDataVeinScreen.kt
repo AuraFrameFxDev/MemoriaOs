@@ -38,6 +38,11 @@ import androidx.compose.ui.unit.sp
  * @param modifier Modifier applied to the outer container (Box); use to adjust layout or
  * positioning from the caller.
  */
+/**
+ * A simple, static Compose screen showing a centered translucent card with test status and an action button.
+ *
+ * Displays a title, subtitle, a system status line, three status chips, multiline status details, a placeholder action button, and a build note. All content and values are hard-coded; the button's onClick is a no-op. Intended as a lightweight fallback/test UI for Compose setup.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimpleDataVeinScreen(
