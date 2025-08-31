@@ -2,8 +2,7 @@
 -keep class dev.aurakai.auraframefx.romtools.** { *; }
 
 # Android system modification classes
--keep class android.** { *; }
--keep class java.lang.reflect.** { *; }
+# Avoid keeping platform classes; R8 treats them as library jars and these rules add noise.
 
 # LSPosed and Xposed classes
 -keep class de.robv.android.xposed.** { *; }
