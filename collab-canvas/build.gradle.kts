@@ -55,6 +55,14 @@ android {
         targetCompatibility = JavaVersion.VERSION_24
     }
 
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+        }
+    }
+
     packaging {
         resources {
             excludes += listOf(
@@ -120,6 +128,7 @@ ksp {
     arg("kotlin.languageVersion", "2.2")
     arg("kotlin.apiVersion", "2.2")
     arg("kotlin.jvmTarget", "24")
+
     arg("compile:kotlin.languageVersion", "2.2")
     arg("compile:kotlin.apiVersion", "2.2")
 }
@@ -165,6 +174,8 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
+
+    androidTestImplementation(libs.androidx.test.core)
 
     // Debug implementations
     debugImplementation(libs.androidx.compose.ui.tooling)

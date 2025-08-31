@@ -35,7 +35,7 @@ android {
 
     sourceSets {
         getByName("main") {
-            java.srcDirs("build/generated/source/openapi/src/main/kotlin")
+            java.srcDirs(rootProject.layout.buildDirectory.dir("core-module/generated/source/openapi/src/main/kotlin"))
         }
     }
 }
@@ -60,6 +60,14 @@ dependencies {
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+
+    androidTestImplementation(libs.androidx.test.core)
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {

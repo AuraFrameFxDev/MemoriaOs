@@ -66,6 +66,9 @@ kotlin {
 }
 
 dependencies {
+    // ✅ CRITICAL FIX: Add Compose BOM platform first!
+    implementation(platform(libs.androidx.compose.bom))
+    
     // SACRED RULE #5: DEPENDENCY HIERARCHY
     implementation(project(":core-module"))
     implementation(project(":app"))
@@ -97,6 +100,8 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
+
+    androidTestImplementation(libs.androidx.test.core)
 
     // Debug implementations
     debugImplementation(libs.androidx.compose.ui.tooling)

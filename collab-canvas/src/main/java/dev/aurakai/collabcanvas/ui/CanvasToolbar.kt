@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
  * @param onClear Called when the Clear button is pressed.
  * @param modifier Optional [Modifier] for styling and layout of the toolbar container.
  */
+
 @Composable
 fun CanvasToolbar(
     onColorSelected: (Color) -> Unit,

@@ -21,6 +21,7 @@ ksp {
     arg("kotlin.languageVersion", "2.2")
     arg("kotlin.apiVersion", "2.2")
     arg("kotlin.jvmTarget", "24")
+
     arg("compile:kotlin.languageVersion", "2.2")
     arg("compile:kotlin.apiVersion", "2.2")
 }
@@ -144,6 +145,8 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
+
+    androidTestImplementation(libs.androidx.test.core)
 
     // Debug implementations
     debugImplementation(libs.androidx.compose.ui.tooling)

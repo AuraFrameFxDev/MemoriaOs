@@ -8,6 +8,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.Assert.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.Rule
+import org.junit.jupiter.api.Test
 import org.junit.runner.RunWith
 import java.security.KeyStore
 import javax.inject.Inject
@@ -40,7 +41,7 @@ class CryptoManagerTest {
             val keyStore = KeyStore.getInstance("AndroidKeyStore")
             keyStore.load(null)
             keyStore.deleteEntry("aura_ec_keypair")
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Ignore cleanup errors
         }
     }
@@ -87,7 +88,7 @@ class CryptoManagerTest {
         assertTrue("Shared secret should not be empty", sharedSecretA.isNotEmpty())
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun sessionKeyDerivation_producesValidKey() {
         val sharedSecret = "test_shared_secret".toByteArray()
         val sessionKey = cryptoManager.deriveSessionKey(sharedSecret)
@@ -97,7 +98,7 @@ class CryptoManagerTest {
         assertEquals("Key size should be 256 bits", 32, sessionKey.encoded.size)
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun encryptionAndDecryption_roundtrip() {
         val keyPair = cryptoManager.getOrCreateKeyPair()
         val sharedSecret = cryptoManager.performKeyAgreement(keyPair.private, keyPair.public)
@@ -129,7 +130,7 @@ class CryptoManagerTest {
         assertFalse("Tampered message should not verify", isTamperedValid)
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun differentMessages_produceDifferentSignatures() {
         cryptoManager.getOrCreateKeyPair()
         val message1 = "Message 1".toByteArray()

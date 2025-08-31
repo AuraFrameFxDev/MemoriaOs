@@ -78,8 +78,7 @@ android {
                 "/META-INF/NOTICE",
                 "/META-INF/NOTICE.txt",
                 "META-INF/*.kotlin_module",
-                "**/kotlin/**",
-                "**/*.txt"
+                "**/kotlin/**"
             )
         }
         jniLibs {
@@ -275,6 +274,7 @@ dependencies {
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.core) // Updated to use version catalog
+
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)

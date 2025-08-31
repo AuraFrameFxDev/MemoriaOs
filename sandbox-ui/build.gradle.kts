@@ -23,8 +23,8 @@ android {
     compileSdk = 36
     defaultConfig {
         minSdk = 33
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
+
+          consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -61,6 +61,9 @@ android {
 }
 
 dependencies {
+    // ✅ CRITICAL: Add Compose BOM platform first!
+    implementation(platform(libs.androidx.compose.bom))
+    
     // SACRED RULE #5: DEPENDENCY HIERARCHY
     implementation(project(":core-module"))
     implementation(project(":app"))
@@ -91,6 +94,8 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
+
+    androidTestImplementation(libs.androidx.test.core)
 
     // Debug implementations
     debugImplementation(libs.androidx.compose.ui.tooling)
