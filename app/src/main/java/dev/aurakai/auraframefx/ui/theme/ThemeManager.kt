@@ -46,23 +46,45 @@ class ThemeManager @Inject constructor(
      */
     fun getCurrentTheme(): ThemeConfig = currentTheme
     
+// --- imports at top of ThemeManager.kt ---
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.foundation.isSystemInDarkTheme
+import android.os.Build
+
+// ...
+
     /**
-     * Generate a ColorScheme based on current theme
+     * Generate a ColorScheme based on current theme, respecting system settings and Android 12+ dynamic color.
      */
     @Composable
     fun getColorScheme(): ColorScheme {
-        return if (currentTheme.isDarkMode) {
-            darkColorScheme(
-                primary = currentTheme.primaryColor,
-                secondary = currentTheme.secondaryColor,
-                tertiary = currentTheme.accentColor
-            )
+        // Determine dark mode based on system setting if requested, otherwise use the chosen theme.
+        val dark = if (currentTheme.useSystemTheme) {
+            isSystemInDarkTheme()
         } else {
-            lightColorScheme(
-                primary = currentTheme.primaryColor,
-                secondary = currentTheme.secondaryColor,
-                tertiary = currentTheme.accentColor
-            )
+            currentTheme.isDarkMode
+        }
+        // Enable dynamic color only on Android 12+ when following system theme.
+        val dynamic = currentTheme.useSystemTheme &&
+                      Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+
+        return when {
+            dynamic && dark  -> dynamicDarkColorScheme(context)
+            dynamic && !dark -> dynamicLightColorScheme(context)
+            dark             -> darkColorScheme(
+                                   primary   = currentTheme.primaryColor,
+                                   secondary = currentTheme.secondaryColor,
+                                   tertiary  = currentTheme.accentColor
+                                 )
+            else             -> lightColorScheme(
+                                   primary   = currentTheme.primaryColor,
+                                   secondary = currentTheme.secondaryColor,
+                                   tertiary  = currentTheme.accentColor
+                                 )
         }
     }
     
