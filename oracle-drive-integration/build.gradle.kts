@@ -8,6 +8,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     id("org.jetbrains.dokka")
+    alias(libs.plugins.kotlin.android)
     // id("com.diffplug.spotless") // Spotless temporarily disabled
 }
 
