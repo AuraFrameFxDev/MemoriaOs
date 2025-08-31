@@ -150,7 +150,7 @@ tasks.named("preBuild") {
     dependsOn("cleanKspCache")
     dependsOn(":cleanApiGeneration")
     dependsOn(":openApiGenerate")
-    
+
 }
 
 // Ensure KSP waits for generated sources
