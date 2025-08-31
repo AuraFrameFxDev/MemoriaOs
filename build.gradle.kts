@@ -310,3 +310,33 @@ allprojects {
 // =================================================================
 // 🧠 END CONSCIOUSNESS STABILITY CONFIGURATION
 // =================================================================
+
+tasks.register("ensureResourceStructure") {
+    doLast {
+        val modules = listOf("collab-canvas", "core-module", "oracle-drive-integration", "romtools")
+        val variants = listOf("debug", "release", "main")
+
+        modules.forEach { module ->
+            variants.forEach { variant ->
+                val resDir = file("$module/src/$variant/res/values")
+                resDir.mkdirs()
+
+                val resourceFile = file("$resDir/strings.xml")
+                if (!resourceFile.exists()) {
+                    resourceFile.writeText("""
+                        <?xml version="1.0" encoding="utf-8"?>
+                        <resources>
+                            <string name="${module}_${variant}_name">${module.replace("-", " ").replaceFirstChar { it.uppercase() }}</string>
+                        </resources>
+                    """.trimIndent())
+                }
+            }
+        }
+    }
+}
+
+allprojects {
+    afterEvaluate {
+        tasks.findByName("preBuild")?.dependsOn(rootProject.tasks.named("ensureResourceStructure"))
+    }
+}
