@@ -8,6 +8,12 @@ plugins {
     alias(libs.plugins.kover)
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
+}
+
 android {
     namespace = "dev.aurakai.auraframefx.core"
     compileSdk = 36
@@ -54,6 +60,7 @@ dependencies {
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+
     androidTestImplementation(libs.androidx.test.core)
 }
 

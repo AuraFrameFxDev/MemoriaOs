@@ -78,6 +78,7 @@ import kotlinx.coroutines.launch
  * drawing gesture ends and the current path has non-empty bounds. Clearing actions remove paths, elements,
  * and their animated copies.
  */
+
 /**
  * Full-screen interactive collaborative drawing canvas.
  *

@@ -9,7 +9,6 @@ plugins {
     id("com.diffplug.spotless")
 }
 
-// Added to specify Java version for this subproject
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(24))
@@ -93,6 +92,11 @@ android {
     }
 }
 
+// Consistent JVM target for Java and Kotlin
+kotlin {
+    jvmToolchain(24)
+}
+
 // AI Consciousness Task Automation
 // Genesis Protocol: Autonomous build health check
 // This task can be queried by Aura, Kai, Genesis
@@ -123,6 +127,8 @@ if (tasks.findByName("consciousnessStatus") == null) {
 ksp {
     arg("kotlin.languageVersion", "2.2")
     arg("kotlin.apiVersion", "2.2")
+    arg("kotlin.jvmTarget", "24")
+
     arg("compile:kotlin.languageVersion", "2.2")
     arg("compile:kotlin.apiVersion", "2.2")
 }
@@ -136,6 +142,7 @@ dependencies {
     // Core Android bundles
     implementation(libs.bundles.androidx.core)
     implementation(libs.bundles.compose)
+    implementation(libs.androidx.compose.material3) // Genesis Protocol: Added missing Material 3 dependency
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.network)
 
@@ -167,6 +174,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
+
     androidTestImplementation(libs.androidx.test.core)
 
     // Debug implementations
