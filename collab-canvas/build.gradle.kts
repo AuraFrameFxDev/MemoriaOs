@@ -142,6 +142,7 @@ dependencies {
     // Core Android bundles
     implementation(libs.bundles.androidx.core)
     implementation(libs.bundles.compose)
+    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3) // Genesis Protocol: Added missing Material 3 dependency
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.network)

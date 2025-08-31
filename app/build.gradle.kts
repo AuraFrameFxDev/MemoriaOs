@@ -186,6 +186,18 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.hilt.work)
+    
+    // WorkManager
+    implementation(libs.androidx.work.runtime)
+    
+    // DataStore
+    implementation(libs.androidx.datastore.preferences)
+    
+    // Moshi for JSON processing (required by NetworkModule)
+    implementation(libs.moshi)
+    implementation(libs.moshi.kotlin)
+    ksp(libs.moshi.codegen)
 
     // Coroutines & Networking
     implementation(libs.bundles.coroutines)
