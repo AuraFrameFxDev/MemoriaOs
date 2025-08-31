@@ -129,8 +129,6 @@ tasks.named("preBuild") {
     dependsOn("cleanKspCache")
     dependsOn(":cleanApiGeneration")
     dependsOn(":openApiGenerate")
-    dependsOn(":core-module:compileDebugKotlin")
-    dependsOn(":core-module:compileReleaseKotlin")
 }
 
 // Ensure KSP waits for generated sources
