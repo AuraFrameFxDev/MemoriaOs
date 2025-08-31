@@ -189,6 +189,25 @@ if (hasValidSpecFile) {
         delete(openApiOutputPath)
         delete("core-module/build/generated")
     }
+    
+    // Fix OpenAPI generator bugs with invalid default parameters
+    tasks.register("fixGeneratedApiCode") {
+        group = "openapi"
+        description = "Fix OpenAPI generator Kotlin syntax issues"
+        dependsOn("openApiGenerate")
+        
+        doLast {
+            val apiFile = file("core-module/build/generated/source/openapi/src/main/kotlin/dev/aurakai/aegenesis/api/ROMToolsApi.kt")
+            if (apiFile.exists()) {
+                var content = apiFile.readText()
+                // Fix invalid default parameter values
+                content = content.replace("= detailed)", "= \"detailed\")")
+                content = content.replace("= structure)", "= \"structure\")")
+                apiFile.writeText(content)
+                logger.lifecycle("Fixed OpenAPI generated code syntax issues")
+            }
+        }
+    }
 } else {
     logger.warn("⚠️ OpenAPI generation DISABLED - spec file missing or invalid")
     logger.warn("Expected: app/api/unified-aegenesis-api.yml")
