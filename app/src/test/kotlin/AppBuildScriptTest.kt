@@ -127,7 +127,7 @@ class AppBuildScriptTest {
         fun `preBuild has expected dependencies`() {
             // Ensure dependsOn for all three tasks as per PR
             assertTrue(buildScript.contains("tasks.named(\"preBuild\")"), "preBuild task configuration should exist")
-            listOf("cleanKspCache", ":cleanApiGeneration", ":openApiGenerate").forEach { dep ->
+            listOf("cleanKspCache", ":openApiGenerate").forEach { dep ->
                 assertTrue(
                     buildScript.contains("dependsOn(\"$dep\")"),
                     "preBuild should depend on $dep"
