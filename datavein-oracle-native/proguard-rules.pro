@@ -18,3 +18,5 @@
 # -keepclassmembers class kotlin.coroutines.jvm.internal.DebugMetadataKt {
 #     <methods>;
 # }
+-keep class dev.aurakai.auraframefx.dataveinoraclenative.** { *; }
+-keep class dev.aurakai.auraframefx.dataveinoraclenative.** { *; }

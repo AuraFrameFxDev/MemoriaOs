@@ -1,11 +1,18 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.dokka)
-    alias(libs.plugins.spotless)
-    alias(libs.plugins.kover)
+    id("com.android.library")
+    //id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.serialization")
+    id("com.google.devtools.ksp")
+    // If you use Dokka, Spotless, Kover in this module, add their IDs here too:
+    // id("org.jetbrains.dokka")
+    // id("com.diffplug.spotless")
+    // id("org.jetbrains.kotlinx.kover")
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
 }
 
 android {
@@ -15,54 +22,67 @@ android {
     defaultConfig {
         minSdk = 33
     }
-
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+        viewBinding = false
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_24
         targetCompatibility = JavaVersion.VERSION_24
     }
 
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+
+
+    packaging {
+        resources {
+        }
+
+        sourceSets {
+            getByName("main") {
+                java.srcDirs(rootProject.layout.buildDirectory.dir("core-module/generated/source/openapi/src/main/kotlin"))
+            }
         }
     }
 
-    sourceSets {
-        getByName("main") {
-            java.srcDirs("build/generated/source/openapi/src/main/kotlin")
-        }
+    dependencies {
+        // Core Kotlin libraries
+        implementation(libs.kotlin.stdlib)
+        implementation(libs.kotlin.reflect)
+        implementation(libs.bundles.coroutines)
+        implementation(libs.kotlinx.serialization.json)
+
+        // Networking (for the generated Retrofit client)
+        implementation(libs.retrofit)
+        implementation(libs.retrofit.converter.kotlinx.serialization)
+        implementation(libs.okhttp3.logging.interceptor)
+
+        // Utilities
+        implementation(libs.gson)
+
+        // Security
+
+        // Testing
+        testImplementation(libs.junit)
+        testImplementation(libs.mockk)
+
+        androidTestImplementation(libs.androidx.core.ktx)
+    }
+
+// The duplicate java { toolchain { ... } } block that was here has been removed.
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        dependsOn(":openApiGenerate")
     }
 }
 
-dependencies {
-    // Core Kotlin libraries
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.kotlin.reflect)
-    implementation(libs.bundles.coroutines)
-    implementation(libs.kotlinx.serialization.json)
 
-    // Networking (for the generated Retrofit client)
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.kotlinx.serialization)
-    implementation(libs.okhttp3.logging.interceptor)
-
-    // Utilities
-    implementation(libs.gson)
-
-    // Security
-
-    // Testing
-    testImplementation(libs.junit)
-    testImplementation(libs.mockk)
-    androidTestImplementation(libs.androidx.test.core)
-}
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(24))
-    }
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    dependsOn(":openApiGenerate")
-}

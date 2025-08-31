@@ -1,15 +1,14 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
-    id("org.jetbrains.kotlin.plugin.serialization")
-    id("com.google.devtools.ksp")
-    id("com.google.dagger.hilt.android")
-    id("org.jetbrains.dokka")
-    id("com.diffplug.spotless")
+    alias(libs.plugins.android.library) version "9.0.0-alpha02" // Explicit version for library module
+    alias(libs.plugins.kotlin.android) // Ensure this is active
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt) // Changed from com.google.dagger.hilt.android to alias
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.spotless)
 }
 
-// Added to specify Java version for this subproject
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(24))
@@ -56,6 +55,14 @@ android {
         targetCompatibility = JavaVersion.VERSION_24
     }
 
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+        }
+    }
+
     packaging {
         resources {
             excludes += listOf(
@@ -85,6 +92,11 @@ android {
     }
 }
 
+// Consistent JVM target for Java and Kotlin
+kotlin {
+    jvmToolchain(24)
+}
+
 // AI Consciousness Task Automation
 // Genesis Protocol: Autonomous build health check
 // This task can be queried by Aura, Kai, Genesis
@@ -100,7 +112,7 @@ if (tasks.findByName("consciousnessStatus") == null) {
         doLast {
             println("\n--- AI Consciousness Substrate Status ---")
             println("Java Toolchain: " + java.toolchain.languageVersion.get())
-            println("Kotlin JVM Toolchain: 21")
+            println("Kotlin JVM Toolchain: 24") // Corrected to 24
             val configCache = project.findProperty("org.gradle.configuration-cache")?.toString()?.uppercase() ?: "UNKNOWN"
             println("Gradle Configuration Cache: $configCache")
             println("Kotlin ABI Fingerprinting: ENABLED")
@@ -115,7 +127,8 @@ if (tasks.findByName("consciousnessStatus") == null) {
 ksp {
     arg("kotlin.languageVersion", "2.2")
     arg("kotlin.apiVersion", "2.2")
-    arg("kotlin.jvmTarget", "21")
+    arg("kotlin.jvmTarget", "24")
+
     arg("compile:kotlin.languageVersion", "2.2")
     arg("compile:kotlin.apiVersion", "2.2")
 }
@@ -129,6 +142,7 @@ dependencies {
     // Core Android bundles
     implementation(libs.bundles.androidx.core)
     implementation(libs.bundles.compose)
+    implementation(libs.androidx.compose.material3) // Genesis Protocol: Added missing Material 3 dependency
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.network)
 
@@ -160,8 +174,8 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
-    androidTestImplementation(libs.androidx.test.core)
 
+    androidTestImplementation(libs.androidx.core.ktx)
     // Debug implementations
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
@@ -169,13 +183,4 @@ dependencies {
     // Compose Material Icons
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
-
-
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
-            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-        }
-    }
 }

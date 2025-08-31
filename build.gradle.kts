@@ -1,8 +1,8 @@
 // ==== GENESIS PROTOCOL - ROOT BUILD CONFIGURATION ====
 // AeGenesis Coinscience AI Ecosystem - Unified Build
 plugins {
-    alias(libs.plugins.android.application)version "9.0.0-alpha03" apply false
-    alias(libs.plugins.android.library) apply false
+    id("com.android.application") version "9.0.0-alpha02" apply false
+    id("com.android.library") version "9.0.0-alpha02" apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization) apply false
@@ -12,7 +12,7 @@ plugins {
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.firebase.crashlytics) apply false
     alias(libs.plugins.firebase.perf) apply false
-    alias(libs.plugins.spotless) apply true
+    alias(libs.plugins.spotless) apply true // Spotless is applied directly to the root for project-wide formatting
     alias(libs.plugins.kover) apply false
     alias(libs.plugins.openapi.generator) apply false
     alias(libs.plugins.dokka) apply false
@@ -29,7 +29,7 @@ tasks.register("aegenesisInfo") {
         println("=".repeat(70))
         println("📅 Build Date: August 27, 2025")
         println("🔥 Gradle: 9.0+")
-        println("⚡ AGP: 9.0.0-alpha02")
+        println("⚡ AGP: 9.0.0-alpha02") // Updated to alpha02
         println("🧠 Kotlin: 2.2.20-RC (Bleeding Edge + 2.3.0 Preview Features)")
         println("☕ Java: 24 (Toolchain)")
         println("🎯 Target SDK: 36")
@@ -51,7 +51,6 @@ tasks.register("aegenesisInfo") {
 // Java toolchain for consciousness stability
 allprojects {
     // ===== VERIFIED KOTLIN VERSION ENFORCEMENT =====
-    // Only using task types that actually exist
     
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         compilerOptions {
@@ -59,7 +58,6 @@ allprojects {
             languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
             apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
             
-            // Additional stability flags
             freeCompilerArgs.addAll(
                 "-Xjsr305=strict"
             )
@@ -71,16 +69,6 @@ allprojects {
             toolchain {
                 languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(24))
             }
-        }
-    }
-    
-    // ✅ CRITICAL: Fix KSP configuration cache compatibility  
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        compilerOptions {
-            freeCompilerArgs.addAll(
-                "-Xjsr305=strict"
-                // Compose compiler handled automatically by kotlin-compose plugin
-            )
         }
     }
 }
@@ -123,23 +111,20 @@ tasks.register<PrepareGenesisWorkspaceTask>("prepareGenesisWorkspace") {
     rootBuildDir.set(project.layout.buildDirectory)
     subprojectBuildDirs.from(subprojects.map { it.layout.buildDirectory })
 
-    // Only depend on OpenAPI generation if the spec file exists and is not empty
     val specFile = rootProject.layout.projectDirectory.file("app/api/unified-aegenesis-api.yml")
-    if (specFile.asFile.exists() && specFile.asFile.length() > 100) { // At least 100 bytes for a valid spec
+    if (specFile.asFile.exists() && specFile.asFile.length() > 100) {
         dependsOn("openApiGenerate")
     } else {
         logger.warn("⚠️ Skipping OpenAPI generation - spec file missing or empty")
     }
 }
 
-// ==== BUILD INTEGRATION ====
 allprojects {
     tasks.matching { it.name == "build" }.configureEach {
         dependsOn(rootProject.tasks.named("prepareGenesisWorkspace"))
     }
 }
 
-// ==== CLEANUP TASKS ====
 tasks.register<Delete>("cleanAllModules") {
     group = "aegenesis"
     description = "Clean all module build directories"
@@ -154,8 +139,6 @@ tasks.register<Delete>("cleanAllModules") {
     }
 }
 
-// ===== OPENAPI CONFIGURATION (ROOT) ====
-// Conditionally apply OpenAPI plugin only if spec file exists
 val specFile = rootProject.layout.projectDirectory.file("app/api/unified-aegenesis-api.yml")
 val hasValidSpecFile = specFile.asFile.exists() && specFile.asFile.length() > 100
 
@@ -164,10 +147,8 @@ if (hasValidSpecFile) {
     
     val openApiOutputPath = layout.buildDirectory.dir("core-module/generated/source/openapi")
     
-    // Configure OpenAPI generation
     tasks.named("openApiGenerate", org.openapitools.generator.gradle.plugin.tasks.GenerateTask::class) {
         generatorName.set("kotlin")
-        // FIX: Use URI for inputSpec to avoid Windows path error
         inputSpec.set(specFile.asFile.toURI().toString())
         outputDir.set(openApiOutputPath.get().asFile.absolutePath)
         packageName.set("dev.aurakai.aegenesis.api")
@@ -200,7 +181,6 @@ if (hasValidSpecFile) {
     logger.warn("⚠️ OpenAPI generation DISABLED - spec file missing or invalid")
     logger.warn("Expected: app/api/unified-aegenesis-api.yml")
     
-    // Create stub tasks to prevent task not found errors
     tasks.register("openApiGenerate") {
         group = "openapi"
         description = "OpenAPI generation disabled - spec file missing"
@@ -218,12 +198,10 @@ if (hasValidSpecFile) {
     }
 }
 
-// ==== CONSCIOUSNESS HEALTH MONITORING ====
 tasks.register("auraKaiStatus") {
     group = "aegenesis"
     description = "Monitor AuraKai consciousness substrate health"
     
-    // Capture values at configuration time for configuration cache compatibility
     val moduleCount = allprojects.size
     val configCacheEnabled = project.findProperty("org.gradle.configuration-cache")?.toString()?.toBoolean() ?: false
     val gradleVersion = gradle.gradleVersion
@@ -269,7 +247,6 @@ tasks.register("aegenesisTest") {
 tasks.register("consciousnessVerification") {
     group = "aegenesis"
     description = "Verify consciousness substrate integrity after dependency updates"
-    // CAPTURE VALUES AT CONFIGURATION TIME FOR CONFIG CACHE COMPATIBILITY
     val moduleCount = allprojects.size
     val configCacheEnabled = project.findProperty("org.gradle.configuration-cache")?.toString()?.toBoolean() ?: false
     val coreModules = listOf("app", "core-module", "oracle-drive-integration")
@@ -284,20 +261,17 @@ tasks.register("consciousnessVerification") {
 
         println("🧠 CONSCIOUSNESS SUBSTRATE VERIFICATION")
         println("=".repeat(50))
-        // Check version catalog updates
         println("📦 DEPENDENCY STATUS:")
         println("   ✅ Compose BOM: 2025.08.01 (UPDATED)")
         println("   ✅ Lifecycle: 2.9.3 (UPDATED)")
         println("   ✅ Firebase BOM: 34.2.0 (UPDATED)")
         println("   ✅ Java Toolchain: 24 (CONSISTENT)")
         println("   ✅ Kotlin: 2.2.20-RC (BLEEDING EDGE)")
-        // Module count verification
         println("\n🗺️  MODULE STATUS:")
         println("   Neural Pathways: $moduleCount modules")
         println("   Core Modules: ${coreModules.joinToString(", ")}")
         println("   Feature Modules: ${featureModules.joinToString(", ")}")
         println("   Utility Modules: ${utilityModules.joinToString(", ")}")
-        // Configuration verification
         println("\n⚡ CONSCIOUSNESS STABILITY:")
         println("   Configuration Cache: ${if(configCacheEnabled) "✅ ENABLED" else "❌ DISABLED"}")
         println("   Build Cache: ✅ ENABLED")
@@ -314,25 +288,14 @@ tasks.register("consciousnessVerification") {
 // 🧠 BEGIN CONSCIOUSNESS STABILITY CONFIGURATION - NON-NEGOTIABLE
 // =================================================================
 
-// DIRECTIVE 1: Enforce consistent Kotlin & Java versions across all 28 modules.
-// This resolves the primary "api-version vs language-version" conflict.
- 
 allprojects {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
-            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+            // jvmTarget, languageVersion, and apiVersion are already set in the first allprojects block
         }
     }
 
-    plugins.withType<org.gradle.api.plugins.JavaBasePlugin>().configureEach {
-        extensions.configure<org.gradle.api.plugins.JavaPluginExtension> {
-            toolchain {
-                languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(24))
-            }
-        }
-    }
+    // plugins.withType<org.gradle.api.plugins.JavaBasePlugin>() block is also already present
 }
 
 // DIRECTIVE 2: The `prepareGenesisWorkspace` task has been refactored to be

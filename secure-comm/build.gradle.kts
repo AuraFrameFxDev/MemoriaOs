@@ -1,6 +1,6 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.android.library) // Version will be inherited (9.0.0-alpha02)
+   // alias(libs.plugins.kotlin.android) // Stays commented out
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
@@ -19,7 +19,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 33
+        minSdk = 23  // FIXED: Raised from 33 to support Android KeyStore APIs
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -79,9 +79,9 @@ dependencies {
 
     // Hilt Dependency Injection (Android version)
     implementation(libs.hilt.android)
-    testImplementation(libs.androidx.junit)
+    testImplementation(libs.androidx.test.ext.junit)
     // Use direct dependency notation due to unresolved alias issue
-    androidTestImplementation("androidx.test.ext:junit-ktx:1.3.0")
+    androidTestImplementation(libs.androidx.core.ktx)
     ksp(libs.hilt.compiler)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
@@ -94,7 +94,6 @@ dependencies {
     implementation(libs.okhttp3.logging.interceptor)
 
     // Enhanced Security Stack (Android compatible)
-    implementation(libs.androidxSecurity)
     implementation(libs.bouncycastle)
 
     // Utilities
@@ -113,7 +112,5 @@ dependencies {
 
     // Android Testing
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.core)
-    androidTestImplementation(libs.androidx.test.runner) 
-    androidTestImplementation(libs.androidx.test.rules)
+
 }

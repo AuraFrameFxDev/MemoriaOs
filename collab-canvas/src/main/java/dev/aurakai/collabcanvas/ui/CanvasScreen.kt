@@ -49,6 +49,64 @@ import kotlinx.coroutines.launch
  */
 
 /**
+ * Renders the collaborative drawing canvas screen with tools, gestures, and animated rendering.
+ *
+ * Provides a full-screen drawing surface that supports:
+ * - Freehand drawing, rectangle and oval tools selectable via floating action buttons.
+ * - Pinch-to-zoom and pan (transformable) interactions.
+ * - Tap and drag gesture handling for creating and committing drawable paths.
+ * - Animated progressive rendering of previously committed paths.
+ * - A top app bar with actions to clear the canvas and save (placeholder).
+ * - An on-screen toolbar for selecting color, stroke width, and clearing animated paths.
+ *
+ * The composable owns and remembers all canvas state (paths, elements, current in-progress path,
+ * selected tool/color/stroke, animation state, scale and offset). Committing a completed path
+ * adds a PluckablePath to the internal lists and creates an animated copy for playback.
+ */
+/**
+ * Full-screen composable providing an interactive collaborative drawing canvas.
+ *
+ * Supports freehand drawing (PATH) plus rectangle and oval tools, pinch-to-zoom and pan, tap/drag gestures
+ * to create strokes, and animated playback of committed paths. The UI includes a top app bar with clear
+ * and save actions (save is a placeholder), floating tool buttons to switch between PATH/RECTANGLE/OVAL,
+ * and an on-screen toolbar for selecting color, stroke width, and clearing animated paths.
+ *
+ * Internal state owned by this composable includes the list of committed PluckablePath objects (`paths`),
+ * a list of drawable CanvasElement objects (`elements`), the in-progress `currentPath`, current color and
+ * stroke width, the selected tool and element, animation state for progressive rendering (`animatedPaths`),
+ * and transform state for zoom (`scale`) and pan (`offset`). Committed paths are added to `paths` when a
+ * drawing gesture ends and the current path has non-empty bounds. Clearing actions remove paths, elements,
+ * and their animated copies.
+ */
+
+/**
+ * Full-screen interactive collaborative drawing canvas.
+ *
+ * Supports three tools (freehand PATH, RECTANGLE, OVAL), pinch-to-zoom and pan, tap/drag gestures to create strokes,
+ * and animated playback of committed paths. The UI includes a top app bar with clear and save actions (save is a placeholder),
+ * floating tool buttons to switch tools, and an on-screen toolbar for color, stroke width, and clearing animated paths.
+ *
+ * State managed internally includes committed paths (with separate animated copies), transient drawing state (current path,
+ * color, stroke width, selected tool), zoom/offset animations, and a list of other canvas elements. Committed paths are mirrored
+ * into an animatedPaths map for progressive rendering; clearing actions remove entries from these collections.
+=======
+ * Composable screen that provides an interactive collaborative drawing canvas.
+ *
+ * Features: freehand drawing, rectangle and oval tools, pan & pinch-zoom gestures, animated replay of
+ * completed paths, a grid background, tool FABs, a top app bar with clear/save actions, and an overlaid
+ * toolbar for color/stroke selection and clearing. The composable maintains internal mutable state for:
+ * - completed pluckable paths and a map of animated copies,
+ * - drawable elements (paths, rectangles, ovals),
+ * - the in-progress Path, current color, stroke width, selected tool, and drawing flag,
+ * - scale and pan offsets as Animatable values.
+ *
+ * Side effects:
+ * - Adds completed paths to the internal `paths` list when a drag ends (if non-empty).
+ * - Creates animated copies for new paths via a LaunchedEffect watching `paths`.
+ * - Clearing actions (top-bar delete and toolbar clear) clear `paths`, `elements` (top-bar), and `animatedPaths`.
+ *
+ * This is a UI entry point and does not take parameters or return a value.
+
  * A composable full-screen collaborative drawing canvas with multi-tool support, pan/zoom gestures, and animated replay of completed strokes.
  *
  * This function hosts the UI and state for an interactive drawing surface:
@@ -90,6 +148,23 @@ import kotlinx.coroutines.launch
  *
  * Note: This composable is UI/stateful and intended to be used directly within a Compose hierarchy;
  * it does not persist canvas contents outside its in-memory state.
+ */
+/**
+ * Full-screen collaborative drawing surface with pan/zoom, multiple tools, and animated stroke replay.
+ *
+ * Provides an in-memory canvas UI that supports freehand drawing (path), rectangles, and ovals;
+ * pan/zoom gestures; a translucent grid background; tool selection FABs; and a toolbar for color,
+ * stroke width, and clearing the canvas. In-progress strokes are rendered while drawing and completed
+ * strokes are stored in `paths` (with per-stroke animation metadata kept in `animatedPaths`) for
+ * replay/animation. Global transforms (scale and offset) are applied to all drawing operations so
+ * content remains consistent under zoom and pan.
+ *
+ * Side effects:
+ * - Mutates internal Compose state (in-memory lists `paths`, `elements`, and `animatedPaths`,
+ *   plus transient state like `currentPath`, `currentColor`, `strokeWidth`, `selectedTool`,
+ *   `isDrawing`, `scale`, and `offset`).
+ * - Clearing the canvas or the Delete action removes only in-memory state; there is no persistence.
+ * - The Save action is present in the UI but is a placeholder (no save implementation).
  */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable

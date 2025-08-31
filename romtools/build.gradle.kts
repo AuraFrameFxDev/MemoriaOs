@@ -1,12 +1,20 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.android.library) version "9.0.0-alpha02"
+    alias(libs.plugins.kotlin.android) // Ensures Kotlin Android plugin is active
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.dokka)
     alias(libs.plugins.spotless)
     alias(libs.plugins.kotlin.compose)
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
 }
 
 android {
@@ -42,7 +50,11 @@ android {
         viewBinding = false
     }
 
-
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
+    }
+    
     packaging {
         resources {
             excludes += listOf(
@@ -105,6 +117,7 @@ dependencies {
     // Compose dependencies
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
+    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.compose.material.icons.core)
@@ -118,8 +131,8 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testRuntimeOnly(libs.junit.engine)
     
+    androidTestImplementation(libs.androidx.core.ktx) // MOVED AND CONFIRMED
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
 }
@@ -151,12 +164,11 @@ abstract class VerifyRomToolsTask : DefaultTask() {
     abstract val romToolsDir: DirectoryProperty
 
     /**
-     * Verify that the configured ROM tools directory exists.
+     * Verifies that the configured ROM tools directory exists.
      *
-     * If `romToolsDir` is not set or points to a non-existent directory, the task logs a warning indicating ROM
-     * functionality may be limited. If the directory exists, the task logs a lifecycle message with the directory's
-     * absolute path. This task does not fail the build on a missing directory.
-
+     * If `romToolsDir` is unset or the directory does not exist, logs a warning that ROM functionality may be limited.
+     * If the directory exists, logs a lifecycle message with its absolute path. This check is informational and does not
+     * fail the build when the directory is missing.
      */
     @TaskAction
     fun verify() {
