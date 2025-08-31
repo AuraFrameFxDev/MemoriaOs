@@ -120,7 +120,7 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVers
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomVersion" }
 
 # ===== Google - Material, Hilt, Firebase, Play Services =====
-firebase-perf = { group = "com.google.firebase", name = "firebase-perf", version.ref = "firebasePerfPlugin" }
+ firebase-perf = { group = "com.google.firebase", name = "firebase-perf" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx", version = "22.5.0" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
