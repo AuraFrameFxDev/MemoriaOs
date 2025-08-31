@@ -66,8 +66,7 @@ dependencies {
     
     // Apache Oltu OAuth (required by generated OAuth classes)
     implementation(libs.apache.oltu.oauth2.client)
-    // Exclude common classes that are already included in client
-    // implementation(libs.apache.oltu.oauth2.common)
+    implementation(libs.apache.oltu.oauth2.common)
 
     // Utilities
     implementation(libs.gson)
@@ -81,15 +80,8 @@ dependencies {
     androidTestImplementation(libs.androidx.core.ktx)
 }
 
-// This ensures that Kotlin compilation and KSP tasks run after the openApiGenerate task.
+// This ensures that Kotlin compilation tasks run after the openApiGenerate task.
 // It's good practice, although registering the source set might already establish this dependency.
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     dependsOn(":openApiGenerate")
-    dependsOn(":fixGeneratedApiCode")
-}
-
-// Ensure KSP also waits for API generation
-tasks.withType<com.google.devtools.ksp.gradle.KspTask>().configureEach {
-    dependsOn(":openApiGenerate")
-    dependsOn(":fixGeneratedApiCode")
 }

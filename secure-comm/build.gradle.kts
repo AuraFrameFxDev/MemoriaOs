@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.android.library) // Version will be inherited (9.0.0-alpha01)
+    alias(libs.plugins.android.library) // Version will be inherited (9.0.0-alpha02)
    // alias(libs.plugins.kotlin.android) // Stays commented out
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
