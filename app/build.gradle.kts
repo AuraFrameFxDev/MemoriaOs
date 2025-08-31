@@ -1,14 +1,15 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)      // Now active and aliased
+    alias(libs.plugins.android.application) version "9.0.0-alpha02"
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.firebase.perf) 
 }
 
 android {
@@ -107,6 +108,26 @@ kotlin {
     jvmToolchain(24)
 }
 
+// Explicit Java toolchain for AGP compatibility
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
+}
+
+
+// ===== ENSURE API GENERATION BEFORE COMPILATION =====
+// This ensures that all compilation and processing tasks wait for OpenAPI generation
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    dependsOn(":openApiGenerate")
+    dependsOn(":fixGeneratedApiCode")
+}
+
+// Critical: Ensure KSP waits for API generation since it needs the generated types
+tasks.withType<com.google.devtools.ksp.gradle.KspTask>().configureEach {
+    dependsOn(":openApiGenerate")
+    dependsOn(":fixGeneratedApiCode")
+}
 
 // ===== SIMPLIFIED CLEAN TASKS =====
 tasks.register<Delete>("cleanKspCache") {
@@ -129,6 +150,7 @@ tasks.named("preBuild") {
     dependsOn("cleanKspCache")
     dependsOn(":cleanApiGeneration")
     dependsOn(":openApiGenerate")
+
 }
 
 // Ensure KSP waits for generated sources
