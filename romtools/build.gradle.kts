@@ -158,7 +158,10 @@ tasks.register<Copy>("copyRomTools") {
     }
 }
 
+import org.gradle.api.tasks.InputDirectory
+
 abstract class VerifyRomToolsTask : DefaultTask() {
+    @get:InputDirectory
     @get:Optional
     abstract val romToolsDir: DirectoryProperty
 
