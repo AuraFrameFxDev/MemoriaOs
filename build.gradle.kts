@@ -326,12 +326,13 @@ tasks.register("ensureResourceStructure") {
                     resourceFile.writeText("""
                         <?xml version="1.0" encoding="utf-8"?>
                         <resources>
-                            <string name="${module}_${variant}_name">${module.replace("-", " ").replaceFirstChar { it.uppercase() }}</string>
+                            <string name="${module.replace("-", "_")}_${variant}_name">${module.replace("-", " ").replaceFirstChar { it.uppercase() }}</string>
                         </resources>
                     """.trimIndent())
                 }
             }
         }
+        file("romtools/build/rom-tools").mkdirs()
     }
 }
 
