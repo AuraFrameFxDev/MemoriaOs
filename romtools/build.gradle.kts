@@ -159,7 +159,6 @@ tasks.register<Copy>("copyRomTools") {
 }
 
 abstract class VerifyRomToolsTask : DefaultTask() {
-    @get:InputDirectory
     @get:Optional
     abstract val romToolsDir: DirectoryProperty
 
@@ -185,7 +184,6 @@ tasks.register<VerifyRomToolsTask>("verifyRomTools") {
     romToolsDir.set(romToolsOutputDirectory) // Set to the same shared property
     // Gradle should infer the dependency on copyRomTools because romToolsOutputDirectory
     // is an output of copyRomTools (via 'into') and an input here.
-    dependsOn("copyRomTools")
 }
 
 tasks.named("build") {
