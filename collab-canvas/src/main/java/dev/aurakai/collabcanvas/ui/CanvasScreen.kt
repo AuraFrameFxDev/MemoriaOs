@@ -80,6 +80,33 @@ import kotlinx.coroutines.launch
  * - Drag gestures build the current path (when PATH tool is selected) and finalize it on drag end.
  * - Transform gestures (pinch/drag) update zoom (scale) and pan (offset).
  */
+/**
+ * Full-screen interactive collaborative drawing canvas.
+ *
+ * Provides freehand (Path), Rectangle, and Oval drawing tools with pinch-to-zoom, panning,
+ * tap/drag input, an on-screen tool palette, and animated playback support for committed strokes.
+ *
+ * Detailed behavior:
+ * - Local UI state: committed paths and shape elements, an in-progress Path, current color and stroke width,
+ *   selected tool/element, and a drawing flag.
+ * - Transform state: separate Animatable values for global scale and pan offset used for pinch-to-zoom and pan.
+ * - Gesture handling:
+ *   - Single-tap initializes a point in the current path.
+ *   - Drag gestures (when the PATH tool is selected) build a freehand Path and commit it to `paths` on drag end.
+ *   - A transformable gesture updates global scale and offset for zooming/panning.
+ * - Rendering:
+ *   - Draws a background grid, all committed elements (paths, rectangles, ovals), the in-progress stroke preview,
+ *     and animated copies of committed paths.
+ * - Side effects:
+ *   - Committed strokes are added to `paths` and a copy is kept in `animatedPaths` for playback.
+ *   - The Clear actions (top app bar and toolbar) remove entries from `paths`, `elements`, and `animatedPaths`.
+ * - UI chrome:
+ *   - Top app bar with Clear (clears canvas) and Save (placeholder) actions.
+ *   - Floating action buttons toggle between PATH, RECTANGLE, and OVAL tools.
+ *   - A toolbar for color selection, stroke-width selection, and a clear action.
+ *
+ * This composable manages its own state and side effects; it does not expose parameters.
+ */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CanvasScreen() {
