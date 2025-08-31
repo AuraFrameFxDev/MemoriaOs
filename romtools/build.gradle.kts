@@ -168,11 +168,10 @@ abstract class VerifyRomToolsTask : DefaultTask() {
     abstract val romToolsPath: Property<String>
 
     /**
-     * Verifies that the configured ROM tools directory exists.
+     * Verifies that the configured ROM tools directory (`romToolsPath`) exists and logs the result.
      *
-     * If `romToolsDir` is unset or the directory does not exist, logs a warning that ROM functionality may be limited.
-     * If the directory exists, logs a lifecycle message with its absolute path. This check is informational and does not
-     * fail the build when the directory is missing.
+     * If `romToolsPath` is unset or points to a non-existent directory, a warning is logged and the task does not fail the build.
+     * If the directory exists, a lifecycle message is logged with its absolute path.
      */
     @TaskAction
     fun verify() {
