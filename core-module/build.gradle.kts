@@ -45,37 +45,37 @@ android {
 
     sourceSets {
         getByName("main") {
-            kotlin.srcDirs(file("build/generated/source/openapi/src/main/kotlin"))
+            kotlin.srcDirs(file("build/generated/source/openapi/src/main/kotlin")) // Corrected to function call
+        }
+    }
+}
 
-            dependencies {
-                // Core Kotlin libraries
-                implementation(libs.kotlin.stdlib)
-                implementation(libs.kotlin.reflect)
-                implementation(libs.bundles.coroutines)
-                implementation(libs.kotlinx.serialization.json)
+dependencies {
+    // Core Kotlin libraries
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlin.reflect)
+    implementation(libs.bundles.coroutines)
+    implementation(libs.kotlinx.serialization.json)
 
-                // Networking (for the generated Retrofit client)
-                implementation(libs.retrofit)
-                implementation(libs.retrofit.converter.kotlinx.serialization)
-                implementation(libs.okhttp3.logging.interceptor)
+    // Networking (for the generated Retrofit client)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.kotlinx.serialization)
+    implementation(libs.okhttp3.logging.interceptor)
 
-                // Utilities
-                implementation(libs.gson)
+    // Utilities
+    implementation(libs.gson)
 
-                // Security
+    // Security
 
-                // Testing
-                testImplementation(libs.junit)
-                testImplementation(libs.mockk)
+    // Testing
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
 
-                androidTestImplementation(libs.androidx.core.ktx)
-            }
+    androidTestImplementation(libs.androidx.core.ktx)
+}
 
 // This ensures that Kotlin compilation tasks run after the openApiGenerate task.
 // It's good practice, although registering the source set might already establish this dependency.
-            tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-                dependsOn(":openApiGenerate")
-            }
-        }
-    }
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    dependsOn(":openApiGenerate")
 }
