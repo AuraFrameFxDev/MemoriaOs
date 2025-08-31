@@ -43,6 +43,13 @@ import androidx.compose.ui.unit.sp
  *
  * Displays a title, subtitle, a system status line, three status chips, multiline status details, a placeholder action button, and a build note. All content and values are hard-coded; the button's onClick is a no-op. Intended as a lightweight fallback/test UI for Compose setup.
  */
+/**
+ * A centered, card-based Compose screen presenting a static, mocked "DataVein" status dashboard.
+ *
+ * Intended as a simple fallback/debug UI: it renders hard-coded labels, status chips and details
+ * (including emojis) inside a semi-transparent card. The action button's `onClick` is a placeholder
+ * (no navigation/behavior implemented).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimpleDataVeinScreen(
