@@ -63,7 +63,9 @@ class OracleDriveRepositoryImpl @Inject constructor(
         try {
             val response = oracleCloudApi.downloadFile(bucketName = bucketName, objectName = objectName)
             if (response.isSuccessful && response.body() != null) {
-                val file = File(destinationPath, objectName) // Ensure destinationPath is a directory
+                // Normalize objectName to its basename to prevent path traversal
+                val safeName = File(objectName).name // strips any path components
+                val file = File(destinationPath, safeName) // Ensure destinationPath is a directory
                 file.parentFile?.mkdirs() // Create parent directories if they don't exist
                 response.body()!!.byteStream().use { inputStream ->
                     FileOutputStream(file).use { outputStream ->
