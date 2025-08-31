@@ -1,12 +1,9 @@
 plugins {
-    id("com.android.library")
-    //id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.serialization")
-    id("com.google.devtools.ksp")
-    // If you use Dokka, Spotless, Kover in this module, add their IDs here too:
-    // id("org.jetbrains.dokka")
-    // id("com.diffplug.spotless")
-    // id("org.jetbrains.kotlinx.kover")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.compose)
 }
 
 java {
@@ -41,48 +38,44 @@ android {
         targetCompatibility = JavaVersion.VERSION_24
     }
 
-
-
     packaging {
-        resources {
+        resources { // This packaging block can be removed if there are no specific packaging resource rules
         }
+    }
 
-        sourceSets {
-            getByName("main") {
-                java.srcDirs(rootProject.layout.buildDirectory.dir("core-module/generated/source/openapi/src/main/kotlin"))
+    sourceSets {
+        getByName("main") {
+            kotlin.srcDirs(file("build/generated/source/openapi/src/main/kotlin"))
+
+            dependencies {
+                // Core Kotlin libraries
+                implementation(libs.kotlin.stdlib)
+                implementation(libs.kotlin.reflect)
+                implementation(libs.bundles.coroutines)
+                implementation(libs.kotlinx.serialization.json)
+
+                // Networking (for the generated Retrofit client)
+                implementation(libs.retrofit)
+                implementation(libs.retrofit.converter.kotlinx.serialization)
+                implementation(libs.okhttp3.logging.interceptor)
+
+                // Utilities
+                implementation(libs.gson)
+
+                // Security
+
+                // Testing
+                testImplementation(libs.junit)
+                testImplementation(libs.mockk)
+
+                androidTestImplementation(libs.androidx.core.ktx)
+            }
+
+// This ensures that Kotlin compilation tasks run after the openApiGenerate task.
+// It's good practice, although registering the source set might already establish this dependency.
+            tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+                dependsOn(":openApiGenerate")
             }
         }
     }
-
-    dependencies {
-        // Core Kotlin libraries
-        implementation(libs.kotlin.stdlib)
-        implementation(libs.kotlin.reflect)
-        implementation(libs.bundles.coroutines)
-        implementation(libs.kotlinx.serialization.json)
-
-        // Networking (for the generated Retrofit client)
-        implementation(libs.retrofit)
-        implementation(libs.retrofit.converter.kotlinx.serialization)
-        implementation(libs.okhttp3.logging.interceptor)
-
-        // Utilities
-        implementation(libs.gson)
-
-        // Security
-
-        // Testing
-        testImplementation(libs.junit)
-        testImplementation(libs.mockk)
-
-        androidTestImplementation(libs.androidx.core.ktx)
-    }
-
-// The duplicate java { toolchain { ... } } block that was here has been removed.
-
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        dependsOn(":openApiGenerate")
-    }
 }
-
-
