@@ -225,36 +225,18 @@ class GradleVersionCatalogTest {
         }
         }
 
-        @Test
-        fun libraryEntriesHaveEitherVersionOrVersionRef() {
-            for ((path, text) in catalogTextByPath) {
-                // naive scan inside [libraries] subtables; entries typically like:
-                // lib = { module = "g:a", version = "1.2.3" } or version.ref = "x"
-                val inLibraries = StringBuilder()
-                var inLib = false
-                for (line in text.lines()) {
-                    val t = line.trim()
-                    if (t.startsWith("[") && t.endsWith("]")) {
-                        inLib = t == "[libraries]" || t.startsWith("[libraries.")
-                        continue
-                    }
-                    if (inLib) inLibraries.appendLine(line)
-                }
-                val content = inLibraries.toString()
-                if (content.isBlank()) continue
+        for (e in entries) {
+            val usesComposeBom = Regex("""(?m)^\s*androidx-compose-bom\s*=""").containsMatchIn(text)
+            val usesFirebaseBom = Regex("""(?m)^\s*firebase-bom\s*=""").containsMatchIn(text)
+            val isCompose = Regex("""\bgroup\s*=\s*["']androidx\.compose\.[^"']*["']""").containsMatchIn(e)
+            val isFirebase = Regex("""\bgroup\s*=\s*["']com\.google\.firebase["']""").containsMatchIn(e)
+            val isBomManaged = (usesComposeBom && isCompose) || (usesFirebaseBom && isFirebase)
 
-                val entryRegex = Regex("""^\s*([A-Za-z0-9._-]+)\s*=\s*\{[^}]*}""")
-                val versionRegex = Regex("""\bversion\s*=\s*["'][^"']+["']""")
-                val versionRefRegex = Regex("""\bversion\.ref\s*=\s*["'][^"']+["']""")
-
-                val entries = content.lines().mapNotNull { entryRegex.find(it)?.value }
-                if (entries.isEmpty()) continue
-
-                for (e in entries) {
-                    assertTrue(versionRegex.containsMatchIn(e) || versionRefRegex.containsMatchIn(e),
-                        "Library entry missing version or version.ref: $e in $path")
-                }
-            }
+            assertTrue(
+                versionRegex.containsMatchIn(e) || versionRefRegex.containsMatchIn(e) || isBomManaged,
+                "Library entry missing version or version.ref (and not covered by a BOM): $e in $path"
+            )
+        }
         }
     }
 
