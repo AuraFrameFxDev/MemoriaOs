@@ -149,11 +149,11 @@ yuki = { module = "com.highcapable.yukihookapi:api", version.ref = "yuki" }
 yuki-ksp-xposed = { module = "com.highcapable.yukihookapi:ksp-xposed", version.ref = "yuki" }
 
 # ===== Security & Crypto =====
-androidxSecurity = { group = "androidx.security", name = "security-crypto", version.ref = "androidxSecurity" }
-bcprov-jdk18on-v177 = { module = "org.bouncycastle:bcprov-jdk24on", version.ref = "bcprovJdk18on" }
-bouncycastle = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
-conscrypt-android = { group = "org.conscrypt", name = "conscrypt-android", version = "2.5.3" }
-tink = { group = "com.google.crypto.tink", name = "tink-android", version.ref = "tink" }
+androidxSecurity      = { group = "androidx.security", name = "security-crypto", version.ref = "androidxSecurity" }
+bcprov-jdk18on-v177   = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bcprovJdk18on" }
+bouncycastle          = { group = "org.bouncycastle",    name = "bcprov-jdk18on",   version.ref = "bouncycastle" }
+conscrypt-android     = { group = "org.conscrypt",      name = "conscrypt-android", version = "2.5.3" }
+tink                  = { group = "com.google.crypto.tink", name = "tink-android",   version.ref = "tink" }
 
 # ===== Code Quality, Debugging & Build Logic =====
 aura-backend-api-generator = { module = "dev.aurakai.aura:aura-backend-api-generator", version.ref = "auraBackendApiGenerator" }
