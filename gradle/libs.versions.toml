@@ -26,6 +26,7 @@ workManager = "2.10.3"
 # ===== Google =====
 firebaseBom = "34.2.0"
 firebaseCrashlytics = "3.0.6"
+firebasePerfPlugin = "1.4.2"
 firebaseCrashlyticsKtx = "19.4.4"
 googleAuth = "21.4.0"
 googleAuthApiPhone = "18.2.0"
@@ -79,6 +80,7 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
+firebase-perf = { id = "com.google.firebase.firebase-perf", version.ref = "firebasePerfPlugin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
