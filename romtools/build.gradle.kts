@@ -1,16 +1,14 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.TaskAction
 
 plugins {
-    alias(libs.plugins.android.library) version "9.0.0-alpha01"
-    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.android.library) version "9.0.0-alpha02"
+    alias(libs.plugins.kotlin.android) // Ensures Kotlin Android plugin is active
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.dokka)
     alias(libs.plugins.spotless)
+    alias(libs.plugins.kotlin.compose)
 }
 
 java {
@@ -82,15 +80,6 @@ android {
     }
 }
 
-// Kotlin compiler options for Compose
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    compilerOptions {
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
-        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-    }
-}
-
 dependencies {
     // SACRED RULE #5: DEPENDENCY HIERARCHY
     implementation(project(":core-module"))
@@ -142,7 +131,7 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testRuntimeOnly(libs.junit.engine)
     
-    androidTestImplementation(libs.androidx.core.ktx)
+    androidTestImplementation(libs.androidx.core.ktx) // MOVED AND CONFIRMED
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
@@ -154,12 +143,13 @@ val romToolsOutputDirectory: DirectoryProperty = project.objects.directoryProper
 // ROM Tools specific tasks
 tasks.register<Copy>("copyRomTools") {
     from("src/main/resources")
-    into(romToolsOutputDirectory)
+    into(romToolsOutputDirectory) // Use the shared property with into()
     include("**/*.so", "**/*.bin", "**/*.img", "**/*.jar")
     includeEmptyDirs = false
     
     doFirst {
         val dirFile = romToolsOutputDirectory.get().asFile
+        // The Copy task's into() will handle directory creation
         logger.lifecycle("📁 ROM tools directory: ${dirFile.absolutePath}")
     }
     
@@ -168,10 +158,14 @@ tasks.register<Copy>("copyRomTools") {
     }
 }
 
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import java.io.File
+
 abstract class VerifyRomToolsTask : DefaultTask() {
-    @get:InputDirectory
+    @get:Input
     @get:Optional
-    abstract val romToolsDir: DirectoryProperty
+    abstract val romToolsPath: Property<String>
 
     /**
      * Verifies that the configured ROM tools directory exists.
@@ -182,9 +176,14 @@ abstract class VerifyRomToolsTask : DefaultTask() {
      */
     @TaskAction
     fun verify() {
-        val dir = romToolsDir.orNull?.asFile
-        if (dir?.exists() != true) {
-            logger.warn("⚠️  ROM tools directory not found - ROM functionality may be limited")
+        val path = romToolsPath.orNull
+        if (path == null) {
+            logger.warn("⚠️  ROM tools directory not configured - ROM functionality may be limited")
+            return
+        }
+        val dir = File(path)
+        if (!dir.exists()) {
+            logger.warn("⚠️  ROM tools directory not found at: $path")
         } else {
             logger.lifecycle("✅ ROM tools verified and ready: ${dir.absolutePath}")
         }
@@ -192,7 +191,10 @@ abstract class VerifyRomToolsTask : DefaultTask() {
 }
 
 tasks.register<VerifyRomToolsTask>("verifyRomTools") {
-    romToolsDir.set(romToolsOutputDirectory)
+    romToolsPath.set(romToolsOutputDirectory.map { it.asFile.absolutePath })
+    // Explicit dependency to ensure copy runs first, although property mapping should handle this.
+    // This is safer if the copy task is ever skipped.
+    dependsOn(tasks.named("copyRomTools"))
 }
 
 tasks.named("build") {

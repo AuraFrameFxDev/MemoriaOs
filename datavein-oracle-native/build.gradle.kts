@@ -1,9 +1,8 @@
 plugins {
-    id("com.android.library")
-    //id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
-    id("org.jetbrains.kotlin.plugin.serialization")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.android.library) version "9.0.0-alpha01" // Explicit version for library module
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.10"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.10"
+    id("com.google.ksp") version "2.2.20-2.2.0-RC"
     id("com.google.dagger.hilt.android")
     id("org.jetbrains.dokka")
     id("com.diffplug.spotless")
