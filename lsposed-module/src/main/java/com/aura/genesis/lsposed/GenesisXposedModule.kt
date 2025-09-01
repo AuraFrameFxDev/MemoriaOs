@@ -15,7 +15,10 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 class GenesisXposedModule : IYukiHookXposedInit {
 
     /**
-     * Called when the module is loaded by LSPosed framework
+     * Entrypoint invoked by LSPosed when the module is loaded; configures YukiHookAPI and registers hooks.
+     *
+     * Loads module preferences (key "genesis_module"), sets YukiHookAPI configuration (debug log tag "GenesisModule"
+     * and `isDebug` from BuildConfig), then installs the module's hooks via `loadHooks(GenesisHooks)`.
      */
     override fun onHook() = YukiHookAPI.encase {
         // Load module preferences
@@ -44,7 +47,15 @@ class GenesisXposedModule : IYukiHookXposedInit {
     }
 
     /**
-     * Called when the system server is started
+     * Invoked during Zygote/system-server startup. Called once when the process is being initialized
+     * at the framework/zygote level and can be used to perform early (Zygote-phase) initialization.
+     *
+     * This implementation is a no-op placeholder; keep or override to run module code that must
+     * execute before app processes are forked.
+     *
+     * @param startupParam Opaque platform-specific startup parameter provided by the host (may be
+     *                     null). Its exact content depends on the runtime (LSPosed/Xposed) and is
+     *                     not interpreted by this method.
      */
     @Suppress("unused")
     fun initZygote(startupParam: Any?) {

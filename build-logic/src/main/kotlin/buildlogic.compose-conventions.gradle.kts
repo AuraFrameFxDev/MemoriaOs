@@ -14,6 +14,18 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class BuildLogicComposeConventionPlugin : Plugin<Project> {
+    /**
+     * Applies a standardized Jetpack Compose convention to an Android library project.
+     *
+     * Configures the target Project by applying Android Library, Kotlin Android and Kotlin
+     * Serialization plugins; enabling Compose and setting the Compose compiler extension;
+     * applying packaging exclusions; setting Java source/target compatibility to Java 17;
+     * opting-in Kotlin source sets to common Compose experimental APIs; adding a Compose BOM
+     * and common Compose, Lifecycle, Navigation and Hilt navigation dependencies; and
+     * configuring Kotlin compilation to target JVM 17 with Compose-specific compiler arguments.
+     *
+     * The plugin reads dependency versions and libraries from the version catalog named "libs".
+     */
     override fun apply(target: Project) {
         with(target) {
             // Apply required plugins

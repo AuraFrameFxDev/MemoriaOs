@@ -7,10 +7,26 @@ import org.example.list.LinkedList
 
 class StringUtils {
     companion object {
+        /**
+         * Concatenates the elements of the given linked list into a single string.
+         *
+         * Delegates to [JoinUtils.join] to perform the actual joining.
+         *
+         * @param source The linked list whose elements will be joined into a string.
+         * @return The concatenated string produced by joining the list's elements.
+         */
         fun join(source: LinkedList): String {
             return JoinUtils.join(source)
         }
 
+        /**
+         * Splits the given string into a LinkedList of substrings.
+         *
+         * The exact splitting behavior (delimiter and trimming) is provided by SplitUtils.split.
+         *
+         * @param source The input string to split.
+         * @return A LinkedList containing the resulting substrings in order.
+         */
         fun split(source: String): LinkedList {
             return SplitUtils.split(source)
         }

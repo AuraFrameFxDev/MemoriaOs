@@ -7,6 +7,15 @@ import org.example.list.LinkedList
 
 class SplitUtils {
     companion object {
+        /**
+         * Splits the input string on space characters and returns a LinkedList of non-empty tokens.
+         *
+         * Consecutive, leading, or trailing spaces do not produce empty tokens; only substrings between spaces
+         * that are not empty are added to the returned LinkedList.
+         *
+         * @param source The string to split.
+         * @return A LinkedList containing the non-empty tokens in order.
+         */
         fun split(source: String): LinkedList {
             var lastFind = 0
             val result = LinkedList()
@@ -29,12 +38,25 @@ class SplitUtils {
             return result
         }
 
+        /**
+         * Adds the given token to the list if it is valid.
+         *
+         * A token is considered valid when `isTokenValid(token)` returns true (non-empty).
+         *
+         * @param token The token to conditionally add.
+         * @param list The target LinkedList to receive the token.
+         */
         private fun addIfValid(token: String, list: LinkedList) {
             if (isTokenValid(token)) {
                 list.add(token)
             }
         }
 
+        /**
+         * Returns true when the token contains one or more characters (i.e., is not empty).
+         *
+         * @return true if `token` is not empty; false otherwise.
+         */
         private fun isTokenValid(token: String): Boolean {
             return token.isNotEmpty()
         }
