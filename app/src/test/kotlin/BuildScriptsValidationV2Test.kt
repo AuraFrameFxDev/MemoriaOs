@@ -121,8 +121,13 @@ class BuildScriptsValidationV2Test {
         assertTrue("Compose build feature must be enabled", hasComposeBuildFeatures)
 
         // composeOptions { kotlinCompilerExtensionVersion = ... }
-        val hasComposeCompilerVersion = content.contains(Regex("""composeOptions\s*\{\s*[^}]*kotlinCompilerExtensionVersion\s*=""", RegexOption.DOT_MATCHES_ALL))
-        assertTrue("Compose compiler extension version should be configured", hasComposeCompilerVersion)
+        val hasComposeCompilerConfig =
+            content.contains(Regex("""composeOptions\s*\{\s*[^}]*kotlinCompilerExtensionVersion\s*=""", RegexOption.DOT_MATCHES_ALL)) ||
+            content.contains(Regex("""composeCompiler\s*\{"""))
+        assertTrue(
+            "Compose compiler should be configured via composeOptions or composeCompiler",
+            hasComposeCompilerConfig
+        )
     }
 
     @Test
