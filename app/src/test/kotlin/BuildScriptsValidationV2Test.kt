@@ -239,8 +239,8 @@ class BuildScriptsValidationV2Test {
         val content = buildFile.readText()
 
         // Alias usage forbidden in app/plugins for core ones (already partly tested, keep defense-in-depth)
-        assertFalse(content.contains("alias(libs.plugins.androidApplication)"))
-        assertFalse(content.contains("alias(libs.plugins.kotlinAndroid)"))
+        assertFalse(content.contains("alias(libs.plugins.android.application)"))
+        assertFalse(content.contains("alias(libs.plugins.kotlin.android)"))
         assertFalse(content.contains("alias(libs.plugins.ksp)"))
 
         // Avoid hardcoding plugin versions in the app module (they should come from settings pluginManagement or convention plugin)
