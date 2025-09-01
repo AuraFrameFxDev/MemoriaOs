@@ -45,19 +45,18 @@ class GradleVersionCatalogTest {
             )
             found += typical.filter { Files.exists(it) }
 
-            // Fallback: scan for any libs.versions.toml
-            if (found.isEmpty()) {
-                Files.walk(repoRoot).use { stream ->
-                    stream.filter { it.fileName?.toString() == "libs.versions.toml" }
-                        .forEach { found += it }
-                }
+            // Also discover any additional catalogs across the repo
+            Files.walk(repoRoot).use { stream ->
+                stream.filter {
+                    val n = it.fileName?.toString() ?: ""
+                    n == "libs.versions.toml" || n.startsWith("libs.versions.toml")
+                }.forEach { p -> if (p !in found) found += p }
             }
 
             catalogPaths = found.distinct()
             catalogTextByPath = catalogPaths.associateWith {
                 Files.readString(it, StandardCharsets.UTF_8)
             }
-        }
 
         @AfterAll
         @JvmStatic
