@@ -14,14 +14,14 @@ plugins {
 }
 
 // Advanced OpenAPI Configuration
-val hasValidSpecFile = file("api-spec.yaml").exists() || file("openapi.yaml").exists()
+val hasValidSpecFile = file("app/api/unified-aegenesis-api.yml").exists()
 
 if (hasValidSpecFile) {
     apply(plugin = "org.openapi.generator")
     
     configure<org.openapitools.generator.gradle.plugin.extensions.OpenApiGeneratorGenerateExtension> {
         generatorName.set("kotlin")
-        inputSpec.set("$rootDir/api-spec.yaml")
+        inputSpec.set("$rootDir/app/api/unified-aegenesis-api.yml")
         outputDir.set("$rootDir/core-module/build/generated/source/openapi")
         apiPackage.set("dev.aurakai.auraframefx.api")
         modelPackage.set("dev.aurakai.auraframefx.model")
