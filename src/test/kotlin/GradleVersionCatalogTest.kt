@@ -118,9 +118,14 @@ class GradleVersionCatalogTest {
                 val trimmed = line.trim()
                 if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
                     inSection = trimmed == "[$sectionHeader]" || trimmed.startsWith("[$sectionHeader.")
-                    if (trimmed != "[$sectionHeader]" && trimmed.startsWith("[$sectionHeader.")) {
-                        // treat subtables as not part of plain [versions]; break if you prefer stricter behavior
-                        inSection = trimmed == "[$sectionHeader]"
+                    if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+                        if (trimmed == "[$sectionHeader]") {
+                            inSection = true
+                        } else if (trimmed.startsWith("[") && !trimmed.startsWith("[$sectionHeader.")) {
+                            inSection = false
+                        }
+                        // Keep inSection true for subtables like [versions.something]
+                        continue
                     }
                     continue
                 }
