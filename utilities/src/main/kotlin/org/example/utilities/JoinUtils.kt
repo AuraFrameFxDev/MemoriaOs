@@ -7,6 +7,14 @@ import org.example.list.LinkedList
 
 class JoinUtils {
     companion object {
+        /**
+         * Joins the elements of the provided LinkedList into a single string separated by single spaces.
+         *
+         * Each element's string representation (via `toString()`) is appended in order. An empty list yields an empty string.
+         *
+         * @param source LinkedList whose elements will be concatenated.
+         * @return A space-delimited string of the list's elements.
+         */
         fun join(source: LinkedList): String {
             val result = StringBuilder()
             for (i in 0 until source.size()) {
