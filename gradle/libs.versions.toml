@@ -257,7 +257,7 @@ leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-and
 
 # ===== FIREBASE =====
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx", version = "22.5.0" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" } # version via BOM
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebaseCrashlyticsKtx" }
 
 # ===== GOOGLE PLAY SERVICES =====
