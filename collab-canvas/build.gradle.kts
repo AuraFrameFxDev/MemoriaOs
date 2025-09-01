@@ -1,6 +1,6 @@
 
 plugins {
-    alias(libs.plugins.android.library) version "9.0.0-alpha01" // Explicit version for library module
+    alias(libs.plugins.android.library) // Explicit version for library module
     alias(libs.plugins.kotlin.android) // Ensure this is active
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
