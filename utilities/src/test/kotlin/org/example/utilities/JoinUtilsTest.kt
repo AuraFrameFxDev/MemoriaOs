@@ -1,154 +1,109 @@
 package org.example.utilities
 
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
+import org.example.list.LinkedList
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.assertAll
+import org.junit.jupiter.api.Test
 
 /**
- * Testing library/framework: JUnit Jupiter (JUnit 5).
+ * Tests for JoinUtils.join which concatenates LinkedList elements separated by a single space.
  *
- * This test suite verifies JoinUtils.join behavior across:
- * - empty list
- * - single element
- * - multiple elements (spacing rules)
- * - elements containing spaces
- * - null-like or unexpected inputs via a defensive fake (size changes mid-iteration)
- * - very large inputs performance-wise (sanity check without heavy cost)
- *
- * We provide a lightweight test-double for org.example.list.LinkedList to avoid external deps.
+ * Framework: JUnit 5 (Jupiter)
  */
 class JoinUtilsTest {
 
-    // Minimal interface expected by JoinUtils.join
-    interface TestLinkedList {
-        fun size(): Int
-        fun get(index: Int): Any?
-    }
-
-    // Adapter to satisfy the expected type at call site using typealias within this test scope.
-    // If org.example.list.LinkedList exists in the project, these fakes emulate just what we need.
-    private class SimpleLinkedList(private val items: List<Any?>) : TestLinkedList {
-        override fun size(): Int = items.size
-        override fun get(index: Int): Any? = items[index]
-    }
-
-    // Faulty fake to simulate size changing during iteration to ensure join uses size() snapshot/looping correctly
-    private class FlakyLinkedList(private val backing: MutableList<Any?>) : TestLinkedList {
-        private var calls = 0
-        override fun size(): Int {
-            calls++
-            // After first call, change the reported size to simulate concurrent modification
-            return if (calls <= 1) backing.size else maxOf(0, backing.size - 1)
+    private fun linkedListOf(vararg items: String): LinkedList {
+        val list = LinkedList()
+        for (item in items) {
+            // Assuming LinkedList has an add method from Gradle init sample.
+            list.add(item)
         }
-        override fun get(index: Int): Any? = backing[index]
-    }
-
-    // Helper to bridge our TestLinkedList to the expected signature type without importing project class:
-    // We define a local shim with the same binary shape: size() and get(Int).
-    // Kotlin is structural here only at compile level for our local use; to avoid classpath conflicts,
-    // we create a local data holder whose methods are forwarded via an anonymous object cast.
-    @Suppress("UNCHECKED_CAST")
-    private fun toExpected(list: TestLinkedList): org.example.list.LinkedList {
-        // Create a dynamic proxy-like shim via anonymous object with matching methods.
-        val shim = object {
-            fun size(): Int = list.size()
-            fun get(i: Int): Any? = list.get(i)
-        }
-        return shim as org.example.list.LinkedList
+        return list
     }
 
     @Nested
-    @DisplayName("join: basic cases")
-    inner class BasicCases {
-
+    @DisplayName("Happy paths")
+    inner class HappyPaths {
         @Test
-        fun `returns empty string for empty list`() {
-            val src = SimpleLinkedList(emptyList())
-            val result = JoinUtils.join(toExpected(src))
+        fun `empty list returns empty string`() {
+            val list = LinkedList()
+            val result = JoinUtils.join(list)
             assertEquals("", result)
         }
 
         @Test
-        fun `single element no extra spaces`() {
-            val src = SimpleLinkedList(listOf("alpha"))
-            val result = JoinUtils.join(toExpected(src))
-            assertEquals("alpha", result)
+        fun `single element list returns the element without extra spaces`() {
+            val list = linkedListOf("hello")
+            val result = JoinUtils.join(list)
+            assertEquals("hello", result)
         }
 
         @Test
-        fun `two elements separated by single space`() {
-            val src = SimpleLinkedList(listOf("alpha", "beta"))
-            val result = JoinUtils.join(toExpected(src))
-            assertEquals("alpha beta", result)
+        fun `two elements result in single space between them`() {
+            val list = linkedListOf("hello", "world")
+            val result = JoinUtils.join(list)
+            assertEquals("hello world", result)
         }
 
         @Test
-        fun `multiple elements produce single spaces only between`() {
-            val src = SimpleLinkedList(listOf("a","b","c","d"))
-            val result = JoinUtils.join(toExpected(src))
+        fun `multiple elements join with single spaces only`() {
+            val list = linkedListOf("a", "b", "c", "d")
+            val result = JoinUtils.join(list)
             assertEquals("a b c d", result)
-            assertFalse(result.contains("  "))
-            assertTrue(result.count { it == ' ' } == 3)
         }
     }
 
     @Nested
-    @DisplayName("join: element content edge cases")
-    inner class ElementContentCases {
-
+    @DisplayName("Edge cases")
+    inner class EdgeCases {
         @Test
-        fun `elements containing internal spaces are preserved verbatim`() {
-            val src = SimpleLinkedList(listOf("hello world", "kotlin  test", " end "))
-            val result = JoinUtils.join(toExpected(src))
-            assertEquals("hello world kotlin  test  end ", result)
+        fun `elements that are empty strings are preserved, yielding consecutive spaces`() {
+            val list = linkedListOf("a", "", "b", "")
+            val result = JoinUtils.join(list)
+            // "a" + " " + "" + " " + "b" + " " + "" -> "a  b "
+            assertEquals("a  b ", result)
         }
 
         @Test
-        fun `null elements are converted to string literal null`() {
-            val src = SimpleLinkedList(listOf("x", null, "y"))
-            val result = JoinUtils.join(toExpected(src))
-            // Kotlin's StringBuilder.append(Any?) uses "null" for null values
-            assertEquals("x null y", result)
+        fun `elements that contain spaces are preserved verbatim`() {
+            val list = linkedListOf("hello", "big world", "!")
+            val result = JoinUtils.join(list)
+            assertEquals("hello big world !", result)
         }
 
         @Test
-        fun `non-string elements are stringified via toString`() {
-            data class P(val x:Int, val y:Int)
-            val src = SimpleLinkedList(listOf(123, true, P(1,2)))
-            val result = JoinUtils.join(toExpected(src))
-            assertAll(
-                { assertTrue(result.startsWith("123 true P(x=1, y=2)".substring(0, 7))) },
-                { assertEquals("123 true P(x=1, y=2)", result) }
-            )
+        fun `non-ascii characters are handled correctly`() {
+            val list = linkedListOf("こんにちは", "世界", "👋")
+            val result = JoinUtils.join(list)
+            assertEquals("こんにちは 世界 👋", result)
+        }
+
+        @Test
+        fun `large list joins correctly and does not throw`() {
+            val items = (1..1000).map { "v$it" }.toTypedArray()
+            val list = linkedListOf(*items)
+            val result = assertDoesNotThrow { JoinUtils.join(list) }
+            // Validate start/middle/end to avoid building expected full string manually
+            val parts = result.split(" ")
+            assertEquals(1000, parts.size)
+            assertEquals("v1", parts.first())
+            assertEquals("v500", parts[499])
+            assertEquals("v1000", parts.last())
         }
     }
 
     @Nested
-    @DisplayName("join: robustness")
-    inner class Robustness {
-
+    @DisplayName("Defensive behavior")
+    inner class DefensiveBehavior {
         @Test
-        fun `handles size fluctuation after first size check gracefully`() {
-            val src = FlakyLinkedList(mutableListOf("a","b","c"))
-            val result = JoinUtils.join(toExpected(src))
-            // Because loop bounds use '0 until source.size()', the size is evaluated once.
-            // First size() => 3, so join should attempt to get indices 0,1,2 which exist.
-            assertEquals("a b c", result)
-        }
-
-        @Test
-        fun `large input remains efficient and correct`() {
-            val n = 2000
-            val items = (1..n).map { it.toString() }
-            val src = SimpleLinkedList(items)
-            val result = JoinUtils.join(toExpected(src))
-            assertTrue(result.startsWith("1 2 3 4 5"))
-            assertTrue(result.endsWith("${n-1} $n"))
-            // basic sanity: number of spaces should be n-1
-            val spaces = result.count { it == ' ' }
-            assertEquals(n - 1, spaces)
+        fun `does not prepend or append extra spaces`() {
+            val list = linkedListOf("x", "y", "z")
+            val result = JoinUtils.join(list)
+            // Ensure no leading or trailing whitespace
+            assertEquals(result, result.trim())
+            assertEquals("x y z", result)
         }
     }
 }
