@@ -92,6 +92,24 @@ import kotlinx.coroutines.launch
  * Visual content (grid, elements, current in-progress path, and animated paths) is drawn under the current scale and offset transforms so zoom and pan affect all canvas content consistently.
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+/**
+ * Full-screen composable providing an interactive collaborative drawing canvas.
+ *
+ * Renders a pan- and zoom-able canvas with a background grid, selectable drawing tools
+ * (freehand PATH, RECTANGLE, OVAL), a live in-progress stroke, and playback-ready committed paths.
+ * Users can draw freehand with drag/tap gestures (PATH), pan/zoom via transform gestures, select
+ * tool, color, and stroke width via the toolbar, and clear or save the canvas from the top app bar.
+ *
+ * Visual content (grid, elements, current stroke, and animated/committed paths) is uniformly
+ * transformed by the current scale and offset so zooming and panning affect all layers together.
+ * Committed paths are stored in `paths` and mirrored into `animatedPaths` for animated playback.
+ *
+ * Side effects:
+ * - Maintains and mutates internal remembered state: committed `paths`, `elements`, `animatedPaths`,
+ *   current in-progress `currentPath`, `currentColor`, `strokeWidth`, selected tool, and transform
+ *   state (`scale`, `offset`).
+ * - Clearing actions remove entries from `paths`, `elements`, and `animatedPaths`.
+ */
 @Composable
 fun CanvasScreen() {
     // Canvas state

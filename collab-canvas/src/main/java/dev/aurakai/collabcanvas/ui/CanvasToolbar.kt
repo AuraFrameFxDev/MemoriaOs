@@ -67,6 +67,18 @@ import androidx.compose.ui.unit.dp
  * @param modifier Optional Modifier applied to the toolbar container.
 
  */
+/**
+ * A composable toolbar for selecting paint color, stroke width, or clearing the canvas.
+ *
+ * Tapping the color or stroke icons toggles inline pickers shown beneath the main row.
+ * Selecting a color calls [onColorSelected] and hides the color picker. Selecting a stroke
+ * width calls [onStrokeWidthSelected] and hides the stroke selector. Tapping Clear invokes [onClear].
+ *
+ * @param onColorSelected Called with the chosen [Color] when a color swatch is selected.
+ * @param onStrokeWidthSelected Called with the chosen stroke width (in pixels) when a width is selected.
+ * @param onClear Called when the Clear button is pressed.
+ * @param modifier Optional [Modifier] for styling and layout.
+ */
 @Composable
 fun CanvasToolbar(
     onColorSelected: (Color) -> Unit,
