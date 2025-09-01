@@ -103,9 +103,6 @@ android {
     }
 }
 
-kotlin {
-    jvmToolchain(24)
-}
 
 // Explicit Java toolchain for AGP compatibility
 java {
