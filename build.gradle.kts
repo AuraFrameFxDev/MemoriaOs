@@ -119,6 +119,6 @@ apply(from = "nuclear-clean.gradle.kts")
 // Wire automation tasks
 allprojects {
     afterEvaluate {
-        tasks.findByName("preBuild")?.dependsOn("ensureResourceStructure")
+        tasks.findByName("preBuild")?.dependsOn(":ensureResourceStructure")
     }
 }
