@@ -155,8 +155,8 @@ tasks.register<Copy>("copyRomTools") {
     includeEmptyDirs = false
     
     doFirst {
-        val dirFile = romToolsOutputDirectory.get().asFile
-        // The Copy task's into() will handle directory creation
+        // Ensure the ROM tools output directory exists before copying
+        dirFile.mkdirs()
         logger.lifecycle("📁 ROM tools directory: ${dirFile.absolutePath}")
     }
     
