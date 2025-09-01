@@ -136,6 +136,16 @@ dependencyUpdates {
     }
 }
 
+/**
+ * Returns true if the provided version string is considered non-stable.
+ *
+ * A version is treated as stable when it either contains one of the keywords
+ * "RELEASE", "FINAL", or "GA" (case-insensitive) or matches the pattern
+ * `^[0-9,.v-]+(-r)?$` (numeric-like versions, optionally suffixed with `-r`).
+ *
+ * @param version The version string to evaluate.
+ * @return `true` when the version is non-stable, `false` when it is considered stable.
+ */
 fun isNonStable(version: String): Boolean {
     val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
     val regex = "^[0-9,.v-]+(-r)?$".toRegex()

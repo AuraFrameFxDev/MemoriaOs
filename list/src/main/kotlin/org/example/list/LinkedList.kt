@@ -6,6 +6,13 @@ package org.example.list
 class LinkedList {
     private var head: Node? = null
 
+    /**
+     * Appends the given string to the end of the list.
+     *
+     * If the list is empty the element becomes the new head; otherwise it is linked as the current tail's next node.
+     *
+     * @param element The string to append.
+     */
     fun add(element: String) {
         val newNode = Node(element)
 
@@ -17,6 +24,12 @@ class LinkedList {
         }
     }
 
+    /**
+     * Returns the last node (tail) of the singly linked list starting from [head], or `null` if the list is empty.
+     *
+     * @param head the starting node of the list, or `null` for an empty list
+     * @return the tail node or `null` when [head] is `null`
+     */
     private fun tail(head: Node?): Node? {
         var it: Node?
 
@@ -28,6 +41,16 @@ class LinkedList {
         return it
     }
 
+    /**
+     * Removes the first occurrence of the given element from the list.
+     *
+     * Searches the list from the head and unlinks the first node whose string equals
+     * the provided element (case-sensitive). If a matching node is found it is
+     * removed and the method returns true; otherwise returns false.
+     *
+     * @param element The string value to remove.
+     * @return True if an element was removed; false if no matching element was found.
+     */
     fun remove(element: String): Boolean {
         var result = false
         var previousIt: Node? = null
@@ -45,6 +68,15 @@ class LinkedList {
         return result
     }
 
+    /**
+     * Remove `currentIt` from the list by relinking its predecessor or updating `head`.
+     *
+     * If `currentIt` is the current head, `head` is set to `currentIt.next`; otherwise
+     * `previousIt.next` is updated to skip `currentIt`.
+     *
+     * @param previousIt The node immediately before `currentIt`, or null when `currentIt` is the head.
+     * @param currentIt The node to unlink from the list.
+     */
     private fun unlink(previousIt: Node?, currentIt: Node) {
         if (currentIt == head) {
             head = currentIt.next
@@ -53,6 +85,13 @@ class LinkedList {
         }
     }
 
+    /**
+     * Returns the number of elements in the list.
+     *
+     * Traverses the linked list from the head and counts nodes.
+     *
+     * @return The current size (number of nodes) in this list.
+     */
     fun size(): Int {
         var size = 0
 
@@ -65,6 +104,16 @@ class LinkedList {
         return size
     }
 
+    /**
+     * Returns the element at the given 0-based index in the list.
+     *
+     * If `idx` is negative it is treated as 0 (the head element). Throws
+     * IndexOutOfBoundsException when the index is out of range or the list is empty.
+     *
+     * @param idx 0-based position of the element to retrieve.
+     * @return the string stored at the specified index.
+     * @throws IndexOutOfBoundsException if no element exists at the requested index.
+     */
     fun get(idx: Int): String {
         var index = idx
         var it = head
