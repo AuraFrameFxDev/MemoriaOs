@@ -1,6 +1,6 @@
 
 plugins {
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.library) // Explicit version for library module
     alias(libs.plugins.kotlin.android) // Ensure this is active
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
