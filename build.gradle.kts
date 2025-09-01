@@ -31,7 +31,7 @@ configure<org.openapitools.generator.gradle.plugin.extensions.OpenApiGeneratorGe
     ))
 }
 
-tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerate") {
+tasks.named<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerate") {
     group = "openapi tools"
     description = "Generate Kotlin API client from OpenAPI spec"
     onlyIf { file("app/api/unified-aegenesis-api.yml").exists() }
