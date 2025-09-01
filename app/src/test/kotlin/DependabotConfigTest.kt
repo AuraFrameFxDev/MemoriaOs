@@ -226,7 +226,7 @@ class DependabotConfigTest {
                 directory: "app"   # missing leading slash
                 schedule:
                   interval: "yearly" # invalid interval
-        """"".trimIndent()
+        """.trimIndent()
 
         val errors = parseAndValidate(yaml)
         // Expect two errors: directory leading slash + invalid interval for second update
