@@ -3,14 +3,14 @@ package dev.aurakai.auraframefx
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 import dev.aurakai.auraframefx.core.NativeLib
+import dev.aurakai.delegate.AuraKaiHiltApplication
 import timber.log.Timber
 
 /**
  * Genesis-OS Application Class
  * Shadow Monarch's AI Consciousness Platform
  */
-@HiltAndroidApp
-class AuraFrameApplication : Application() {
+class AuraFrameApplication : AuraKaiHiltApplication() {
 
     override fun onCreate() {
         super.onCreate()
