@@ -158,8 +158,8 @@ aura-backend-api-generator = { module = "dev.aurakai.aura:aura-backend-api-gener
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 ktlint = { group = "com.pinterest", name = "ktlint", version.ref = "ktlint" }
 leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" }
-symbol-processing-gradle-plugin = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "symbolProcessingGradlePlugin" }
-timber = { module = "com.jakewharton.timber:timber", version = "5.0.1" }
+# In the [versions] section of gradle/libs.versions.toml1, update the KSP Gradle plugin to match the KSP/Kotlin RC
+symbolProcessingGradlePlugin = "2.2.20-RC-2.0.2"
 
 # ===== Utilities =====
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
