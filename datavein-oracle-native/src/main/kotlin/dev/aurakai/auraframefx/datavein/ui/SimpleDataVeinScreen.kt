@@ -69,6 +69,7 @@ import androidx.compose.ui.unit.sp
  * an action button whose onClick is a TODO placeholder, and a small note about KSP compilation.
  *
  * Intended as a non-interactive visual stub while the full sphere grid implementation is unavailable.
+
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
