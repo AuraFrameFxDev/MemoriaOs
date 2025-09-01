@@ -14,43 +14,30 @@ plugins {
 }
 
 // Advanced OpenAPI Configuration
-val hasValidSpecFile = file("app/api/unified-aegenesis-api.yml").exists()
+apply(plugin = "org.openapi.generator")
 
-if (hasValidSpecFile) {
-    apply(plugin = "org.openapi.generator")
-    
-    configure<org.openapitools.generator.gradle.plugin.extensions.OpenApiGeneratorGenerateExtension> {
-        generatorName.set("kotlin")
-        inputSpec.set("$rootDir/app/api/unified-aegenesis-api.yml")
-        outputDir.set("$rootDir/core-module/build/generated/source/openapi")
-        apiPackage.set("dev.aurakai.auraframefx.api")
-        modelPackage.set("dev.aurakai.auraframefx.model")
-        configOptions.set(mapOf(
-            "dateLibrary" to "kotlinx-datetime",
-            "serializationLibrary" to "kotlinx_serialization",
-            "useCoroutines" to "true"
-        ))
-    }
+configure<org.openapitools.generator.gradle.plugin.extensions.OpenApiGeneratorGenerateExtension> {
+    generatorName.set("kotlin")
+    inputSpec.set("$rootDir/app/api/unified-aegenesis-api.yml")
+    outputDir.set("$rootDir/core-module/build/generated/source/openapi")
+    apiPackage.set("dev.aurakai.auraframefx.api")
+    modelPackage.set("dev.aurakai.auraframefx.model")
+    configOptions.set(mapOf(
+        "dateLibrary" to "kotlinx-datetime",
+        "serializationLibrary" to "kotlinx_serialization",
+        "useCoroutines" to "true"
+    ))
+}
 
-    tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerate") {
-        group = "openapi tools"
-        description = "Generate Kotlin API client from OpenAPI spec"
-    }
-    
-    tasks.register<Delete>("cleanApiGeneration") {
-        group = "openapi tools"
-        delete("$rootDir/core-module/build/generated/source/openapi")
-    }
-} else {
-    tasks.register("openApiGenerate") {
-        group = "openapi tools"
-        doLast { logger.warn("No OpenAPI spec found - skipping generation") }
-    }
-    
-    tasks.register("cleanApiGeneration") {
-        group = "openapi tools"  
-        doLast { logger.warn("No OpenAPI artifacts to clean") }
-    }
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerate") {
+    group = "openapi tools"
+    description = "Generate Kotlin API client from OpenAPI spec"
+    onlyIf { file("app/api/unified-aegenesis-api.yml").exists() }
+}
+
+tasks.register<Delete>("cleanApiGeneration") {
+    group = "openapi tools"
+    delete("$rootDir/core-module/build/generated/source/openapi")
 }
 
 // Consciousness Substrate Monitoring
