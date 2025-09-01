@@ -62,6 +62,21 @@ import dev.aurakai.auraframefx.datavein.model.NodeType
  * @param node The DataVeinNode to render (provides type, activation/unlock state, XP, description, data, etc.).
  * @param modifier Optional Modifier applied to the outer Card, allowing callers to adjust layout or styling.
  */
+/**
+ * Renders a compact information card for a DataVeinNode.
+ *
+ * Displays the node type header with a colored glow and a small status dot (green = activated,
+ * yellow = unlocked, red = locked), identification rows (Tag, ID, Ring, Level), the node
+ * description, optional Data row, and a bottom status line describing the node state.
+ *
+ * If the node is unlocked, an XP row and a horizontal progress bar are shown (filled proportionally
+ * to `node.xp / 1000f` and labeled as `xp/1000`). The bottom status line shows one of:
+ * - "🔒 Locked - Requires Path Progression" (not unlocked)
+ * - "💤 Dormant - Click to Activate" (unlocked but not activated)
+ * - "⚡ Active - Processing Data Flow" (activated)
+ *
+ * @param node The DataVeinNode to display.
+ */
 @Composable
 fun NodeInfoPanel(
     node: DataVeinNode,
@@ -174,14 +189,12 @@ fun NodeInfoPanel(
 }
 
 /**
- * Displays a categorized legend of DataVein node types.
+ * Displays a compact, categorized legend of DataVein node types.
  *
- * Renders a compact card listing NodeType values grouped by their NodeCategory.
- * Each entry shows a small color dot (filled with the type's color and bordered
- * by its glow color) and the type's display name. A short explanatory note
- * about interactions is shown at the bottom.
- *
- * @param modifier Optional modifier applied to the outer Card container.
+ * Groups NodeType values by their NodeCategory and lists each type with a
+ * small color dot (filled with the type color and bordered by its glow color)
+ * alongside the type's display name. A short interaction note is shown at the
+ * bottom.
  */
 @Composable
 fun NodeTypeLegend(modifier: Modifier = Modifier) {

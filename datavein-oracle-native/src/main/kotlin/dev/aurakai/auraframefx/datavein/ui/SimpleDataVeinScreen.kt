@@ -47,6 +47,20 @@ import androidx.compose.ui.unit.sp
  *
  * @param modifier Optional [Modifier] for styling or positioning the root container.
  */
+/**
+ * Renders a simple, card-based debug UI that mimics a DataVein status dashboard.
+ *
+ * The composable fills available space with a centered, semi-transparent card containing:
+ * - Title and subtitle
+ * - A cyan horizontal divider
+ * - System status line and three status chips (Core Nodes, Active Flows, Data Streams)
+ * - Multiline status details
+ * - An action button labeled "🚀 Launch Sphere Grid" (placeholder; no navigation or side effects)
+ * - A small yellow note explaining this screen is a fallback while KSP compilation issues are resolved
+ *
+ * This screen is intended for local debugging/fallback scenarios only. Styling and content are
+ * static and hard-coded; the action button's onClick is a TODO placeholder.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimpleDataVeinScreen(
