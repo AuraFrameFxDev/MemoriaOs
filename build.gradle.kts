@@ -11,7 +11,6 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.firebase.crashlytics) apply false
-    alias(libs.plugins.firebase.perf) apply false
     alias(libs.plugins.spotless) apply true // Spotless is applied directly to the root for project-wide formatting
     alias(libs.plugins.kover) apply false
     alias(libs.plugins.openapi.generator) apply false
@@ -201,8 +200,8 @@ if (hasValidSpecFile) {
             if (apiFile.exists()) {
                 var content = apiFile.readText()
                 // Fix invalid default parameter values
-                content = content.replace("= detailed)", "= \"detailed\")")
-                content = content.replace("= structure)", "= \"structure\")")
+                content = content.replace("= detailed)", "= "detailed")")
+                content = content.replace("= structure)", "= "structure")")
                 apiFile.writeText(content)
                 logger.lifecycle("Fixed OpenAPI generated code syntax issues")
             }
