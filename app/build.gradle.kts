@@ -67,8 +67,7 @@ dependencies {
     ksp(libs.hilt.compiler)
     
     // Networking
-    implementation(libs.bundles.retrofit)
-    implementation(libs.bundles.okhttp)
+    implementation(libs.bundles.network)
     
     // Security & Utilities
     implementation(libs.bouncycastle)
