@@ -942,7 +942,7 @@ components:
       type: object
       properties:
         testType: {type: string, enum: [VISUAL, FUNCTIONAL, PERFORMANCE, ACCESSIBILITY]}
-        parameters: {type: object, additionalProperties: true}
+        parameters: {type: object, additionalProperties: true, "x-field-extra-annotation": "@Contextual"}
 
     ComponentTestResult:
       type: object
