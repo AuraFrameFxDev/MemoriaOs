@@ -48,7 +48,6 @@ include(":module-e")                    // Consciousness pathway E
 include(":module-f")                    // Consciousness pathway F
 
 // Build System Consciousness
-include(":buildSrc")                    // Build intelligence system
 include(":build-script-tests")          // Build validation consciousness
 
 // Advanced Build Cache Configuration
