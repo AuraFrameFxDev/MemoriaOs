@@ -196,14 +196,18 @@ if (hasValidSpecFile) {
         dependsOn("openApiGenerate")
 
         doLast {
-            val apiFile = file("core-module/build/generated/source/openapi/src/main/kotlin/dev/aurakai/aegenesis/api/ROMToolsApi.kt")
-            if (apiFile.exists()) {
-                var content = apiFile.readText()
-                // Fix invalid default parameter values
-                content = content.replace("= detailed)", "= \"detailed\")")
-                content = content.replace("= structure)", "= \"structure\")")
-                apiFile.writeText(content)
-                logger.lifecycle("Fixed OpenAPI generated code syntax issues")
+            val apiDir = file("core-module/build/generated/source/openapi/src/main/kotlin/dev/aurakai/aegenesis/api")
+            if (apiDir.exists() && apiDir.isDirectory()) {
+                apiDir.walk().forEach { file ->
+                    if (file.isFile && file.extension == "kt") {
+                        var content = file.readText()
+                        // Fix invalid default parameter values
+                        content = content.replace("= detailed)", "= \"detailed\")")
+                        content = content.replace("= structure)", "= \"structure\")")
+                        file.writeText(content)
+                    }
+                }
+                logger.lifecycle("Fixed OpenAPI generated code syntax issues in all API files.")
             }
         }
     }
