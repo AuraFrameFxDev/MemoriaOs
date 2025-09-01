@@ -21,7 +21,6 @@ android {
     defaultConfig {
         minSdk = 23 // Lowered for broader compatibility
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
