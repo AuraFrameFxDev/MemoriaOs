@@ -15,11 +15,11 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 class GenesisXposedModule : IYukiHookXposedInit {
 
     /**
-     * Entry point invoked by LSPosed to initialize the module's hook environment.
+     * Initializes the module's hook environment for LSPosed.
      *
-     * Loads the module preferences ("genesis_module"), configures YukiHookAPI (debug logging enabled
-     * when preferences "debug_log" is true and `BuildConfig.DEBUG` is set), and registers hooks by
-     * loading the `GenesisHooks` container.
+     * Loads the module preferences ("genesis_module"), configures YukiHookAPI (sets the debugLog tag
+     * to "GenesisModule" and enables it based on the "debug_log" preference; sets global isDebug from
+     * BuildConfig.DEBUG), and registers hooks by loading the GenesisHooks container.
      */
     override fun onHook() = YukiHookAPI.encase {
         // Load module preferences
@@ -39,7 +39,12 @@ class GenesisXposedModule : IYukiHookXposedInit {
     }
 
     /**
-     * Called when the module is loaded by LSPosed framework (legacy API)
+     * Legacy LSPosed entry point invoked when a package is loaded.
+     *
+     * Delegates to [onHook] for modern initialization. The `loadPackageParam` is accepted
+     * for compatibility with older LSPosed/Module API signatures and is ignored.
+     *
+     * @param loadPackageParam Legacy load-package parameter (may be null and is unused).
      */
     @Suppress("unused")
     fun handleLoadPackage(loadPackageParam: Any?) {
