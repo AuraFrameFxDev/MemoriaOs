@@ -35,14 +35,21 @@ class SecureKeyStore @Inject constructor(
     }
 
     /**
-     * Encrypts and stores the given byte array under the provided key in app-private SharedPreferences.
+     * Encrypts and stores the given byte array under the provided key in private SharedPreferences.
      *
-     * The data is encrypted using a per-entry AES-GCM key. The per-entry key alias is derived as `"$KEY_ALIAS_$key"`.
-     * The stored value is the IV (12 bytes) concatenated with the ciphertext, encoded as Base64 with NO_WRAP,
-     * and written to the "secure_prefs" preference under `key`. If an entry already exists for `key`, it is replaced.
+     * The data is encrypted using a per-item AES-GCM key and stored as a Base64-encoded string
+     * containing the concatenation of the 12-byte IV and the ciphertext.
+     *
+     * @param key Identifier used as the SharedPreferences entry name and as the per-item key suffix.
+
+     * Encrypts the provided plaintext with a per-entry AES-GCM key and saves the result to app-private SharedPreferences.
+     *
+     * The per-entry key alias is derived as `"$KEY_ALIAS_$key"`. The stored value is the IV concatenated with the ciphertext,
+     * encoded as Base64 with NO_WRAP, and written to the "secure_prefs" preference under `key`. If an entry already exists
+     * for `key`, it is replaced.
      *
      * @param key Identifier used to derive the per-entry keystore alias and as the SharedPreferences entry key.
-     * @param data Plaintext bytes to encrypt and persist.
+ @param data Plaintext bytes to encrypt and persist.
      */
     fun storeData(key: String, data: ByteArray) {
         val encryptedData = encryptData(key, data)

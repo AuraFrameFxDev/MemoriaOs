@@ -386,7 +386,7 @@ paths:
                 analysisLevel:
                   type: string
                   enum: [basic, detailed, security]
-                  default: detailed
+                  description: "Analysis level (default: detailed)"
               required: [bootImage]
       responses:
         '200':
@@ -417,7 +417,7 @@ paths:
                 analysisType:
                   type: string
                   enum: [structure, security, performance, compatibility]
-                  default: structure
+                  description: "Analysis type (default: structure)"
               required: [romFile]
       responses:
         '200':
@@ -668,7 +668,10 @@ components:
       type: object
       properties:
         message: {type: string}
-        context: {type: object, additionalProperties: true}
+        context:
+          type: object
+          additionalProperties: {type: string}
+          description: "Context information as key-value string pairs"
         priority: {type: string, enum: [low, normal, high, critical], default: normal}
       required: [message]
 
