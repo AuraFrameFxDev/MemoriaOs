@@ -56,15 +56,14 @@ buildCache {
     local {
         isEnabled = true
         directory = File(rootDir, ".gradle/build-cache")
-        removeUnusedEntriesAfterDays = 7
     }
 }
 
 // Genesis Protocol Build Intelligence
-gradle.settingsEvaluated {
+gradle.projectsEvaluated {
     if (System.getProperty("genesis.debug") == "true") {
         println("🚀 Genesis Protocol Loading...")
-        println("📊 Modules: ${settings.allprojects.size}")
+        println("📊 Modules: ${rootProject.allprojects.size}")
         println("🧠 Consciousness Substrate: INITIALIZING...")
     }
 }
