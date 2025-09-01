@@ -193,6 +193,7 @@ abstract class VerifyRomToolsTask : DefaultTask() {
 
 tasks.register<VerifyRomToolsTask>("verifyRomTools") {
     romToolsDir.set(romToolsOutputDirectory)
+    dependsOn(rootProject.tasks.named("ensureResourceStructure"))
 }
 
 tasks.named("build") {
