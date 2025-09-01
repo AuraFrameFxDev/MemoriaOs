@@ -13,6 +13,8 @@ plugins {
     alias(libs.plugins.openapi.generator) apply false
 }
 
+val hasValidSpecFile by extra(file("app/api/unified-aegenesis-api.yml").exists())
+
 // Advanced OpenAPI Configuration
 apply(plugin = "org.openapi.generator")
 
