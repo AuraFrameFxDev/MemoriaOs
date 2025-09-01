@@ -61,6 +61,15 @@ import androidx.compose.ui.unit.sp
  * This screen is intended for local debugging/fallback scenarios only. Styling and content are
  * static and hard-coded; the action button's onClick is a TODO placeholder.
  */
+/**
+ * A static, centered debug/fallback UI that displays a mocked DataVein status dashboard.
+ *
+ * Renders a translucent card with title, subtitle, a cyan divider, an overall system status line,
+ * three colored status chips (Core Nodes, Active Flows, Data Streams), multiline detail text,
+ * an action button whose onClick is a TODO placeholder, and a small note about KSP compilation.
+ *
+ * Intended as a non-interactive visual stub while the full sphere grid implementation is unavailable.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimpleDataVeinScreen(
