@@ -78,22 +78,18 @@ import dev.aurakai.auraframefx.datavein.model.NodeType
  * @param node The DataVeinNode to display.
  */
 /**
- * Renders a stylized information card for a single DataVeinNode.
+ * Renders a stylized information panel for a DataVein node.
  *
- * Displays the node type title with a colored status dot, identification rows (tag, id, ring, level),
- * optional progression (XP and an XP progress bar when the node is unlocked), the node description,
- * an optional data row (when `node.data` is non-empty), and a human-readable status line.
+ * Displays the node type header with a colorized status indicator, identifying rows
+ * (Tag, ID, Ring, Level), optional XP and XP progress bar when unlocked, the node
+ * description, optional data field, and a compact bottom status line reflecting
+ * locked/dormant/active state.
  *
- * Behavior and visual cues:
- * - Status dot color: green when `node.activated`, yellow when `node.isUnlocked` (but not activated), red otherwise.
- * - XP and XP progress bar are shown only if `node.isUnlocked`. The progress bar fills proportionally to `node.xp / 1000f`.
- * - Status line shows one of:
- *   - "🔒 Locked - Requires Path Progression" when not unlocked,
- *   - "💤 Dormant - Click to Activate" when unlocked but not activated,
- *   - "⚡ Active - Processing Data Flow" when activated.
+ * The card border and header text use the node type's glow color. XP is shown as
+ * "xp/1000" and the progress bar is filled proportionally to `node.xp / 1000f`.
  *
- * @param node The DataVeinNode whose details are rendered.
- * @param modifier Optional Compose Modifier applied to the outer Card.
+ * @param node The DataVeinNode to display.
+ * @param modifier Optional Compose modifier applied to the top-level Card.
  */
 @Composable
 fun NodeInfoPanel(
@@ -287,18 +283,16 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
 }
 
 /**
- * Renders a compact status card showing live-like DataVein metrics and two progress bars.
+ * Displays a compact status card showing real-time-like metrics and progress for the DataVein.
  *
- * Displays an animated glyph and title, three metric rows (Active Flows, Active Nodes, Unlocked),
- * and progress indicators for "Activation" (activeNodes / totalNodes) and "Progression"
- * (unlockedNodes / totalNodes).
- *
- * Progress values are computed with a safe division: if totalNodes <= 0 both progress ratios are 0.
+ * Shows an animated glyph with a title, three metric rows (Active Flows, Active Nodes, Unlocked),
+ * and two progress bars for "Activation" and "Progression" computed as ratios against totalNodes.
  *
  * @param activeFlows Current number of active data flows.
  * @param activeNodes Number of nodes currently active.
- * @param totalNodes Total number of nodes; used as the denominator for percentage calculations.
+ * @param totalNodes Total number of nodes; used as the denominator for percentage calculations (safe-divide: 0 if zero).
  * @param unlockedNodes Number of nodes that have been unlocked.
+ * @param modifier Modifier to apply to the root Card composable.
  */
 @Composable
 fun StatusPanel(
