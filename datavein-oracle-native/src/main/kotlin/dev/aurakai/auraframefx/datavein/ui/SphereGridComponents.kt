@@ -23,7 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,6 +40,16 @@ import dev.aurakai.auraframefx.datavein.model.NodeType
 
 /**
  * Enhanced Node Info Panel with FFX-style progression details
+ */
+/**
+ * Renders a stylized info card displaying a DataVein node's type, identification, progression, description, and current status.
+ *
+ * Shows the node type title with a colored status dot, tag/ID/ring/level rows, and — when unlocked — XP and a horizontal XP bar.
+ * Also displays the node description, optional data row (when present), and a one-line status message reflecting locked, dormant, or active states.
+ *
+ * @param node The DataVeinNode whose details are rendered.
+ * @param modifier Optional Compose modifier applied to the outer Card.
+
  */
 @Composable
 fun NodeInfoPanel(
@@ -89,7 +99,7 @@ fun NodeInfoPanel(
                 )
             }
 
-            Divider(color = node.type.glowColor.copy(alpha = 0.3f))
+            HorizontalDivider(color = node.type.glowColor.copy(alpha = 0.3f))
 
             // Node identification
             InfoRow("Tag", node.tag, Color.Cyan)
@@ -153,7 +163,13 @@ fun NodeInfoPanel(
 }
 
 /**
- * Enhanced Node Type Legend with categories
+ * Renders a legend Card listing DataVein node types grouped by category.
+ *
+ * Displays a titled card that iterates NodeCategory values and shows each NodeType in that
+ * category as a small colored swatch (filled with `type.color` and bordered with `type.glowColor`)
+ * followed by the type's display name. Ends with a short explanatory legend about interaction
+ * and unlocking. Designed as a small, translucent UI panel for quick reference.
+
  */
 @Composable
 fun NodeTypeLegend(modifier: Modifier = Modifier) {
@@ -175,7 +191,7 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
                 fontSize = 12.sp
             )
 
-            Divider(color = Color.White.copy(alpha = 0.2f))
+            HorizontalDivider(color = Color.White.copy(alpha = 0.2f))
 
             // Group by category
             NodeCategory.values().forEach { category ->
@@ -228,7 +244,19 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
 }
 
 /**
- * Enhanced Status Panel with real-time metrics
+ * Displays a status card summarizing real-time DataVein metrics.
+ *
+ * Shows a pulsing header, three compact status rows (Active Flows, Active Nodes, Unlocked)
+ * and two horizontal progress indicators for activation and progression. Percentages
+ * are computed relative to `totalNodes`; if `totalNodes` is zero the percentages are treated
+ * as 0 to avoid division by zero.
+ *
+ * @param activeFlows Number of currently active flows.
+ * @param activeNodes Number of currently active nodes.
+ * @param totalNodes Total number of nodes; used to compute percentage values.
+ * @param unlockedNodes Number of unlocked nodes; used to compute percentage values.
+ * @param modifier Optional Compose modifier for the panel.
+
  */
 @Composable
 fun StatusPanel(
@@ -276,7 +304,7 @@ fun StatusPanel(
                 )
             }
 
-            Divider(color = Color.Cyan.copy(alpha = 0.3f))
+            HorizontalDivider(color = Color.Cyan.copy(alpha = 0.3f))
 
             StatusRow("Active Flows", activeFlows.toString(), Color(0xFF00FF88))
             StatusRow("Active Nodes", "$activeNodes/$totalNodes", Color(0xFF4FC3F7))

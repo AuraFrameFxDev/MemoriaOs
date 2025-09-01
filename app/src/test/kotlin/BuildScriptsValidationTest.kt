@@ -1,5 +1,7 @@
 import io.mockk.clearAllMocks
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -896,6 +898,7 @@ class BuildScriptsValidationTest {
             content.contains("platform(libs.firebaseBom)")
         )
     }
+
 }
     // Additional Structure and Semantics Coverage (Appended by PR test enhancement)
     @Test

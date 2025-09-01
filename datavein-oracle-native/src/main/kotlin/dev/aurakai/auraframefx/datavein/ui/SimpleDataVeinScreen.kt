@@ -12,7 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +26,20 @@ import androidx.compose.ui.unit.sp
 /**
  * Simple DataVein Screen for testing basic Compose setup
  * This serves as a fallback while we resolve KSP issues
+ */
+/**
+ * Renders the "DataVein Sphere Grid" status card UI.
+ *
+ * Displays a centered card on a dark background containing:
+ * - title and subtitle,
+ * - a divider and system status line,
+ * - three status chips (Core Nodes, Active Flows, Data Streams),
+ * - a multi-line status overview,
+ * - an action button labeled "🚀 Launch Sphere Grid" (currently a placeholder with no action),
+ * - and an informational note about KSP compilation.
+ *
+ * The composable accepts a Modifier to customize its outer container.
+
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +80,7 @@ fun SimpleDataVeinScreen(
                     fontSize = 16.sp
                 )
 
-                Divider(color = Color.Cyan.copy(alpha = 0.3f))
+                HorizontalDivider(color = Color.Cyan.copy(alpha = 0.3f))
 
                 Text(
                     text = "System Status: ⚡ ACTIVE",

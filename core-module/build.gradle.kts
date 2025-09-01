@@ -8,6 +8,12 @@ plugins {
     alias(libs.plugins.kover)
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
+}
+
 android {
     namespace = "dev.aurakai.auraframefx.core"
     compileSdk = 36
@@ -61,6 +67,7 @@ java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(24))
     }
+
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {

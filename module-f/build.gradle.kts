@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -45,19 +47,19 @@ android {
         viewBinding = false  // Genesis Protocol - Compose only
     }
 
-    // REMOVED: composeOptions - AGP 8.13.0-rc01 auto-detects from version catalog!
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_24
         targetCompatibility = JavaVersion.VERSION_24
     }
+
     kotlin {
         compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
-            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+            jvmTarget.set(JvmTarget.JVM_24)
         }
     }
+
+    // REMOVED: composeOptions - AGP 8.13.0-rc01 auto-detects from version catalog!
+
 
     packaging {
         resources {
@@ -88,6 +90,7 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.test.core)
+
 
     // Debug implementations
     debugImplementation(libs.androidx.compose.ui.tooling)
