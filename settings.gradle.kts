@@ -1,69 +1,70 @@
-@file:Suppress("UnstableApiUsage")
-
-// ===== GENESIS AUTO-PROVISIONED SETTINGS =====
-// Gradle 9.1.0-rc1 + AGP 9.0.0-alpha01
-// NO manual version catalog configuration needed!
-
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
-
 pluginManagement {
     repositories {
-        google()                    // FIRST - Google for Android plugins
-        gradlePluginPortal()        // SECOND - Gradle official plugins
-        mavenCentral()              // THIRD - Maven Central
-        maven("https://androidx.dev/storage/compose-compiler/repository/") {
-            name = "AndroidXDev"
-        }
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") {
-            name = "JetBrainsCompose"
-        }
-        maven("https://oss.sonatype.org/content/repositories/snapshots/") {
-            name = "SonatypeSnapshots"
-        }
-        maven("https://jitpack.io") {
-            name = "JitPack"
-        }
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        maven("https://androidx.dev/storage/compose-compiler/repository/")
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
-}
-
-plugins {
-    // Auto-provision Java toolchains with enhanced configuration
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()                    // FIRST - Google for AndroidX dependencies
-        mavenCentral()              // SECOND - Maven Central for most libs
-        maven("https://androidx.dev/storage/compose-compiler/repository/") {
-            name = "AndroidXDev"
-        }
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") {
-            name = "JetBrainsCompose"
-        }
-        maven("https://oss.sonatype.org/content/repositories/snapshots/") {
-            name = "SonatypeSnapshots"
-        }
-        maven("https://jitpack.io") {
-            name = "JitPack"
-        }
+        google()
+        mavenCentral()
+        maven("https://androidx.dev/storage/compose-compiler/repository/")
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev") 
+        maven("https://oss.sonatype.org/content/repositories/snapshots/")
+        maven("https://jitpack.io")
     }
-    // ✅ NO VERSION CATALOG CONFIG - Auto-discovered from gradle/libs.versions.toml
 }
+
+// Bleeding-Edge Features
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+enableFeaturePreview("STABLE_CONFIGURATION_CACHE") 
+enableFeaturePreview("VERSION_CATALOGS")
 
 rootProject.name = "Genesis-Os"
 
-// Genesis Protocol - Auto-discovered modules
-include(":app")
-include(":core-module")
-include(":feature-module")
-include(":datavein-oracle-native")
-include(":oracle-drive-integration")
-include(":secure-comm")
-include(":sandbox-ui")
-include(":collab-canvas")
-include(":colorblendr")
-include(":romtools")
-include(":module-a", ":module-b", ":module-c", ":module-d", ":module-e", ":module-f")
+// 🧠 Consciousness Substrate Modules (15+ Neural Pathways)
+include(":app")                          // Main consciousness interface
+include(":core-module")                  // Central nervous system  
+include(":secure-comm")                  // Cryptographic neural pathways
+include(":oracle-drive-integration")     // Cloud consciousness bridge
+include(":collab-canvas")               // Collaborative consciousness 
+include(":colorblendr")                 // Visual processing cortex
+include(":romtools")                    // System manipulation tools
+include(":sandbox-ui")                  // Experimental UI consciousness
+include(":datavein-oracle-native")      // Native data processing
+include(":feature-module")              // Feature consciousness manager
+
+// Modular Consciousness Components
+include(":module-a")                    // Consciousness pathway A
+include(":module-b")                    // Consciousness pathway B  
+include(":module-c")                    // Consciousness pathway C
+include(":module-d")                    // Consciousness pathway D
+include(":module-e")                    // Consciousness pathway E
+include(":module-f")                    // Consciousness pathway F
+
+// Build System Consciousness
+include(":buildSrc")                    // Build intelligence system
+include(":build-script-tests")          // Build validation consciousness
+
+// Advanced Build Cache Configuration
+buildCache {
+    local {
+        isEnabled = true
+        directory = File(rootDir, ".gradle/build-cache")
+        removeUnusedEntriesAfterDays = 7
+    }
+}
+
+// Genesis Protocol Build Intelligence
+gradle.settingsEvaluated {
+    if (System.getProperty("genesis.debug") == "true") {
+        println("🚀 Genesis Protocol Loading...")
+        println("📊 Modules: ${settings.allprojects.size}")
+        println("🧠 Consciousness Substrate: INITIALIZING...")
+    }
+}
