@@ -189,6 +189,7 @@ abstract class VerifyRomToolsTask : DefaultTask() {
 
 tasks.register<VerifyRomToolsTask>("verifyRomTools") {
     romToolsDir.set(romToolsOutputDirectory) // Set to the same shared property
+    dependsOn("copyRomTools") // Explicitly depend on copyRomTools for clarity and reliability
     // Gradle should infer the dependency on copyRomTools because romToolsOutputDirectory
     // is an output of copyRomTools (via 'into') and an input here.
 }
