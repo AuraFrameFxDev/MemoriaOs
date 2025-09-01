@@ -91,6 +91,20 @@ import dev.aurakai.auraframefx.datavein.model.NodeType
  * @param node The DataVeinNode to display.
  * @param modifier Optional Compose modifier applied to the top-level Card.
  */
+/**
+ * Renders a compact card showing detailed information and live status for a single DataVein node.
+ *
+ * The panel displays the node type header with a colored glow, a small status dot (green = activated,
+ * yellow = unlocked, red = locked), identification rows (Tag, ID, Ring, Level), and the node description.
+ * If the node is unlocked, an XP row and a horizontal progress bar are shown (xp out of 1000). An optional
+ * Data row is rendered when the node's data string is non-empty. A short status line at the bottom summarizes
+ * the node state:
+ *  - "🔒 Locked - Requires Path Progression" when not unlocked,
+ *  - "💤 Dormant - Click to Activate" when unlocked but not activated,
+ *  - "⚡ Active - Processing Data Flow" when activated.
+ *
+ * @param node The DataVeinNode whose information and status are rendered.
+ */
 @Composable
 fun NodeInfoPanel(
     node: DataVeinNode,

@@ -62,20 +62,13 @@ import androidx.compose.ui.unit.sp
  * static and hard-coded; the action button's onClick is a TODO placeholder.
  */
 /**
- * A static, centered fallback UI that presents a mocked "DataVein Sphere Grid" status dashboard.
+ * Composable UI screen that displays a mocked "DataVein" status dashboard.
  *
- * Renders a full-screen dark background with a centered Card containing:
- * - Title and subtitle
- * - A cyan horizontal divider
- * - A system status line
- * - Three colored status chips (Core Nodes, Active Flows, Data Streams)
- * - Multiline status details
- * - A cyan action button ("Launch Sphere Grid") with a TODO placeholder onClick
- * - A small yellow note about KSP compilation issues
- *
- * This composable is purely presentational and contains no navigation or side effects.
- *
- * @param modifier Optional [Modifier] for customizing the layout/appearance of the root container.
+ * Shows a centered card with title, subtitle, a cyan divider, overall system status,
+ * three status chips (Core Nodes, Active Flows, Data Streams), detailed status lines,
+ * an action button labeled "🚀 Launch Sphere Grid" (currently a TODO placeholder),
+ * and a small note indicating this is a fallback view while full implementation is pending.
+
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
