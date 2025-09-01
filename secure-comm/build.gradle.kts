@@ -1,50 +1,133 @@
 plugins {
-    alias(libs.plugins.android.library) // Version will be inherited (9.0.0-alpha02)
-   // alias(libs.plugins.kotlin.android) // Stays commented out
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.dokka)
-    alias(libs.plugins.spotless)
-    alias(libs.plugins.kover)
-    alias(libs.plugins.kotlin.android)
+    id("buildlogic.android-library-conventions")
+    id("org.jetbrains.kotlin.plugin.serialization")
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
+    id("org.jetbrains.dokka")
+    id("com.diffplug.spotless")
+    id("org.jetbrains.kotlinx.kover")
 }
 
+// Configure KSP
 ksp {
-    arg("kotlin.languageVersion", "2.2") // Match main Kotlin compiler
-    arg("kotlin.apiVersion", "2.2")    // Match main Kotlin compiler
+    // Set Kotlin language and API version
+    arg("kotlin.languageVersion", "2.2")
+    arg("kotlin.apiVersion", "2.2")
+    
+    // Enable incremental processing for better build performance
+    arg("room.incremental", "true")
+    
+    // Enable KSP's experimental parallel processing
+    arg("room.schemaLocation", "$projectDir/schemas")
+    
+    // Enable K2 compiler
+    arg("ksp.incremental.k2", "true")
+    
+    // Enable KSP's experimental mode for better performance
+    arg("ksp.incremental.log", "true")
 }
 
 android {
     namespace = "dev.aurakai.auraframefx.securecomm"
+    
+    // Enable Java 24 bytecode
     compileSdk = 36
-
+    
     defaultConfig {
-        minSdk = 23  // FIXED: Raised from 33 to support Android KeyStore APIs
+        minSdk = 23  // Required for Android KeyStore APIs
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
+        
         consumerProguardFiles("consumer-rules.pro")
+        
+        // Enable vector drawable support
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+        
+        // Enable Java 24 bytecode
+        buildConfigField("int", "TARGET_SDK_VERSION", "$compileSdk")
     }
 
     lint {
+        // Configure lint options
         abortOnError = false
         checkReleaseBuilds = false
         disable += setOf("InvalidPackage", "GradleDependency")
+        
+        // Enable lint checks for test sources
+        checkTestSources = true
+        ignoreTestSources = false
+        
+        // Enable all warnings as errors
+        warningsAsErrors = false
+        
+        // Enable HTML report
+        htmlReport = true
+        
+        // Configure lint baseline
+        baseline = file("lint-baseline.xml")
     }
 
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+        
+        debug {
+            // Enable test coverage in debug builds
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
+            
+            // Enable code shrinking in debug for faster builds
+            isMinifyEnabled = false
+            isShrinkResources = false
+        }
     }
 
+    // Enable build features
     buildFeatures {
-        compose = false
         buildConfig = true
-        viewBinding = false
+        aidl = false
+        renderScript = false
+        shaders = false
+    }
+    
+    // Configure Java compatibility
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
+        isCoreLibraryDesugaringEnabled = true
+    }
+    
+    // Configure Kotlin compiler options
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+            freeCompilerArgs.addAll(
+                "-Xjvm-default=all",
+                "-opt-in=kotlin.RequiresOptIn"
+            )
+        }
+    }
+    
+    // Configure test options
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+            all { test ->
+                test.testLogging {
+                    events("passed", "skipped", "failed")
+                    showStandardStreams = true
+                }
+            }
+        }
     }
 
     packaging {
@@ -68,40 +151,57 @@ dependencies {
     // SACRED RULE #5: DEPENDENCY HIERARCHY
     implementation(project(":core-module"))
 
-    // Core Android libraries (since this module uses Android APIs)
+    // Core Kotlin
+    implementation(libs.kotlin.stdlib.jdk8)
+    implementation(libs.kotlin.reflect)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.serialization.json)
+    
+    // AndroidX Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     
-    // Kotlin libraries
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.kotlin.reflect)
-    implementation(libs.bundles.coroutines)
-    implementation(libs.kotlinx.serialization.json)
-
-    // Hilt Dependency Injection (Android version)
+    // Security
+    implementation(libs.androidx.security.crypto)
+    implementation(libs.bouncycastle.bcprov)
+    implementation(libs.bouncycastle.bcpkix)
+    
+    // Dependency Injection
     implementation(libs.hilt.android)
-    testImplementation(libs.androidx.test.ext.junit)
-    // Use direct dependency notation due to unresolved alias issue
-    androidTestImplementation(libs.androidx.core.ktx)
     ksp(libs.hilt.compiler)
+    
+    // Testing
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)  // For testing Kotlin Flows
+    
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.compose.ui.test)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
-    testImplementation(libs.hilt.android.testing)
-    kspTest(libs.hilt.compiler)
-
-    // Networking
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.kotlinx.serialization)
-    implementation(libs.okhttp3.logging.interceptor)
-
-    // Enhanced Security Stack (Android compatible)
-    implementation(libs.bouncycastle)
+    
+    // Core library desugaring for Java 8+ APIs on older Android versions
+    coreLibraryDesugaring(libs.android.desugarJdkLibs)
+    
+    // Logging
+    implementation(libs.timber)
+    
+    // For testing with AndroidX Test and Hilt
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestUtil(libs.androidx.test.orchestrator)
 
     // Utilities
     implementation(libs.gson)
     implementation(libs.commons.io)
     implementation(libs.commons.compress)
-    implementation(libs.xz)
 
     // Testing
     testImplementation(libs.junit)

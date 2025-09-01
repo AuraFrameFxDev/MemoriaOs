@@ -1,72 +1,146 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.kotlin.compose)
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.serialization")
+    id("com.google.devtools.ksp")
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(24))
-    }
-}
+apply(from = rootProject.file("build-logic/src/main/kotlin/buildlogic.compose-conventions.gradle.kts"))
 
 android {
     namespace = "dev.aurakai.auraframefx.core"
-    compileSdk = 36
-
+    
     defaultConfig {
         minSdk = 33
+        
+        // Enable vector drawable support
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+        
+        // Enable Java 24 bytecode
+        compileSdk = 36
+        
+        // Test instrumentation runner
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    
+    sourceSets {
+        getByName("main") {
+            kotlin.srcDirs(file("build/generated/source/openapi/src/main/kotlin"))
+        }
+    }
+    
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+        
+        debug {
+            // Enable test coverage in debug builds
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
+            
+            // Disable minification for faster builds
+            isMinifyEnabled = false
+            isShrinkResources = false
+        }
     }
+    
+    // Enable build features
     buildFeatures {
-        compose = true
         buildConfig = true
+        compose = true
         viewBinding = false
     }
+    
+    // Configure Java compatibility
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_24
         targetCompatibility = JavaVersion.VERSION_24
+        isCoreLibraryDesugaringEnabled = true
     }
-
-    packaging {
-        resources { // This packaging block can be removed if there are no specific packaging resource rules
+    
+    // Configure Kotlin compiler options
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+            freeCompilerArgs.addAll(
+                "-Xjvm-default=all",
+                "-opt-in=kotlin.RequiresOptIn"
+            )
         }
     }
-
-    sourceSets {
-        getByName("main") {
-            kotlin.srcDirs(file("build/generated/source/openapi/src/main/kotlin")) // Corrected to function call
+    
+    // Configure test options
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+            all { test ->
+                test.testLogging {
+                    events("passed", "skipped", "failed")
+                    showStandardStreams = true
+                }
+            }
         }
     }
 }
 
 dependencies {
-    // Core Kotlin libraries
+    // Core Kotlin
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlin.reflect)
-    implementation(libs.bundles.coroutines)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.datetime)
-
-    // Networking (for the generated Retrofit client)
+    
+    // AndroidX Core
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${libs.versions.androidxLifecycle.get()}")
+    
+    // Compose
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.activity.compose)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    
+    // Dependency Injection
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    
+    // Networking
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.kotlinx.serialization)
-    implementation(libs.retrofit.converter.scalars)
     implementation(libs.okhttp3.logging.interceptor)
     
+    // Testing
+    testImplementation(libs.junit)
+    testImplementation("org.jetbrains.kotlin:kotlin-test:${libs.versions.kotlin.get()}")
+    testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    
+    // Core library desugaring for Java 8+ APIs on older Android versions
+    coreLibraryDesugaring(libs.coreLibraryDesugaring)
+
     // Apache Oltu OAuth (required by generated OAuth classes)
-    implementation(libs.apache.oltu.oauth2.client)
-    implementation(libs.apache.oltu.oauth2.common)
+    implementation("org.apache.oltu.oauth2:org.apache.oltu.oauth2.client:1.0.2")
+    implementation("org.apache.oltu.oauth2:org.apache.oltu.oauth2.common:1.0.2")
 
     // Utilities
     implementation(libs.gson)

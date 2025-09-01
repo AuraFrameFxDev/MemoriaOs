@@ -1,17 +1,14 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.android.application) // Added: Ensures Android app plugin is first
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
-    alias(libs.plugins.firebase.perf) // Corrected alias from previous step
-    alias(libs.plugins.detekt)
-    alias(libs.plugins.dokka)
-    alias(libs.plugins.spotless)
 }
 
 android {
@@ -106,18 +103,35 @@ android {
     }
 }
 
-kotlin {
-    jvmToolchain(24)
+
+// Explicit Java toolchain for AGP compatibility
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
 }
 
+
+// ===== ENSURE API GENERATION BEFORE COMPILATION =====
+// This ensures that all compilation and processing tasks wait for OpenAPI generation
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    dependsOn(":openApiGenerate")
+    dependsOn(":fixGeneratedApiCode")
+}
+
+// Critical: Ensure KSP waits for API generation since it needs the generated types
+tasks.withType<com.google.devtools.ksp.gradle.KspTask>().configureEach {
+    dependsOn(":openApiGenerate")
+    dependsOn(":fixGeneratedApiCode")
+}
 
 // ===== SIMPLIFIED CLEAN TASKS =====
 tasks.register<Delete>("cleanKspCache") {
     group = "build setup"
     description = "Clean KSP caches (fixes NullPointerException)"
-    
+
     val buildDirProvider = layout.buildDirectory
-    
+
     delete(
         buildDirProvider.dir("generated/ksp"),
         buildDirProvider.dir("tmp/kapt3"),
@@ -132,6 +146,8 @@ tasks.named("preBuild") {
     dependsOn("cleanKspCache")
     dependsOn(":cleanApiGeneration")
     dependsOn(":openApiGenerate")
+    dependsOn(":core-module:compileDebugKotlin")
+    dependsOn(":core-module:compileReleaseKotlin")
 }
 
 // Ensure KSP waits for generated sources
@@ -143,23 +159,23 @@ tasks.withType<com.google.devtools.ksp.gradle.KspTask>().configureEach {
 tasks.register("aegenesisAppStatus") {
     group = "aegenesis"
     description = "Show AeGenesis app module status"
-    
+
     doLast {
         println("📱 AEGENESIS APP MODULE STATUS")
         println("=".repeat(50))
-        
+
         val apiFile = layout.projectDirectory.file("api/unified-aegenesis-api.yml").asFile
         val apiExists = apiFile.exists()
         val apiSize = if (apiExists) apiFile.length() else 0
-        
+
         println("🔌 Unified API Spec: ${if (apiExists) "✅ Found" else "❌ Missing"}")
         if (apiExists) {
             println("📄 API File Size: ${apiSize / 1024}KB")
         }
-        
+
         val nativeCode = project.file("src/main/cpp/CMakeLists.txt").exists()
         println("🔧 Native Code: ${if (nativeCode) "✅ Enabled" else "❌ Disabled"}")
-        
+
         println("🧠 KSP Mode: ${project.findProperty("ksp.useKSP2") ?: "default"}")
         println("🎯 Target SDK: 36")
         println("📱 Min SDK: 33")
@@ -195,13 +211,13 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.hilt.work)
-    
+
     // WorkManager
     implementation(libs.androidx.work.runtime)
-    
+
     // DataStore
     implementation(libs.androidx.datastore.preferences)
-    
+
     // Moshi for JSON processing (required by NetworkModule)
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
