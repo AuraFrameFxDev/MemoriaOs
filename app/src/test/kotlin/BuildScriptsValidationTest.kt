@@ -901,14 +901,16 @@ class BuildScriptsValidationTest {
     @Test
     fun `compose options specify compiler extension version via version catalog`() {
         val content = buildFile.readText()
-        // Accept common patterns: either composeOptions block or kotlinCompilerExtensionVersion in android block
-        val hasComposeOptionsBlock = "composeOptions".toRegex().containsMatchIn(content)
-        assertTrue("composeOptions block should be present to declare Kotlin compiler extension version", hasComposeOptionsBlock)
-        // Ensure version comes from the version catalog (avoid hardcoding)
+
+        val pluginsBlock = Regex("plugins\\s*\\{[\\s\\S]*?\\}").find(content)?.value ?: ""
+        val usesComposePlugin = pluginsBlock.contains("org.jetbrains.kotlin.plugin.compose")
+        val usesCatalogComposeExt = Regex(
+            "kotlinCompilerExtensionVersion\\s*=\\s*libs\\.versions\\.composeCompiler(\\.get\\(\\))?"
+        ).containsMatchIn(content)
+
         assertTrue(
-            "Compose compiler extension version should be sourced from libs.versions.composeCompiler.get()",
-            content.contains("kotlinCompilerExtensionVersion") &&
-                    (content.contains("libs.versions.composeCompiler.get()") || content.contains("libs.versions.composeCompiler"))
+            "Either the Kotlin Compose plugin is applied (Kotlin 2.x) or composeOptions sets kotlinCompilerExtensionVersion from the version catalog",
+            usesComposePlugin || usesCatalogComposeExt
         )
     }
 
