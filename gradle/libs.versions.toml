@@ -41,6 +41,7 @@ kotlinxSerialization = "1.9.0"
 coroutinesTest = "1.10.2"
 
 # ===== Networking =====
+moshi = "1.15.1"
 okhttp = "5.1.0"
 retrofit = "3.0.0"
 
