@@ -976,11 +976,10 @@ class BuildScriptsValidationTest {
     }
     @Test
     fun `junit jupiter usage aligns with declared test dependencies`() {
-        val usingJupiterAnnotations = true // This test file imports org.junit.jupiter.api.*
         val moduleBuild = File("app/build.gradle.kts").readText()
-        if (usingJupiterAnnotations) {
-            assertTrue("Module should declare JUnit (platform or jupiter) test dependency via catalog", moduleBuild.contains("testImplementation") )
-        }
+        val hasJupiterDep = moduleBuild.contains(Regex("""testImplementation\([^)]*(junit-jupiter|libs\.junitJupiter)\b"""))
+                || moduleBuild.contains("useJUnitPlatform()")
+        assertTrue("Module should depend on JUnit Jupiter or enable JUnit Platform", hasJupiterDep)
     }
     @Test
     fun `gradle properties include useful flags when file exists`() {
