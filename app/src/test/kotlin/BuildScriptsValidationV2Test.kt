@@ -92,7 +92,7 @@ class BuildScriptsValidationV2Test {
         val preBuildBlocks = Regex("""tasks\.named\("preBuild"\)\s*\{""").findAll(content).count()
         assertTrue("There should be exactly one preBuild task configuration block", preBuildBlocks == 1)
     }
-// (Brace removed)
+}
     // Additional comprehensive tests (JUnit 5 + MockK)
     // These focus on ensuring the migration to plugin id() usage, Java/Kotlin toolchains,
     // Compose build features, Compose compiler settings, task wiring, and packaging details
