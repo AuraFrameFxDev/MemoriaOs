@@ -65,7 +65,9 @@ dependencies {
     implementation(libs.okhttp3.logging.interceptor)
     
     // Apache Oltu OAuth (required by generated OAuth classes)
-    implementation(libs.apache.oltu.oauth2.client)
+    implementation(libs.apache.oltu.oauth2.client) {
+        exclude(group = "org.apache.oltu.oauth2", module = "org.apache.oltu.oauth2.common")
+    }
     // Exclude common classes that are already included in client
     // implementation(libs.apache.oltu.oauth2.common)
 
