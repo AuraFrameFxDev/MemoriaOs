@@ -146,8 +146,6 @@ yuki = { module = "com.highcapable.yukihookapi:api", version.ref = "yuki" }
 yuki-ksp-xposed = { module = "com.highcapable.yukihookapi:ksp-xposed-pioneer", version.ref = "yuki" }
 
 # ===== Security & Crypto =====
-# File: gradle/libs.versions.toml1
-# Lines 150–155
 
 androidxSecurity = { group = "androidx.security", name = "security-crypto", version.ref = "androidxSecurity" }
 bcprov-jdk18on = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bcprovJdk18on" }
