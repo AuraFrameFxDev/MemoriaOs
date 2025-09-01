@@ -71,6 +71,16 @@ import androidx.compose.ui.unit.sp
  * Intended as a non-interactive visual stub while the full sphere grid implementation is unavailable.
 
  */
+/**
+ * A static Jetpack Compose fallback UI that simulates a "DataVein" status dashboard.
+ *
+ * Displays a centered card with a title, subtitle, a cyan divider, system status line,
+ * three status chips (Core Nodes, Active Flows, Data Streams), multi-line status details,
+ * a cyan action button ("Launch Sphere Grid") and a small note indicating this screen is
+ * a temporary fallback until KSP compilation issues are resolved.
+ *
+ * The action button's onClick is a placeholder and performs no navigation or side effects.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimpleDataVeinScreen(
