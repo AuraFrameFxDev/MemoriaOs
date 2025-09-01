@@ -21,12 +21,12 @@ class StringUtils {
         }
 
         /**
-         * Splits the input string into a LinkedList of substrings.
+         * Split a string into a LinkedList of substrings.
          *
-         * Delegates to SplitUtils.split to perform the actual splitting.
+         * Returns a LinkedList containing the substrings in the original order.
          *
          * @param source The string to split.
-         * @return A LinkedList containing the resulting substrings in order.
+         * @return A LinkedList of substrings produced from the input.
          */
         fun split(source: String): LinkedList {
             return SplitUtils.split(source)

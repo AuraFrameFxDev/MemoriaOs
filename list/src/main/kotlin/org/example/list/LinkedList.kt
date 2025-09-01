@@ -69,13 +69,13 @@ class LinkedList {
     }
 
     /**
-     * Remove `currentIt` from the list by relinking its predecessor or updating `head`.
+     * Unlink the given node from the list.
      *
-     * If `currentIt` is the current head, `head` is set to `currentIt.next`; otherwise
-     * `previousIt.next` is updated to skip `currentIt`.
+     * If `currentIt` is the head, updates `head` to `currentIt.next`; otherwise updates
+     * `previousIt.next` to skip `currentIt`.
      *
-     * @param previousIt The node immediately before `currentIt`, or null when `currentIt` is the head.
-     * @param currentIt The node to unlink from the list.
+     * @param previousIt The node immediately before `currentIt`, or null if `currentIt` is the head.
+     * @param currentIt The node to remove from the list.
      */
     private fun unlink(previousIt: Node?, currentIt: Node) {
         if (currentIt == head) {
@@ -105,10 +105,11 @@ class LinkedList {
     }
 
     /**
-     * Returns the element at the given 0-based index in the list.
+     * Return the element at the given 0-based index.
      *
-     * If `idx` is negative it is treated as 0 (the head element). Throws
-     * IndexOutOfBoundsException when the index is out of range or the list is empty.
+     * Negative indices are treated as 0 (the head). If the index is greater than
+     * or equal to the list size (or the list is empty), an [IndexOutOfBoundsException]
+     * is thrown.
      *
      * @param idx 0-based position of the element to retrieve.
      * @return the string stored at the specified index.

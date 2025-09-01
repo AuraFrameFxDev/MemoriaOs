@@ -39,10 +39,10 @@ class SplitUtils {
         }
 
         /**
-         * Adds the given token to the provided list if the token is considered valid (non-empty).
+         * Appends the token to the given list if the token is non-empty.
          *
-         * @param token Candidate token; only added when not empty.
-         * @param list Destination LinkedList which will be mutated to include the token when valid.
+         * @param token The candidate token to add; ignored when empty.
+         * @param list The destination LinkedList that will be mutated to include `token` when valid.
          */
         private fun addIfValid(token: String, list: LinkedList) {
             if (isTokenValid(token)) {
