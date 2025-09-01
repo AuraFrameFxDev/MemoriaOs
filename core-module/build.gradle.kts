@@ -85,11 +85,9 @@ dependencies {
 // It's good practice, although registering the source set might already establish this dependency.
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     dependsOn(":openApiGenerate")
-    dependsOn(":fixGeneratedApiCode")
 }
 
 // Ensure KSP also waits for API generation
 tasks.withType<com.google.devtools.ksp.gradle.KspTask>().configureEach {
     dependsOn(":openApiGenerate")
-    dependsOn(":fixGeneratedApiCode")
 }
