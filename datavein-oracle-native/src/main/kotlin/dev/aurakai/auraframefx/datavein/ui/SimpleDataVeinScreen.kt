@@ -38,6 +38,15 @@ import androidx.compose.ui.unit.sp
  * @param modifier Modifier applied to the outer container (Box); use to adjust layout or
  * positioning from the caller.
  */
+/**
+ * Composable screen showing a centered, card-based debug UI for a mocked "DataVein" status dashboard.
+ *
+ * The UI is a full-screen dark background with a translucent black card containing a title, subtitle,
+ * a cyan divider, a system status line, three status chips (Core Nodes, Active Flows, Data Streams),
+ * multiline status details, an action button (placeholder — no navigation or side effects), and a small note.
+ *
+ * @param modifier Optional [Modifier] for styling or positioning the root container.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimpleDataVeinScreen(
