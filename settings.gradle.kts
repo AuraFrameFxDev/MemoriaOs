@@ -23,7 +23,7 @@ dependencyResolutionManagement {
 // Bleeding-Edge Features
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE") 
-enableFeaturePreview("VERSION_CATALOGS")
+//verisoncatalogs doesnt exist called automatically look at the versions//
 
 rootProject.name = "Genesis-Os"
 
