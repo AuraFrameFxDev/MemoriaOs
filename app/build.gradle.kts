@@ -274,7 +274,8 @@ dependencies {
     testRuntimeOnly(libs.junit.engine)
 
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.core) // Updated to use version catalog
+    androidTestImplementation(libs.androidx.test.core)
+
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
