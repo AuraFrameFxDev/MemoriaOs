@@ -45,11 +45,19 @@ android {
         viewBinding = false  // Genesis Protocol - Compose only
     }
 
-    // Removed android { kotlin { ... } } block as compilerOptions are handled by root build.gradle.kts
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_24
         targetCompatibility = JavaVersion.VERSION_24
+        isCoreLibraryDesugaringEnabled = true
+    }
+
+    kotlin {
+        jvmToolchain(24)
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+        }
     }
 
     packaging {
@@ -85,9 +93,8 @@ dependencies {
     // Utilities
     implementation(libs.bundles.utilities)
 
-    // Core library desugaring
-    coreLibraryDesugaring(libs.coreLibraryDesugaring)
-
+    // Core library desugaring - using modern DSL
+    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
     // Testing
     testImplementation(libs.bundles.testing)
     testImplementation(libs.junit.engine) // Changed from testRuntimeOnly for consistency

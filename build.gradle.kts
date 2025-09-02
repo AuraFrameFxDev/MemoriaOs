@@ -1,3 +1,7 @@
+import java.io.File
+import org.openapitools.generator.gradle.plugin.tasks.MetaTask
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
@@ -7,34 +11,67 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.google.services) apply false
-    alias(libs.plugins.firebase.crashlytics) apply false
     alias(libs.plugins.firebase.perf) apply false
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.openapi.generator) apply false
+    alias(libs.plugins.kover) apply false
+    alias(libs.plugins.dokka) apply false
 }
 
-val hasValidSpecFile by extra(file("app/api/unified-aegenesis-api.yml").exists())
+val specFile = file("app/api/unified-aegenesis-api.yml")
+val hasValidSpecFile by extra(specFile.exists())
 
 // Advanced OpenAPI Configuration
 apply(plugin = "org.openapi.generator")
 
-configure<org.openapitools.generator.gradle.plugin.extensions.OpenApiGeneratorGenerateExtension> {
-    generatorName.set("kotlin")
-    inputSpec.set("$rootDir/app/api/unified-aegenesis-api.yml")
-    outputDir.set("$rootDir/core-module/build/generated/source/openapi")
-    apiPackage.set("dev.aurakai.auraframefx.api")
-    modelPackage.set("dev.aurakai.auraframefx.model")
-    configOptions.set(mapOf(
-        "dateLibrary" to "kotlinx-datetime",
-        "serializationLibrary" to "kotlinx_serialization",
-        "useCoroutines" to "true"
-    ))
-}
+// Only configure OpenAPI tasks if the spec file exists
+if (specFile.exists()) {
+    // Configure the meta task if it doesn't exist
+    if (!tasks.names.contains("openApiMeta")) {
+        tasks.register<MetaTask>("openApiMeta") {
+            generatorName.set("kotlin")
+            packageName.set("dev.aurakai.auraframefx.generated")
+            outputFolder.set("${project.layout.buildDirectory.get().asFile.absolutePath}/openapi-meta")
+        }
+    }
 
-tasks.named<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerate") {
-    group = "openapi tools"
-    description = "Generate Kotlin API client from OpenAPI spec"
-    onlyIf { file("app/api/unified-aegenesis-api.yml").exists() }
+    // Configure the generation extension
+    extensions.configure<org.openapitools.generator.gradle.plugin.extensions.OpenApiGeneratorGenerateExtension> {
+        generatorName.set("kotlin")
+        inputSpec.set(specFile.absolutePath.replace("\\", "/"))
+        outputDir.set("${project.rootDir.absolutePath}/core-module/build/generated/source/openapi"
+            .replace("\\", "/")
+            .replace("//", "/")
+        )
+        apiPackage.set("dev.aurakai.auraframefx.api")
+        modelPackage.set("dev.aurakai.auraframefx.model")
+        configOptions.set(mapOf(
+            "dateLibrary" to "kotlinx-datetime",
+            "serializationLibrary" to "kotlinx_serialization",
+            "useCoroutines" to "true"
+        ))
+        validateSpec.set(true)
+        skipValidateSpec.set(false)
+        logToStderr.set(true)
+        verbose.set(true)
+    }
+
+    // Configure the generate task
+    tasks.withType<GenerateTask> {
+        group = "openapi tools"
+        description = "Generate Kotlin API client from OpenAPI spec"
+        
+        // Ensure output directory exists and is clean
+        outputs.upToDateWhen { false } // Always run to ensure clean generation
+        
+        doFirst {
+            val outputDir = file("${project.rootDir.absolutePath}/core-module/build/generated/source/openapi")
+            if (outputDir.exists()) {
+                outputDir.deleteRecursively()
+            }
+            outputDir.parentFile?.mkdirs()
+        }
+    }
 }
 
 tasks.register<Delete>("cleanApiGeneration") {

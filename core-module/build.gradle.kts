@@ -1,9 +1,9 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.android.library)         // Android library module
+    alias(libs.plugins.kotlin.android)          // Android-only Kotlin
+    id("org.jetbrains.kotlin.plugin.compose")  // Official Compose compiler plugin
+    alias(libs.plugins.kotlin.serialization)    // Kotlinx serialization
+    alias(libs.plugins.ksp)                     // Kotlin Symbol Processing
 }
 
 java {
@@ -19,6 +19,7 @@ android {
     defaultConfig {
         minSdk = 33
     }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -28,68 +29,93 @@ android {
             )
         }
     }
+
     buildFeatures {
         compose = true
         buildConfig = true
         viewBinding = false
     }
+
+    // Java compatibility settings
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_24
         targetCompatibility = JavaVersion.VERSION_24
+        isCoreLibraryDesugaringEnabled = true
+    }
+
+    // Kotlin compiler options
+    kotlin {
+        jvmToolchain(24)
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+        }
+    }
+
+    // Compose Compiler Configuration (Modern approach as of Kotlin 2.0+)
+    composeCompiler {
+        reportsDestination = layout.buildDirectory.dir("compose_compiler")
     }
 
     packaging {
-        resources { // This packaging block can be removed if there are no specific packaging resource rules
+        resources {
+            excludes += "/META-INF/**"
         }
     }
 
     sourceSets {
         getByName("main") {
-            kotlin.srcDirs(file("build/generated/source/openapi/src/main/kotlin")) // Corrected to function call
+            java {
+                srcDirs("build/generated/source/openapi/src/main/kotlin")
+            }
         }
     }
-}
 
-dependencies {
-    // Core Kotlin libraries
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.kotlin.reflect)
-    implementation(libs.bundles.coroutines)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.kotlinx.datetime)
+    dependencies {
+        // Core Kotlin libraries
+        implementation(libs.kotlin.stdlib)
+        implementation(libs.kotlin.reflect)
+        implementation(libs.bundles.coroutines)
+        implementation(libs.kotlinx.serialization.json)
+        implementation(libs.kotlinx.datetime)
 
-    // Networking (for the generated Retrofit client)
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.kotlinx.serialization)
-    implementation(libs.retrofit.converter.scalars)
-    implementation(libs.okhttp3.logging.interceptor)
-    
-    // Apache Oltu OAuth (required by generated OAuth classes)
-    implementation(libs.apache.oltu.oauth2.client) {
-        exclude(group = "org.apache.oltu.oauth2", module = "org.apache.oltu.oauth2.common")
+        // Networking (for the generated Retrofit client)
+        implementation(libs.retrofit)
+        implementation(libs.retrofit.converter.kotlinx.serialization)
+        implementation(libs.retrofit.converter.scalars)
+        implementation(libs.okhttp3.logging.interceptor)
+
+        // Apache Oltu OAuth (required by generated OAuth classes)
+        implementation(libs.apache.oltu.oauth2.client) {
+            exclude(group = "org.apache.oltu.oauth2", module = "org.apache.oltu.oauth2.common")
+        }
+        // Exclude common classes that are already included in client
+        // implementation(libs.apache.oltu.oauth2.common)
+
+        // Core Library Desugaring
+        coreLibraryDesugaring(libs.android.desugar.jdk.libs)
+
+        // Utilities
+        implementation(libs.gson)
+
+        // Security
+
+        // Testing
+        testImplementation(libs.junit)
+        testImplementation(libs.mockk)
+
+        androidTestImplementation(libs.androidx.core.ktx)
     }
-    // Exclude common classes that are already included in client
-    // implementation(libs.apache.oltu.oauth2.common)
 
-    // Utilities
-    implementation(libs.gson)
 
-    // Security
 
-    // Testing
-    testImplementation(libs.junit)
-    testImplementation(libs.mockk)
-
-    androidTestImplementation(libs.androidx.core.ktx)
-}
-
-// This ensures that Kotlin compilation and KSP tasks run after the openApiGenerate task.
-// It's good practice, although registering the source set might already establish this dependency.
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    dependsOn(":openApiGenerate")
-}
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        dependsOn(":openApiGenerate")
+    }
 
 // Ensure KSP also waits for API generation
-tasks.withType<com.google.devtools.ksp.gradle.KspTask>().configureEach {
-    dependsOn(":openApiGenerate")
+    tasks.withType<com.google.devtools.ksp.gradle.KspTask>().configureEach {
+        dependsOn(":openApiGenerate")
+    }
 }

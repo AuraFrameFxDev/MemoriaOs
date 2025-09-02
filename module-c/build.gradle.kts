@@ -51,6 +51,12 @@ android {
         targetCompatibility = JavaVersion.VERSION_24
     }
 
+    kotlinOptions {
+        jvmTarget = "24"
+        apiVersion = "2.2"
+        languageVersion = "2.2"
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"

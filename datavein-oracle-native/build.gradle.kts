@@ -88,6 +88,16 @@ android {
         sourceCompatibility = JavaVersion.VERSION_24
         targetCompatibility = JavaVersion.VERSION_24
     }
+
+    // Kotlin compiler options using the new DSL
+    kotlin {
+        jvmToolchain(24)
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+        }
+    }
 }
 
 dependencies {
@@ -122,7 +132,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     // Core library desugaring
-    coreLibraryDesugaring(libs.coreLibraryDesugaring)
+    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
 
     // Xposed Framework - LSPosed Integration
     implementation(libs.bundles.xposed)

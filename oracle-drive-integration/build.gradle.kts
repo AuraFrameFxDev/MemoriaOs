@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -74,6 +72,17 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_24
         targetCompatibility = JavaVersion.VERSION_24
+        isCoreLibraryDesugaringEnabled = true
+    }
+    
+    // Kotlin compiler options using the new DSL
+    kotlin {
+        jvmToolchain(24)
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+        }
     }
 
     packaging {
@@ -120,7 +129,7 @@ dependencies {
     ksp(libs.room.compiler)
 
     // Core library desugaring
-    coreLibraryDesugaring(libs.coreLibraryDesugaring)
+    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
 
     // Xposed Framework - Complete Integration
     implementation(libs.bundles.xposed)

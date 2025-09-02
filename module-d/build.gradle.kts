@@ -51,6 +51,12 @@ android {
         sourceCompatibility = JavaVersion.VERSION_24
         targetCompatibility = JavaVersion.VERSION_24
     }
+
+    kotlinOptions {
+        jvmTarget = "24"
+        apiVersion = "2.2"
+        languageVersion = "2.2"
+    }
     // REMOVED: composeOptions - AGP 8.13.0-rc01 auto-detects from version catalog!
 
     packaging {

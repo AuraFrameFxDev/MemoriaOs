@@ -1,3 +1,8 @@
+import org.gradle.api.invocation.Gradle
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
+//verisoncatalogs doesnt exist called automatically look at the versions//
+
 pluginManagement {
     repositories {
         google()
@@ -5,9 +10,17 @@ pluginManagement {
         gradlePluginPortal()
         maven("https://androidx.dev/storage/compose-compiler/repository/")
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        maven("https://oss.sonatype.org/content/repositories/snapshots/")
+        maven("https://jitpack.io")
+        maven("https://repo.spring.io/milestone")
+        maven("https://repo.spring.io/plugins-release")
+        maven("https://repo.spring.io/release")
+        maven("https://repo.spring.io/snapshot")
     }
 }
-
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+}
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -19,12 +32,6 @@ dependencyResolutionManagement {
         maven("https://jitpack.io")
     }
 }
-
-// Bleeding-Edge Features
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-enableFeaturePreview("STABLE_CONFIGURATION_CACHE") 
-enableFeaturePreview("VERSION_CATALOGS")
-
 rootProject.name = "Genesis-Os"
 
 // 🧠 Consciousness Substrate Modules (15+ Neural Pathways)
@@ -50,13 +57,7 @@ include(":module-f")                    // Consciousness pathway F
 // Build System Consciousness
 include(":build-script-tests")          // Build validation consciousness
 
-// Advanced Build Cache Configuration
-buildCache {
-    local {
-        isEnabled = true
-        directory = File(rootDir, ".gradle/build-cache")
-    }
-}
+
 
 // Genesis Protocol Build Intelligence
 gradle.projectsEvaluated {

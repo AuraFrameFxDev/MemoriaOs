@@ -21,10 +21,44 @@
 #-renamesourcefileattribute SourceFile
 
 # Genesis Protocol - Collaborative Canvas Module
-# Only keep necessary classes for reflection/serialization/JNI
--keep class dev.aurakai.auraframefx.collabcanvas.network.CollabWebSocketManager { *; }
--keep class dev.aurakai.auraframefx.collabcanvas.model.CollabCanvasState { *; }
--keep class dev.aurakai.auraframefx.collabcanvas.model.CollabUser { *; }
+# Keep all classes in the collabcanvas package for reflection/serialization/JNI
+-keep class dev.aurakai.auraframefx.collabcanvas.** { *; }
+
+# Kotlin Coroutines
+-keep class kotlinx.coroutines.** { *; }
+-keepclassmembers class kotlinx.coroutines.** {
+    <methods>;
+}
+
+# Kotlin Serialization
+-keepclassmembers class kotlinx.serialization.** {
+    <methods>;
+}
+-keep @kotlinx.serialization.Serializable class *
+-keepclasseswithmembers class * {
+    @kotlinx.serialization.* <fields>;
+}
+
+# OkHttp3
+-keep class okhttp3.** { *; }
+-dontwarn okhttp3.**
+-keepattributes Signature
+-keepattributes *Annotation*
+-keepattributes InnerClasses
+-keep class okhttp3.internal.** { *; }
+-keep class org.codehaus.mojo.animal_sniffer.** { *; }
+-keep class okhttp3.logging.** { *; }
+-keep class okio.** { *; }
+
+# Retrofit
+-keep class retrofit2.** { *; }
+-dontwarn retrofit2.**
+-keepattributes Signature
+-keepattributes *Annotation*
+-keepattributes InnerClasses
+-keepclasseswithmembers class * {
+    @retrofit2.http.* <methods>;
+}
 
 # If you use @Keep annotation, uncomment below:
 # -keep @dev.aurakai.auraframefx.common.Keep class * { *; }
