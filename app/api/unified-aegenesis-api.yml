@@ -942,11 +942,9 @@ components:
       type: object
       properties:
         testType: {type: string, enum: [VISUAL, FUNCTIONAL, PERFORMANCE, ACCESSIBILITY]}
-        parameters:
-          type: string
-          description: "Test parameters as JSON string"
-          nullable: true
-          example: "{\"timeout\": 5000, \"retries\": 3}"
+        parameters: {type: object, additionalProperties: true, x-field-extra-annotation: "@Contextual"}
+       
+
 
     ComponentTestResult:
       type: object
