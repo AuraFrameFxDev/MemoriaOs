@@ -78,7 +78,7 @@ android {
         implementation(libs.kotlin.reflect)
         implementation(libs.bundles.coroutines)
         implementation(libs.kotlinx.serialization.json)
-        implementation(libs.kotlinx.datetime)
+        implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
 
         // Networking (for the generated Retrofit client)
         implementation("com.squareup.retrofit2:retrofit:${libs.versions.retrofit.get()}")

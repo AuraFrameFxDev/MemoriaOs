@@ -84,12 +84,10 @@ android {
     }
 
     dependencies {
-        // Core library desugaring for Java 8+ API support
-        coreLibraryDesugaring(libs.coreLibraryDesugaring)
-
         // SACRED RULE #5: DEPENDENCY HIERARCHY
         implementation(project(":core-module"))
-
+        // Core library desugaring for Java 8+ API support
+        coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
         // Core Android libraries (since this module uses Android APIs)
         implementation(libs.androidx.core.ktx)
         implementation(libs.androidx.appcompat)

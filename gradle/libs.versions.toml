@@ -9,7 +9,6 @@ kotlin = "2.2.20-RC"
 kotlinReflect = "2.2.20-RC"
 kotlinStdlib = "2.2.20-RC"
 
-kotlinxDatetime = "0.5.0"
 ksp = "2.2.20-RC-2.0.2"
 
 materialVersion = "1.12.0"
@@ -174,7 +173,6 @@ androidx-annotation-experimental = { module = "androidx.annotation:annotation-ex
 androidx-fragment = { module = "androidx.fragment:fragment", version = "1.5.1" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version = "2.5.1" }
 androidx-savedstate = { module = "androidx.savedstate:savedstate", version = "1.2.0" }
-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 timber = { module = "com.jakewharton.timber:timber", version = "5.0.1" }
 
