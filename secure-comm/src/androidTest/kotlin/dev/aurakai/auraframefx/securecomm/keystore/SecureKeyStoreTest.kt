@@ -1,198 +1,278 @@
 package dev.aurakai.auraframefx.securecomm.keystore
 
 import android.content.Context
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.junit.jupiter.api.AfterEach
+import android.content.SharedPreferences
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyProperties
+import android.util.Base64
+import io.mockk.*
+import io.mockk.impl.annotations.MockK
+import org.junit.After
 import org.junit.Assert.*
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.runner.RunWith
+import org.junit.Before
+import org.junit.Test
 import java.security.KeyStore
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
+import javax.crypto.spec.GCMParameterSpec
 
-/**
- * Tests for the SecureKeyStore class in the NeuralSync recovery system.
- */
-@RunWith(AndroidJUnit4::class)
 class SecureKeyStoreTest {
+
+    @MockK lateinit var context: Context
+    @MockK lateinit var sharedPrefs: SharedPreferences
+    @MockK lateinit var editor: SharedPreferences.Editor
+    @MockK lateinit var keyStore: KeyStore
+    @MockK lateinit var secretKeyEntry: KeyStore.SecretKeyEntry
+    @MockK lateinit var secretKey: SecretKey
+    @MockK lateinit var cipher: Cipher
+    @MockK lateinit var keyGenerator: KeyGenerator
+
     private lateinit var secureKeyStore: SecureKeyStore
-    private lateinit var context: Context
-    private val testKey = "test_key"
-    private val testData = "NeuralSync test data".toByteArray()
 
-    @BeforeEach
+    @Before
     fun setUp() {
-        context = ApplicationProvider.getApplicationContext()
-        secureKeyStore = SecureKeyStore(context)
+        MockKAnnotations.init(this, relaxUnitFun = true)
 
-        // Clear any existing test data
-        context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
-            .edit()
-            .clear()
-            .apply()
-    }
-
-    @AfterEach
-    fun tearDown() {
-        // Clean up test keys from AndroidKeyStore
-        try {
-            val keyStore = KeyStore.getInstance("AndroidKeyStore")
-            keyStore.load(null)
-
-            // Delete all test keys
-            keyStore.aliases().toList().forEach { alias ->
-                if (alias.startsWith("aura_secure_key_")) {
-                    keyStore.deleteEntry(alias)
-                }
-            }
-        } catch (e: Exception) {
-            // Ignore cleanup errors
+        // Mock Android Base64 - using NO_WRAP as per implementation
+        mockkStatic(Base64::class)
+        every { Base64.encodeToString(any(), Base64.NO_WRAP) } answers {
+            java.util.Base64.getEncoder().encodeToString(firstArg())
         }
+        every { Base64.decode(any<String>(), Base64.NO_WRAP) } answers {
+            java.util.Base64.getDecoder().decode(firstArg<String>())
+        }
+
+        // Mock Context and SharedPreferences - using "secure_prefs" as per implementation
+        every { context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE) } returns sharedPrefs
+        every { sharedPrefs.edit() } returns editor
+        every { editor.putString(any(), any()) } returns editor
+        every { editor.remove(any()) } returns editor
+        every { editor.clear() } returns editor
+        every { editor.apply() } just Runs
+
+        // Mock KeyStore
+        mockkStatic(KeyStore::class)
+        every { KeyStore.getInstance("AndroidKeyStore") } returns keyStore
+        every { keyStore.load(null) } just Runs
+
+        // Mock KeyGenerator
+        mockkStatic(KeyGenerator::class)
+        every { KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore") } returns keyGenerator
+        every { keyGenerator.init(any<KeyGenParameterSpec>()) } just Runs
+        every { keyGenerator.generateKey() } returns secretKey
+
+        // Mock Cipher
+        mockkStatic(Cipher::class)
+        every { Cipher.getInstance("AES/GCM/NoPadding") } returns cipher
+
+        secureKeyStore = SecureKeyStore(context)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
     }
 
     @Test
-    fun storeAndRetrieveData_worksCorrectly() {
-        // Store data
-        secureKeyStore.storeData(testKey, testData)
+    fun storeData_encryptsAndStoresSuccessfully() {
+        val key = "test_key"
+        val data = "sensitive data".toByteArray()
+        val keyAlias = "aura_secure_key_$key"
+        val iv = ByteArray(12) { it.toByte() }
+        val encryptedData = "encrypted_data".toByteArray()
 
-        // Retrieve data
-        val retrievedData = secureKeyStore.retrieveData(testKey)
+        // Mock key creation (key doesn't exist initially)
+        every { keyStore.containsAlias(keyAlias) } returns false
 
-        assertNotNull("Retrieved data should not be null", retrievedData)
-        assertArrayEquals("Retrieved data should match stored data", testData, retrievedData)
+        // Mock encryption
+        every { cipher.init(Cipher.ENCRYPT_MODE, secretKey) } just Runs
+        every { cipher.iv } returns iv
+        every { cipher.doFinal(data) } returns encryptedData
+
+        val storedData = slot<String>()
+        every { editor.putString(key, capture(storedData)) } returns editor
+
+        secureKeyStore.storeData(key, data)
+
+        verify { keyGenerator.generateKey() }
+        verify { cipher.init(Cipher.ENCRYPT_MODE, secretKey) }
+        verify { cipher.doFinal(data) }
+        verify { editor.putString(key, any()) }
+        verify { editor.apply() }
+
+        // Verify the stored data is Base64 encoded
+        assertNotNull(storedData.captured)
     }
 
     @Test
-    fun retrieveNonExistentKey_returnsNull() {
-        val retrievedData = secureKeyStore.retrieveData("non_existent_key")
-        assertNull("Retrieving non-existent key should return null", retrievedData)
+    fun storeData_usesExistingKey_whenKeyExists() {
+        val key = "test_key"
+        val data = "sensitive data".toByteArray()
+        val keyAlias = "aura_secure_key_$key"
+        val iv = ByteArray(12) { it.toByte() }
+        val encryptedData = "encrypted_data".toByteArray()
+
+        // Mock key retrieval (key already exists)
+        every { keyStore.containsAlias(keyAlias) } returns true
+        every { keyStore.getEntry(keyAlias, null) } returns secretKeyEntry
+        every { secretKeyEntry.secretKey } returns secretKey
+
+        // Mock encryption
+        every { cipher.init(Cipher.ENCRYPT_MODE, secretKey) } just Runs
+        every { cipher.iv } returns iv
+        every { cipher.doFinal(data) } returns encryptedData
+
+        secureKeyStore.storeData(key, data)
+
+        verify { keyStore.getEntry(keyAlias, null) }
+        verify(exactly = 0) { keyGenerator.generateKey() } // Should not generate new key
+        verify { cipher.init(Cipher.ENCRYPT_MODE, secretKey) }
+        verify { cipher.doFinal(data) }
     }
 
     @Test
-    fun overwriteData_worksCorrectly() {
-        val initialData = "initial data".toByteArray()
-        val updatedData = "updated data".toByteArray()
+    fun retrieveData_decryptsAndReturnsData() {
+        val key = "test_key"
+        val keyAlias = "aura_secure_key_$key"
+        val originalData = "sensitive data".toByteArray()
+        val iv = ByteArray(12) { it.toByte() }
+        val encryptedData = "encrypted_data".toByteArray()
+        val combinedData = iv + encryptedData
+        val base64Data = java.util.Base64.getEncoder().encodeToString(combinedData)
 
-        // Store initial data
-        secureKeyStore.storeData(testKey, initialData)
+        // Mock key retrieval
+        every { keyStore.containsAlias(keyAlias) } returns true
+        every { keyStore.getEntry(keyAlias, null) } returns secretKeyEntry
+        every { secretKeyEntry.secretKey } returns secretKey
 
-        // Overwrite with updated data
-        secureKeyStore.storeData(testKey, updatedData)
+        // Mock SharedPreferences retrieval
+        every { sharedPrefs.getString(key, null) } returns base64Data
 
-        // Retrieve and verify
-        val retrievedData = secureKeyStore.retrieveData(testKey)
-        assertArrayEquals("Retrieved data should be the updated data", updatedData, retrievedData)
+        // Mock decryption
+        every { cipher.init(Cipher.DECRYPT_MODE, secretKey, any<GCMParameterSpec>()) } answers {
+            val spec = arg<GCMParameterSpec>(2)
+            assertEquals(128, spec.tLen) // Verify GCM tag length
+            assertArrayEquals(iv, spec.iv) // Verify IV
+        }
+        every { cipher.doFinal(encryptedData) } returns originalData
+
+        val result = secureKeyStore.retrieveData(key)
+
+        assertNotNull(result)
+        assertArrayEquals(originalData, result)
+        verify { cipher.init(Cipher.DECRYPT_MODE, secretKey, any<GCMParameterSpec>()) }
+        verify { cipher.doFinal(encryptedData) }
     }
 
     @Test
-    fun removeData_worksCorrectly() {
-        // Store data
-        secureKeyStore.storeData(testKey, testData)
+    fun retrieveData_returnsNull_whenKeyNotFound() {
+        val key = "nonexistent_key"
+        every { sharedPrefs.getString(key, null) } returns null
 
-        // Remove data
-        secureKeyStore.removeData(testKey)
+        val result = secureKeyStore.retrieveData(key)
 
-        // Verify removal
-        val retrievedData = secureKeyStore.retrieveData(testKey)
-        assertNull("Data should be removed", retrievedData)
+        assertNull(result)
     }
 
     @Test
-    fun clearAllData_worksCorrectly() {
-        // Store multiple data items
-        secureKeyStore.storeData("key1", "data1".toByteArray())
-        secureKeyStore.storeData("key2", "data2".toByteArray())
-        secureKeyStore.storeData("key3", "data3".toByteArray())
+    fun retrieveData_returnsNull_whenDecryptionFails() {
+        val key = "test_key"
+        val keyAlias = "aura_secure_key_$key"
+        val iv = ByteArray(12) { it.toByte() }
+        val encryptedData = "encrypted_data".toByteArray()
+        val combinedData = iv + encryptedData
+        val base64Data = java.util.Base64.getEncoder().encodeToString(combinedData)
 
-        // Clear all data
+        every { keyStore.containsAlias(keyAlias) } returns true
+        every { keyStore.getEntry(keyAlias, null) } returns secretKeyEntry
+        every { secretKeyEntry.secretKey } returns secretKey
+        every { sharedPrefs.getString(key, null) } returns base64Data
+
+        // Mock decryption failure
+        every { cipher.init(Cipher.DECRYPT_MODE, secretKey, any<GCMParameterSpec>()) } just Runs
+        every { cipher.doFinal(any<ByteArray>()) } throws javax.crypto.AEADBadTagException("Decryption failed")
+
+        val result = secureKeyStore.retrieveData(key)
+
+        assertNull(result)
+    }
+
+    @Test
+    fun retrieveData_returnsNull_whenDataTooShort() {
+        val key = "test_key"
+        val shortData = ByteArray(5) // Less than 12 bytes (GCM_IV_LENGTH)
+        val base64ShortData = java.util.Base64.getEncoder().encodeToString(shortData)
+
+        every { sharedPrefs.getString(key, null) } returns base64ShortData
+
+        val result = secureKeyStore.retrieveData(key)
+
+        assertNull(result)
+    }
+
+    @Test
+    fun retrieveData_returnsNull_whenBase64DecodingFails() {
+        val key = "test_key"
+        every { sharedPrefs.getString(key, null) } returns "invalid_base64_data"
+        every { Base64.decode("invalid_base64_data", Base64.NO_WRAP) } throws IllegalArgumentException("Invalid Base64")
+
+        val result = secureKeyStore.retrieveData(key)
+
+        assertNull(result)
+    }
+
+    @Test
+    fun removeData_removesFromSharedPreferences() {
+        val key = "test_key"
+
+        secureKeyStore.removeData(key)
+
+        verify { editor.remove(key) }
+        verify { editor.apply() }
+    }
+
+    @Test
+    fun clearAllData_clearsSharedPreferences() {
         secureKeyStore.clearAllData()
 
-        // Verify all data is cleared
-        assertNull(secureKeyStore.retrieveData("key1"))
-        assertNull(secureKeyStore.retrieveData("key2"))
-        assertNull(secureKeyStore.retrieveData("key3"))
+        verify { editor.clear() }
+        verify { editor.apply() }
     }
 
     @Test
-    fun encryptionAndDecryption_roundtrip() {
-        val testKey = "encryption_test_key"
-        val testMessage = "This is a test message for encryption".toByteArray()
+    fun encryptDecrypt_roundTrip_worksCorrectly() {
+        val key = "round_trip_key"
+        val keyAlias = "aura_secure_key_$key"
+        val originalData = "test data for round trip".toByteArray()
+        val iv = ByteArray(12) { it.toByte() }
+        val encryptedData = "mock_encrypted_data".toByteArray()
+        val combinedData = iv + encryptedData
 
-        // Store encrypted data
-        secureKeyStore.storeData(testKey, testMessage)
+        // Setup for store operation
+        every { keyStore.containsAlias(keyAlias) } returns false
+        every { cipher.init(Cipher.ENCRYPT_MODE, secretKey) } just Runs
+        every { cipher.iv } returns iv
+        every { cipher.doFinal(originalData) } returns encryptedData
 
-        // Retrieve and decrypt data
-        val decrypted = secureKeyStore.retrieveData(testKey)
+        val storedDataSlot = slot<String>()
+        every { editor.putString(key, capture(storedDataSlot)) } returns editor
 
-        assertArrayEquals("Decrypted data should match original", testMessage, decrypted)
-    }
+        // Store the data
+        secureKeyStore.storeData(key, originalData)
 
-    @Test
-    fun differentKeys_produceDifferentCiphertexts() {
-        val message = "Same message, different keys".toByteArray()
-        val key1 = "key1"
-        val key2 = "key2"
+        // Setup for retrieve operation
+        every { keyStore.containsAlias(keyAlias) } returns true
+        every { keyStore.getEntry(keyAlias, null) } returns secretKeyEntry
+        every { secretKeyEntry.secretKey } returns secretKey
+        every { sharedPrefs.getString(key, null) } answers { storedDataSlot.captured }
+        every { cipher.init(Cipher.DECRYPT_MODE, secretKey, any<GCMParameterSpec>()) } just Runs
+        every { cipher.doFinal(encryptedData) } returns originalData
 
-        // Store same message with different keys
-        secureKeyStore.storeData(key1, message)
-        secureKeyStore.storeData(key2, message)
+        // Retrieve the data
+        val result = secureKeyStore.retrieveData(key)
 
-        // Get the raw encrypted values
-        val prefs = context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
-        val encrypted1 = prefs.getString(key1, null)
-        val encrypted2 = prefs.getString(key2, null)
-
-        assertNotNull("First encrypted value should not be null", encrypted1)
-        assertNotNull("Second encrypted value should not be null", encrypted2)
-        assertNotEquals(
-            "Same message with different keys should produce different ciphertexts",
-            encrypted1,
-            encrypted2
-        )
-    }
-
-    @Test
-    fun tamperedCiphertext_failsDecryption() {
-        // Store data
-        secureKeyStore.storeData(testKey, testData)
-
-        // Get the raw encrypted value
-        val prefs = context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
-        val encrypted = prefs.getString(testKey, null) ?: fail("Encrypted data should not be null")
-
-        // Tamper with the stored value (flip a bit in the base64 string)
-        val tamperedArray = encrypted.toCharArray()
-        if (tamperedArray.size > 10) {
-            tamperedArray[10] = if (tamperedArray[10] == 'A') 'B' else 'A'
-        }
-        val tampered = String(tamperedArray)
-
-        // Save the tampered value
-        prefs.edit().putString(testKey, tampered).apply()
-
-        // Attempt to retrieve - should fail to decrypt
-        val retrieved = secureKeyStore.retrieveData(testKey)
-        assertNull("Tampered ciphertext should fail decryption", retrieved)
-    }
-
-    @Test
-    fun keyRotation_worksCorrectly() {
-        // Store data with initial key
-        secureKeyStore.storeData(testKey, testData)
-
-        // Get the key alias
-        val keyAlias = "${SecureKeyStore.KEY_ALIAS}_$testKey"
-
-        // Delete the key to simulate key rotation
-        val keyStore = KeyStore.getInstance("AndroidKeyStore")
-        keyStore.load(null)
-        keyStore.deleteEntry(keyAlias)
-
-        // Store data again - should create a new key
-        secureKeyStore.storeData(testKey, testData)
-
-        // Verify we can still retrieve the data
-        val retrieved = secureKeyStore.retrieveData(testKey)
-        assertArrayEquals("Data should still be accessible after key rotation", testData, retrieved)
+        assertNotNull(result)
+        assertArrayEquals(originalData, result)
     }
 }

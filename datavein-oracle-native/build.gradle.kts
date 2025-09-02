@@ -1,12 +1,12 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
-    id("org.jetbrains.kotlin.plugin.serialization")
-    id("com.google.devtools.ksp")
-    id("com.google.dagger.hilt.android")
-    id("org.jetbrains.dokka")
-    id("com.diffplug.spotless")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.spotless)
 }
 
 // Added to specify Java version for this subproject
@@ -88,11 +88,16 @@ android {
         sourceCompatibility = JavaVersion.VERSION_24
         targetCompatibility = JavaVersion.VERSION_24
     }
-}
 
-// Consistent JVM target for Java and Kotlin
-kotlin {
-    jvmToolchain(24)
+    // Kotlin compiler options using the new DSL
+    kotlin {
+        jvmToolchain(24)
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+        }
+    }
 }
 
 dependencies {
@@ -127,7 +132,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     // Core library desugaring
-    coreLibraryDesugaring(libs.coreLibraryDesugaring)
 
     // Xposed Framework - LSPosed Integration
     implementation(libs.bundles.xposed)
@@ -142,7 +146,7 @@ dependencies {
     testImplementation(libs.bundles.testing)
     testRuntimeOnly(libs.junit.engine)
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.core.ktx)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)

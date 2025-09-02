@@ -1,14 +1,16 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.TaskAction
 
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.dokka)
     alias(libs.plugins.spotless)
-    alias(libs.plugins.kotlin.compose)
 }
 
 java {
@@ -55,13 +57,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_24
     }
 
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_24)
-        }
-    }
-
-
     packaging {
         resources {
             excludes += listOf(
@@ -84,6 +79,15 @@ android {
                 version = "3.22.1"
             }
         }
+    }
+}
+
+// Kotlin compiler options for Compose
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
     }
 }
 
@@ -138,23 +142,24 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testRuntimeOnly(libs.junit.engine)
     
+    androidTestImplementation(libs.androidx.core.ktx)
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
 }
 
 // Define a shared directory property for ROM tools output
-val romToolsOutputDirectory: org.gradle.api.file.DirectoryProperty = project.objects.directoryProperty().convention(layout.buildDirectory.dir("rom-tools"))
+val romToolsOutputDirectory: DirectoryProperty = project.objects.directoryProperty().convention(layout.buildDirectory.dir("rom-tools"))
 
 // ROM Tools specific tasks
 tasks.register<Copy>("copyRomTools") {
     from("src/main/resources")
-    into(romToolsOutputDirectory) // Use the shared property with into()
+    into(romToolsOutputDirectory)
     include("**/*.so", "**/*.bin", "**/*.img", "**/*.jar")
     includeEmptyDirs = false
     
     doFirst {
+        val dirFile = romToolsOutputDirectory.get().asFile
         // Ensure the ROM tools output directory exists before copying
         dirFile.mkdirs()
         logger.lifecycle("📁 ROM tools directory: ${dirFile.absolutePath}")
@@ -166,13 +171,15 @@ tasks.register<Copy>("copyRomTools") {
 }
 
 abstract class VerifyRomToolsTask : DefaultTask() {
-    @get:InputDirectory
     @get:Optional
-    abstract val romToolsDir: org.gradle.api.file.DirectoryProperty
+    abstract val romToolsDir: DirectoryProperty
 
     /**
-     * Verify that the configured ROM tools directory exists and log the outcome.
+     * Verifies that the configured ROM tools directory exists.
      *
+     * If `romToolsDir` is unset or the directory does not exist, logs a warning that ROM functionality may be limited.
+     * If the directory exists, logs a lifecycle message with its absolute path. This check is informational and does not
+     * fail the build when the directory is missing.
      * If the task's optional `romToolsDir` is unset or points to a non-existent location, the task emits a warning.
      * If the directory exists, the task logs a lifecycle message including the directory's absolute path.
      */
@@ -188,6 +195,8 @@ abstract class VerifyRomToolsTask : DefaultTask() {
 }
 
 tasks.register<VerifyRomToolsTask>("verifyRomTools") {
+    romToolsDir.set(romToolsOutputDirectory)
+    dependsOn(rootProject.tasks.named("ensureResourceStructure"))
     romToolsDir.set(romToolsOutputDirectory) // Set to the same shared property
     dependsOn("copyRomTools") // Explicitly depend on copyRomTools for clarity and reliability
     // Gradle should infer the dependency on copyRomTools because romToolsOutputDirectory

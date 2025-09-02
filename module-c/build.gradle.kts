@@ -1,14 +1,14 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
-    id("org.jetbrains.kotlin.plugin.serialization")
-    id("com.google.devtools.ksp")
-    id("com.google.dagger.hilt.android")
-    id("org.jetbrains.dokka")
-    id("com.diffplug.spotless")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.spotless)
 }
 
 // Added to specify Java version for this subproject
@@ -51,10 +51,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_24
     }
 
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_24)
-        }
+    kotlinOptions {
+        jvmTarget = "24"
+        apiVersion = "2.2"
+        languageVersion = "2.2"
     }
 
     packaging {
@@ -65,6 +65,9 @@ android {
 }
 
 dependencies {
+    // ✅ CRITICAL: Add Compose BOM platform first!
+    implementation(platform(libs.androidx.compose.bom))
+
     // SACRED RULE #5: DEPENDENCY HIERARCHY
     implementation(project(":core-module"))
     implementation(project(":app"))
@@ -73,6 +76,8 @@ dependencies {
     implementation(libs.bundles.androidx.core)
     implementation(libs.bundles.compose)
     implementation(libs.bundles.coroutines)
+    implementation(libs.androidx.compose.material3)
+
     implementation(libs.androidx.compose.material3)
 
     // Hilt Dependency Injection
@@ -87,6 +92,8 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.test.core)
 
+
+    androidTestImplementation(libs.androidx.core.ktx)
 
     // Debug implementations
     debugImplementation(libs.androidx.compose.ui.tooling)

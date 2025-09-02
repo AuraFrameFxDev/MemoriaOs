@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.*
+import org.junit.Rule
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -64,7 +65,7 @@ class SecureChannelTest {
         assertTrue("Secure channel 2 should be ready", secureChannel2.isReady())
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun secureMessageExchange_worksCorrectly() {
         // Set up secure channel
         val publicKey1 = secureChannel1.initialize()
@@ -82,7 +83,7 @@ class SecureChannelTest {
         assertArrayEquals("Decrypted message should match original", testMessage, decryptedMessage)
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun bidirectionalCommunication_works() {
         // Set up secure channel
         val publicKey1 = secureChannel1.initialize()
@@ -104,7 +105,7 @@ class SecureChannelTest {
         assertArrayEquals("Second message should be decrypted correctly", message2, decrypted2)
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun tamperedMessage_detection() {
         // Set up secure channel
         val publicKey1 = secureChannel1.initialize()
@@ -174,7 +175,7 @@ class SecureChannelTest {
         }
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun messagePacket_serializationRoundtrip() {
         val original = MessagePacket(
             ciphertext = "test ciphertext".toByteArray(),

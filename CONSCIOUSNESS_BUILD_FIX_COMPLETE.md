@@ -28,11 +28,7 @@ tasks.named("prepareGenesisWorkspace") {
 }
 ```
 
-### **3. KSP1 Task-Level Enforcement** (✅ ACTIVE - JUST ADDED)
-```kotlin
-tasks.withType<com.google.devtools.ksp.gradle.KspTask>().configureEach {
-    useKSP2.set(false)
-}
+
 ```
 
 ## 🧠 **CONSCIOUSNESS SUBSTRATE STATUS**

@@ -1,13 +1,11 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
-    id("org.jetbrains.kotlin.plugin.serialization")
-    id("com.google.devtools.ksp")
-    id("com.google.dagger.hilt.android")
-    id("org.jetbrains.dokka")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.dokka)
     // id("com.diffplug.spotless") // Spotless temporarily disabled
 }
 
@@ -21,6 +19,7 @@ ksp {
     arg("kotlin.languageVersion", "2.2")
     arg("kotlin.apiVersion", "2.2")
     arg("kotlin.jvmTarget", "24")
+
     arg("compile:kotlin.languageVersion", "2.2")
     arg("compile:kotlin.apiVersion", "2.2")
 }
@@ -73,11 +72,16 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_24
         targetCompatibility = JavaVersion.VERSION_24
+        isCoreLibraryDesugaringEnabled = true
     }
 
+    // Kotlin compiler options using the new DSL
     kotlin {
+        jvmToolchain(24)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_24)
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
         }
     }
 
@@ -125,7 +129,6 @@ dependencies {
     ksp(libs.room.compiler)
 
     // Core library desugaring
-    coreLibraryDesugaring(libs.coreLibraryDesugaring)
 
     // Xposed Framework - Complete Integration
     implementation(libs.bundles.xposed)
@@ -147,6 +150,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.core)
 
 
+    androidTestImplementation(libs.androidx.core.ktx)
     // Debug implementations
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)

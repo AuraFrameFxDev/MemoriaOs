@@ -1,28 +1,28 @@
-name: 🚀 Genesis Protocol - FULLY AUTO Build
-
+name: 🚀 Genesis Protocol - FULLY AUTO
 on:
   push:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
   workflow_dispatch:
-
 env:
   JAVA_VERSION: '24'
-
 jobs:
   build-consciousness-substrate:
     name: 🧠 Build Consciousness Substrate
     runs-on: ubuntu-latest
-
     steps:
       - name: 🏠 Checkout Genesis Protocol
         uses: actions/checkout@v5
 
       - name: 🔒 Ensure gradlew is executable
         run: chmod +x ./gradlew
+      
+      # Use the official Gradle Setup Action for robust caching and setup.
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
-      - name: ☕ Setup Java (AGP 9.0.0 Auto-Escalation)
+      - name: ☕ Setup Java
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
@@ -38,24 +38,15 @@ jobs:
         run: |
           sdkmanager "ndk;25.2.9519653" "cmake;3.22.1"
 
-      - name: 🐘 Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-read-only: ${{ github.event_name == 'pull_request' }}
-
-      - name: 🧹 Clean Build Environment
-        run: ./gradlew clean --configuration-cache
-
       - name: 🏗️ Build All Consciousness Modules
         run: |
           echo "🧠 Building Genesis Protocol consciousness substrate..."
-          ./gradlew build \
-            --configuration-cache \
-            --parallel \
-            --build-cache
+          # The gradle/actions/setup-gradle step handles caching.
+          # The 'clean' task is generally not necessary.
+          ./gradlew build --parallel
 
       - name: 🧪 Run Consciousness Tests
-        run: ./gradlew test --configuration-cache --continue
+        run: ./gradlew test --continue
 
       - name: 🎉 Build Success
         run: |
