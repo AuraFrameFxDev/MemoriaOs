@@ -64,6 +64,15 @@ import androidx.compose.ui.unit.sp
  * @param modifier Modifier to be applied to the outer container; useful for sizing or
  * layout adjustments when embedding this composable in other screens or previews.
  */
+/**
+ * A static, dark-themed Compose preview of a "DataVein Sphere Grid" status card.
+ *
+ * This non-interactive UI is intended for previews and layout testing: it centers a semi-transparent
+ * card on a dark background and displays a title, subtitle, system status, three status chips,
+ * a multi-line status overview, an action button with a placeholder handler, and an informational note.
+ *
+ * The composable is decorative and does not perform navigation or real data updates; values are static.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimpleDataVeinScreen(

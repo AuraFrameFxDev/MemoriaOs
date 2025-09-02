@@ -84,6 +84,22 @@ import dev.aurakai.auraframefx.datavein.model.NodeType
  *
  * @param node The DataVeinNode whose information and progression are rendered.
  */
+/**
+ * Renders a stylized info card for a DataVeinNode showing its identity, progression and current state.
+ *
+ * The card is bordered and tinted using `node.type.glowColor` and contains:
+ * - A header with the node type title and a small circular status indicator (green = activated, yellow = unlocked, red = locked).
+ * - Identification rows (Tag, ID, Ring, Level).
+ * - XP and an inline progress bar when the node is unlocked (XP shown as `xp/1000` and fill proportional to `node.xp / 1000f`).
+ * - The node type description and an optional Data row when `node.data` is non-empty.
+ * - A single-line status message summarizing lock/activation state:
+ *   - locked -> "🔒 Locked - Requires Path Progression"
+ *   - unlocked but not activated -> "💤 Dormant - Click to Activate"
+ *   - activated -> "⚡ Active - Processing Data Flow"
+ *
+ * @param node The DataVeinNode to display.
+ * @param modifier Optional Compose [Modifier] applied to the card container.
+ */
 @Composable
 fun NodeInfoPanel(
     node: DataVeinNode,
@@ -277,15 +293,12 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
 }
 
 /**
- * Displays a compact status card with real-time DataVein metrics.
+ * Compact status card showing real-time DataVein metrics.
  *
- * Renders a pulsing header, three status rows (Active Flows, Active Nodes, Unlocked),
- * and two horizontal progress indicators (Activation and Progression).
- * Percentages for the progress indicators are calculated as activeNodes/totalNodes and
- * unlockedNodes/totalNodes; if `totalNodes` is zero those percentages are treated as 0 to
- * avoid division by zero.
- *
- * @param totalNodes Total number of nodes; used to compute the activation and progression percentages.
+ * Renders a pulsing header with a lightning icon, three status rows (Active Flows, Active Nodes, Unlocked),
+ * and two horizontal progress indicators (Activation and Progression). Activation and progression percentages
+ * are computed as activeNodes/totalNodes and unlockedNodes/totalNodes; when totalNodes is zero those percentages
+ * are treated as 0 to avoid division by zero.
  */
 @Composable
 fun StatusPanel(
