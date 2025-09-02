@@ -78,44 +78,41 @@ android {
         implementation(libs.kotlin.reflect)
         implementation(libs.bundles.coroutines)
         implementation(libs.kotlinx.serialization.json)
-        implementation(libs.kotlinx.datetime)
+        implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
 
         // Networking (for the generated Retrofit client)
-        implementation(libs.retrofit)
-        implementation(libs.retrofit.converter.kotlinx.serialization)
-        implementation(libs.retrofit.converter.scalars)
-        implementation(libs.okhttp3.logging.interceptor)
+        implementation("com.squareup.retrofit2:retrofit:${libs.versions.retrofit.get()}")
+        implementation(libs.retrofit2.kotlinx.serialization.converter)
+        implementation("com.squareup.retrofit2:converter-scalars:${libs.versions.retrofit.get()}")
+        implementation("com.squareup.okhttp3:logging-interceptor:${libs.versions.okhttp.get()}")
 
         // Apache Oltu OAuth (required by generated OAuth classes)
-        implementation(libs.apache.oltu.oauth2.client) {
+        implementation("org.apache.oltu.oauth2:org.apache.oltu.oauth2.client:1.0.2") {
             exclude(group = "org.apache.oltu.oauth2", module = "org.apache.oltu.oauth2.common")
         }
-        // Exclude common classes that are already included in client
-        // implementation(libs.apache.oltu.oauth2.common)
-
-        // Core Library Desugaring
-        coreLibraryDesugaring(libs.android.desugar.jdk.libs)
 
         // Utilities
         implementation(libs.gson)
 
-        // Security
+        // Core Library Desugaring
+        coreLibraryDesugaring(libs.coreLibraryDesugaring)
 
         // Testing
         testImplementation(libs.junit)
         testImplementation(libs.mockk)
-
         androidTestImplementation(libs.androidx.core.ktx)
     }
+}
 
 
 
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        dependsOn(":openApiGenerate")
-    }
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    dependsOn(":openApiGenerate")
+}
 
 // Ensure KSP also waits for API generation
-    tasks.withType<com.google.devtools.ksp.gradle.KspTask>().configureEach {
-        dependsOn(":openApiGenerate")
-    }
+tasks.withType<com.google.devtools.ksp.gradle.KspTask> {
+    dependsOn(":openApiGenerate")
 }
+
+

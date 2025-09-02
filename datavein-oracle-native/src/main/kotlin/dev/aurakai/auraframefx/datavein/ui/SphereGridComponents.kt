@@ -23,7 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,6 +40,65 @@ import dev.aurakai.auraframefx.datavein.model.NodeType
 
 /**
  * Enhanced Node Info Panel with FFX-style progression details
+ */
+/**
+ * Renders a stylized info card displaying a DataVein node's type, identification, progression, description, and current status.
+ *
+ * Shows the node type title with a colored status dot, tag/ID/ring/level rows, and — when unlocked — XP and a horizontal XP bar.
+ * Also displays the node description, optional data row (when present), and a one-line status message reflecting locked, dormant, or active states.
+ *
+ * @param node The DataVeinNode whose details are rendered.
+ * @param modifier Optional Compose modifier applied to the outer Card.
+
+ */
+/**
+ * Renders a stylized information card for a DataVeinNode.
+ *
+ * The card (250.dp wide, rounded corners, 2.dp border tinted by the node type glow color)
+ * shows the node type title and a small circular status indicator (green = activated, yellow = unlocked but dormant,
+ * red = locked). Below the header it presents identification rows (Tag, ID, Ring, Level).
+ *
+ * If the node is unlocked an XP row (`XP: {xp}/1000`) and a horizontal progress track are shown; the progress fill
+ * reflects `node.xp / 1000f`. The node type description is displayed beneath those rows. If `node.data` is non-empty
+ * a "Data" row is shown.
+ *
+ * A single-line status message is shown at the bottom with one of:
+ * - "🔒 Locked - Requires Path Progression" (locked)
+ * - "💤 Dormant - Click to Activate" (unlocked but not activated)
+ * - "⚡ Active - Processing Data Flow" (activated)
+ *
+ * @param node The DataVeinNode to display (used for type, identification, XP, description, data, unlocked/activated state).
+ */
+/**
+ * Renders a stylized information card for a DataVein node.
+ *
+ * The card shows the node type title (colored by the node type's glow color) with a small circular
+ * status indicator (green = activated, yellow = unlocked, red = locked). Always displays identification
+ * rows for Tag, ID, Ring, and Level. If the node is unlocked, displays an XP row and a horizontal XP
+ * progress bar whose fill is proportionate to `node.xp / 1000`. The node type description is always
+ * shown; a "Data" row is rendered only when `node.data` is non-empty. A one-line status message at the
+ * bottom summarizes node state as one of:
+ *  - "🔒 Locked - Requires Path Progression" when not unlocked,
+ *  - "💤 Dormant - Click to Activate" when unlocked but not activated,
+ *  - "⚡ Active - Processing Data Flow" when activated.
+ *
+ * @param node The DataVeinNode whose information and progression are rendered.
+ */
+/**
+ * Renders a stylized info card for a DataVeinNode showing its identity, progression and current state.
+ *
+ * The card is bordered and tinted using `node.type.glowColor` and contains:
+ * - A header with the node type title and a small circular status indicator (green = activated, yellow = unlocked, red = locked).
+ * - Identification rows (Tag, ID, Ring, Level).
+ * - XP and an inline progress bar when the node is unlocked (XP shown as `xp/1000` and fill proportional to `node.xp / 1000f`).
+ * - The node type description and an optional Data row when `node.data` is non-empty.
+ * - A single-line status message summarizing lock/activation state:
+ *   - locked -> "🔒 Locked - Requires Path Progression"
+ *   - unlocked but not activated -> "💤 Dormant - Click to Activate"
+ *   - activated -> "⚡ Active - Processing Data Flow"
+ *
+ * @param node The DataVeinNode to display.
+ * @param modifier Optional Compose [Modifier] applied to the card container.
  */
 @Composable
 fun NodeInfoPanel(
@@ -89,7 +148,7 @@ fun NodeInfoPanel(
                 )
             }
 
-            Divider(color = node.type.glowColor.copy(alpha = 0.3f))
+            HorizontalDivider(color = node.type.glowColor.copy(alpha = 0.3f))
 
             // Node identification
             InfoRow("Tag", node.tag, Color.Cyan)
@@ -153,7 +212,13 @@ fun NodeInfoPanel(
 }
 
 /**
- * Enhanced Node Type Legend with categories
+ * Renders a compact legend Card listing DataVein node types grouped by category.
+ *
+ * The card shows a header ("🌐 DataVein Node Types"), a horizontal divider, and for each
+ * NodeCategory a category label followed by the NodeType entries in that category. Each
+ * entry displays a small circular swatch (filled with `type.color` and bordered with a
+ * semi-transparent `type.glowColor`) and the type's `displayName`. A short two-line
+ * explanatory legend appears at the bottom with interaction hints.
  */
 @Composable
 fun NodeTypeLegend(modifier: Modifier = Modifier) {
@@ -175,7 +240,7 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
                 fontSize = 12.sp
             )
 
-            Divider(color = Color.White.copy(alpha = 0.2f))
+            HorizontalDivider(color = Color.White.copy(alpha = 0.2f))
 
             // Group by category
             NodeCategory.values().forEach { category ->
@@ -228,7 +293,12 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
 }
 
 /**
- * Enhanced Status Panel with real-time metrics
+ * Compact status card showing real-time DataVein metrics.
+ *
+ * Renders a pulsing header with a lightning icon, three status rows (Active Flows, Active Nodes, Unlocked),
+ * and two horizontal progress indicators (Activation and Progression). Activation and progression percentages
+ * are computed as activeNodes/totalNodes and unlockedNodes/totalNodes; when totalNodes is zero those percentages
+ * are treated as 0 to avoid division by zero.
  */
 @Composable
 fun StatusPanel(
@@ -276,7 +346,7 @@ fun StatusPanel(
                 )
             }
 
-            Divider(color = Color.Cyan.copy(alpha = 0.3f))
+            HorizontalDivider(color = Color.Cyan.copy(alpha = 0.3f))
 
             StatusRow("Active Flows", activeFlows.toString(), Color(0xFF00FF88))
             StatusRow("Active Nodes", "$activeNodes/$totalNodes", Color(0xFF4FC3F7))

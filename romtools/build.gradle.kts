@@ -56,7 +56,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_24
         targetCompatibility = JavaVersion.VERSION_24
     }
-    
+
     packaging {
         resources {
             excludes += listOf(
@@ -160,6 +160,8 @@ tasks.register<Copy>("copyRomTools") {
     
     doFirst {
         val dirFile = romToolsOutputDirectory.get().asFile
+        // Ensure the ROM tools output directory exists before copying
+        dirFile.mkdirs()
         logger.lifecycle("📁 ROM tools directory: ${dirFile.absolutePath}")
     }
     
@@ -173,11 +175,11 @@ abstract class VerifyRomToolsTask : DefaultTask() {
     abstract val romToolsDir: DirectoryProperty
 
     /**
-     * Verifies that the configured ROM tools directory exists.
+     * Verifies presence of the configured ROM tools directory.
      *
-     * If `romToolsDir` is unset or the directory does not exist, logs a warning that ROM functionality may be limited.
-     * If the directory exists, logs a lifecycle message with its absolute path. This check is informational and does not
-     * fail the build when the directory is missing.
+     * If the optional `romToolsDir` is unset or points to a non-existent location, the task logs a warning that ROM-related
+     * functionality may be limited. If the directory exists, the task logs a lifecycle message with its absolute path.
+     * This check is informational and does not fail the build.
      */
     @TaskAction
     fun verify() {
@@ -193,6 +195,10 @@ abstract class VerifyRomToolsTask : DefaultTask() {
 tasks.register<VerifyRomToolsTask>("verifyRomTools") {
     romToolsDir.set(romToolsOutputDirectory)
     dependsOn(rootProject.tasks.named("ensureResourceStructure"))
+    romToolsDir.set(romToolsOutputDirectory) // Set to the same shared property
+    dependsOn("copyRomTools") // Explicitly depend on copyRomTools for clarity and reliability
+    // Gradle should infer the dependency on copyRomTools because romToolsOutputDirectory
+    // is an output of copyRomTools (via 'into') and an input here.
 }
 
 tasks.named("build") {

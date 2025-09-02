@@ -78,6 +78,19 @@ import kotlinx.coroutines.launch
  * drawing gesture ends and the current path has non-empty bounds. Clearing actions remove paths, elements,
  * and their animated copies.
  */
+/**
+ * Renders the interactive collaborative drawing surface for creating and animating simple canvas elements.
+ *
+ * This full-screen composable provides:
+ * - Multiple drawing tools: freehand PATH, RECTANGLE, and OVAL.
+ * - Pinch-to-zoom and pan support via a transformable state.
+ * - Tap and drag input for creating in-progress strokes (freehand PATH); completed strokes are committed when the gesture ends and the path has non-empty bounds.
+ * - A top app bar with Clear and Save actions and floating tool buttons to switch tools.
+ * - A toolbar for selecting color and stroke width and clearing committed/animated paths.
+ * - Animated playback support: committed paths are stored in `paths` and mirrored into `animatedPaths` for progressive rendering.
+ *
+ * Visual content (grid, elements, current in-progress path, and animated paths) is drawn under the current scale and offset transforms so zoom and pan affect all canvas content consistently.
+
 
 /**
  * Full-screen interactive collaborative drawing canvas.
@@ -167,6 +180,24 @@ import kotlinx.coroutines.launch
  * - The Save action is present in the UI but is a placeholder (no save implementation).
  */
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+/**
+ * Full-screen composable providing an interactive collaborative drawing canvas.
+ *
+ * Renders a pan- and zoom-able canvas with a background grid, selectable drawing tools
+ * (freehand PATH, RECTANGLE, OVAL), a live in-progress stroke, and playback-ready committed paths.
+ * Users can draw freehand with drag/tap gestures (PATH), pan/zoom via transform gestures, select
+ * tool, color, and stroke width via the toolbar, and clear or save the canvas from the top app bar.
+ *
+ * Visual content (grid, elements, current stroke, and animated/committed paths) is uniformly
+ * transformed by the current scale and offset so zooming and panning affect all layers together.
+ * Committed paths are stored in `paths` and mirrored into `animatedPaths` for animated playback.
+ *
+ * Side effects:
+ * - Maintains and mutates internal remembered state: committed `paths`, `elements`, `animatedPaths`,
+ *   current in-progress `currentPath`, `currentColor`, `strokeWidth`, selected tool, and transform
+ *   state (`scale`, `offset`).
+ * - Clearing actions remove entries from `paths`, `elements`, and `animatedPaths`.
+ */
 @Composable
 fun CanvasScreen() {
     // Canvas state

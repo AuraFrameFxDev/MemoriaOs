@@ -142,7 +142,7 @@ dependencies {
     // Core Android bundles
     implementation(libs.bundles.androidx.core)
     implementation(libs.bundles.compose)
-    
+
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.compose.ui.tooling.preview)
@@ -157,10 +157,6 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
-
-    // Core library desugaring
-    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
-
     // Xposed Framework - Complete Integration
     implementation(libs.bundles.xposed)
     ksp(libs.yuki.ksp.xposed)
@@ -178,6 +174,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
+
 
     androidTestImplementation(libs.androidx.core.ktx)
     // Debug implementations

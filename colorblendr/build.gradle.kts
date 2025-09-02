@@ -72,7 +72,7 @@ android {
 dependencies {
     // ✅ CRITICAL FIX: Add Compose BOM platform first!
     implementation(platform(libs.androidx.compose.bom))
-    
+
     // SACRED RULE #5: DEPENDENCY HIERARCHY
     implementation(project(":core-module"))
     implementation(project(":app"))
@@ -94,7 +94,6 @@ dependencies {
     implementation(libs.bundles.utilities)
 
     // Core library desugaring - using modern DSL
-    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
     // Testing
     testImplementation(libs.bundles.testing)
     testImplementation(libs.junit.engine) // Changed from testRuntimeOnly for consistency
@@ -103,6 +102,8 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
+    androidTestImplementation(libs.androidx.test.core)
+
 
     androidTestImplementation(libs.androidx.core.ktx)
     // Debug implementations

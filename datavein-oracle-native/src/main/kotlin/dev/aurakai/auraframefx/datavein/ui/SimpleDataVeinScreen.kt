@@ -12,7 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +26,52 @@ import androidx.compose.ui.unit.sp
 /**
  * Simple DataVein Screen for testing basic Compose setup
  * This serves as a fallback while we resolve KSP issues
+ */
+/**
+ * Renders the "DataVein Sphere Grid" status card UI.
+ *
+ * Displays a centered card on a dark background containing:
+ * - title and subtitle,
+ * - a divider and system status line,
+ * - three status chips (Core Nodes, Active Flows, Data Streams),
+ * - a multi-line status overview,
+ * - an action button labeled "🚀 Launch Sphere Grid" (currently a placeholder with no action),
+ * - and an informational note about KSP compilation.
+ *
+ * The composable accepts a Modifier to customize its outer container.
+
+ */
+/**
+ * Renders a centered, dark-themed status card for the "DataVein Sphere Grid" UI.
+ *
+ * The composable displays a title and subtitle, a cyan divider, a system status line,
+ * three compact status chips (Core Nodes, Active Flows, Data Streams), a multi-line
+ * status overview, an action button ("Launch Sphere Grid") with a placeholder onClick,
+ * and a small note about KSP compilation. Designed for previewing or testing the
+ * static screen layout; content is currently static and non-interactive.
+ *
+ * @param modifier Modifier applied to the outermost Box container (use to customize sizing,
+ * padding, or alignment of the whole composable).
+ */
+/**
+ * A static, centered test UI showcasing a "DataVein Sphere Grid" status card.
+ *
+ * Displays a stylized card with title, subtitle, a cyan divider, system status line,
+ * three compact status chips (Core Nodes, Active Flows, Data Streams), a multi-line
+ * status overview, a cyan action button (placeholder onClick), and an informational note
+ * about KSP compilation. Intended for visual testing or as a static demo of the Material3 UI.
+ *
+ * @param modifier Modifier to be applied to the outer container; useful for sizing or
+ * layout adjustments when embedding this composable in other screens or previews.
+ */
+/**
+ * A static, dark-themed Compose preview of a "DataVein Sphere Grid" status card.
+ *
+ * This non-interactive UI is intended for previews and layout testing: it centers a semi-transparent
+ * card on a dark background and displays a title, subtitle, system status, three status chips,
+ * a multi-line status overview, an action button with a placeholder handler, and an informational note.
+ *
+ * The composable is decorative and does not perform navigation or real data updates; values are static.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +112,7 @@ fun SimpleDataVeinScreen(
                     fontSize = 16.sp
                 )
 
-                Divider(color = Color.Cyan.copy(alpha = 0.3f))
+                HorizontalDivider(color = Color.Cyan.copy(alpha = 0.3f))
 
                 Text(
                     text = "System Status: ⚡ ACTIVE",

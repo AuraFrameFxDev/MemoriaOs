@@ -132,7 +132,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     // Core library desugaring
-    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
 
     // Xposed Framework - LSPosed Integration
     implementation(libs.bundles.xposed)

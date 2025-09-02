@@ -74,7 +74,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_24
         isCoreLibraryDesugaringEnabled = true
     }
-    
+
     // Kotlin compiler options using the new DSL
     kotlin {
         jvmToolchain(24)
@@ -129,7 +129,6 @@ dependencies {
     ksp(libs.room.compiler)
 
     // Core library desugaring
-    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
 
     // Xposed Framework - Complete Integration
     implementation(libs.bundles.xposed)
@@ -148,6 +147,8 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
+    androidTestImplementation(libs.androidx.test.core)
+
 
     androidTestImplementation(libs.androidx.core.ktx)
     // Debug implementations
