@@ -1,3 +1,7 @@
+import java.io.File
+import org.openapitools.generator.gradle.plugin.tasks.MetaTask
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
@@ -20,32 +24,53 @@ val hasValidSpecFile by extra(specFile.exists())
 // Advanced OpenAPI Configuration
 apply(plugin = "org.openapi.generator")
 
-configure<org.openapitools.generator.gradle.plugin.extensions.OpenApiGeneratorGenerateExtension> {
-    generatorName.set("kotlin")
-    inputSpec.set(specFile.absolutePath.replace("\\", "/"))
-    outputDir.set("${rootDir.absolutePath}/core-module/build/generated/source/openapi")
-    apiPackage.set("dev.aurakai.auraframefx.api")
-    modelPackage.set("dev.aurakai.auraframefx.model")
-    configOptions.set(mapOf(
-        "dateLibrary" to "kotlinx-datetime",
-        "serializationLibrary" to "kotlinx_serialization",
-        "useCoroutines" to "true"
-    ))
-    // Add validation options
-    validateSpec.set(true)
-    skipValidateSpec.set(false)
-    logToStderr.set(true)
-    verbose.set(true)
-}
+// Only configure OpenAPI tasks if the spec file exists
+if (specFile.exists()) {
+    // Configure the meta task if it doesn't exist
+    if (!tasks.names.contains("openApiMeta")) {
+        tasks.register<MetaTask>("openApiMeta") {
+            generatorName.set("kotlin")
+            packageName.set("dev.aurakai.auraframefx.generated")
+            outputFolder.set("${project.layout.buildDirectory.get().asFile.absolutePath}/openapi-meta")
+        }
+    }
 
-tasks.named<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerate") {
-    group = "openapi tools"
-    description = "Generate Kotlin API client from OpenAPI spec"
-    onlyIf { specFile.exists() }
-    
-    // Force clean output directory
-    doFirst {
-        file("${rootDir.absolutePath}/core-module/build/generated/source/openapi").deleteRecursively()
+    // Configure the generation extension
+    extensions.configure<org.openapitools.generator.gradle.plugin.extensions.OpenApiGeneratorGenerateExtension> {
+        generatorName.set("kotlin")
+        inputSpec.set(specFile.absolutePath.replace("\\", "/"))
+        outputDir.set("${project.rootDir.absolutePath}/core-module/build/generated/source/openapi"
+            .replace("\\", "/")
+            .replace("//", "/")
+        )
+        apiPackage.set("dev.aurakai.auraframefx.api")
+        modelPackage.set("dev.aurakai.auraframefx.model")
+        configOptions.set(mapOf(
+            "dateLibrary" to "kotlinx-datetime",
+            "serializationLibrary" to "kotlinx_serialization",
+            "useCoroutines" to "true"
+        ))
+        validateSpec.set(true)
+        skipValidateSpec.set(false)
+        logToStderr.set(true)
+        verbose.set(true)
+    }
+
+    // Configure the generate task
+    tasks.withType<GenerateTask> {
+        group = "openapi tools"
+        description = "Generate Kotlin API client from OpenAPI spec"
+        
+        // Ensure output directory exists and is clean
+        outputs.upToDateWhen { false } // Always run to ensure clean generation
+        
+        doFirst {
+            val outputDir = file("${project.rootDir.absolutePath}/core-module/build/generated/source/openapi")
+            if (outputDir.exists()) {
+                outputDir.deleteRecursively()
+            }
+            outputDir.parentFile?.mkdirs()
+        }
     }
 }
 
