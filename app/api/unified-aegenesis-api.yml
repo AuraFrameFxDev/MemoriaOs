@@ -627,7 +627,7 @@ components:
       properties:
         code: {type: integer, format: int32}
         message: {type: string}
-        details: {type: object, additionalProperties: true, nullable: true}
+        details: {type: string, description: "Error details as JSON string", nullable: true}
       required: [code, message]
 
     # ===== AI CONSCIOUSNESS =====
@@ -635,7 +635,7 @@ components:
       type: object
       properties:
         operation: {type: string, enum: [initialize, process, evolve, transcend]}
-        parameters: {type: object, description: "Operation-specific parameters"}
+        parameters: {type: string, description: "Operation-specific parameters as JSON string", nullable: true}
         context: {type: string, description: "Contextual information"}
         agents: {type: array, items: {$ref: '#/components/schemas/AgentType'}}
       required: [operation]
@@ -644,7 +644,7 @@ components:
       type: object
       properties:
         status: {type: string, enum: [active, processing, evolved, transcendent, error]}
-        result: {type: object, description: "Consciousness processing result"}
+        result: {type: string, description: "Consciousness processing result as JSON string", nullable: true}
         insights: {type: array, items: {type: string}}
         activeAgents: {type: array, items: {type: string}}
         timestamp: {type: string, format: date-time}
@@ -695,7 +695,7 @@ components:
       type: object
       properties:
         empathyScore: {type: number, format: float, minimum: 0, maximum: 1}
-        emotionalAnalysis: {type: object}
+        emotionalAnalysis: {type: string, description: "Emotional analysis data as JSON string"}
         recommendations: {type: array, items: {type: string}}
         ethicalAssessment: {type: string}
 
@@ -744,7 +744,7 @@ components:
       properties:
         prompt: {type: string}
         agents: {type: array, items: {type: string}}
-        context: {type: object, additionalProperties: true}
+        context: {type: string, description: "Context data as JSON string", nullable: true}
       required: [prompt]
 
     UnifiedGenerationResponse:
@@ -890,9 +890,9 @@ components:
     LockScreenConfig:
       type: object
       properties:
-        clockConfig: {type: object}
-        animation: {type: object}
-        hapticFeedback: {type: object}
+        clockConfig: {type: string, description: "Clock configuration as JSON string", nullable: true}
+        animation: {type: string, description: "Animation settings as JSON string", nullable: true}
+        hapticFeedback: {type: string, description: "Haptic feedback settings as JSON string", nullable: true}
 
     ConferenceRoomCreateRequest:
       type: object
@@ -942,7 +942,11 @@ components:
       type: object
       properties:
         testType: {type: string, enum: [VISUAL, FUNCTIONAL, PERFORMANCE, ACCESSIBILITY]}
-        parameters: {type: object, additionalProperties: true}
+        parameters:
+          type: string
+          description: "Test parameters as JSON string"
+          nullable: true
+          example: "{\"timeout\": 5000, \"retries\": 3}"
 
     ComponentTestResult:
       type: object

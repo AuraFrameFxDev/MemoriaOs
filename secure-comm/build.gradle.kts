@@ -1,18 +1,25 @@
 plugins {
-    alias(libs.plugins.android.library) // Version will be inherited (9.0.0-alpha01)
-   // alias(libs.plugins.kotlin.android) // Stays commented out
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android) 
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.dokka)
     alias(libs.plugins.spotless)
     alias(libs.plugins.kover)
-    alias(libs.plugins.kotlin.android)
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
 }
 
 ksp {
-    arg("kotlin.languageVersion", "2.2") // Match main Kotlin compiler
-    arg("kotlin.apiVersion", "2.2")    // Match main Kotlin compiler
+    arg("kotlin.languageVersion", "2.2")
+    arg("kotlin.apiVersion", "2.2")
+    arg("compile:kotlin.languageVersion", "2.2")
+    arg("compile:kotlin.apiVersion", "2.2")
 }
 
 android {
@@ -20,15 +27,9 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 23  // FIXED: Raised from 33 to support Android KeyStore APIs
+        minSdk = 23
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-    }
-
-    lint {
-        abortOnError = false
-        checkReleaseBuilds = false
-        disable += setOf("InvalidPackage", "GradleDependency")
     }
 
     buildTypes {
@@ -47,24 +48,48 @@ android {
         viewBinding = false
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
+        isCoreLibraryDesugaringEnabled = true
+    }
+
+    kotlin {
+        jvmToolchain(24)
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+        }
+    }
+
     packaging {
         resources {
-            excludes += listOf(
+            excludes += setOf(
                 "/META-INF/{AL2.0,LGPL2.1}",
                 "/META-INF/DEPENDENCIES",
                 "/META-INF/LICENSE",
                 "/META-INF/LICENSE.txt",
                 "/META-INF/NOTICE",
                 "/META-INF/NOTICE.txt",
-                "META-INF/*.kotlin_module"
+                "**/*.kotlin_module"
             )
         }
+    }
+
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
+        disable += setOf("InvalidPackage", "GradleDependency")
     }
 }
 
 
 
 dependencies {
+    // Core library desugaring
+    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
+    
     // SACRED RULE #5: DEPENDENCY HIERARCHY
     implementation(project(":core-module"))
 

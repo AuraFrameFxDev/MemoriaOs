@@ -1,9 +1,9 @@
 [versions]
 # ===== Project & Build Tools =====
-agp = "9.0.0-alpha02"
+agp = "9.0.0-alpha01"  # Downgraded as requested
 googleServices = "4.4.3"
 kotlin = "2.2.20-RC"
-ksp = "2.2.20-RC-2.0.2"
+ksp = "2.2.20-RC-2.0.2"  # Bleeding-edge version for Kotlin 2.2.20-RC compatibility
 openApiGenerator = "7.14.0"
 symbolProcessingGradlePlugin = "2.2.10-2.0.2"
 
@@ -26,12 +26,12 @@ workManager = "2.10.3"
 # ===== Google =====
 firebaseBom = "34.2.0"
 firebaseCrashlytics = "3.0.6"
-firebasePerfPlugin = "1.4.2"
+firebasePerfPlugin = "2.0.1"
 firebaseCrashlyticsKtx = "19.4.4"
 googleAuth = "21.4.0"
 googleAuthApiPhone = "18.2.0"
 googleIdentity = "18.1.0"
-hilt = "2.57.1"
+hilt = "2.51.1"  # Latest stable version compatible with AGP 9.0.0-alpha02
 materialVersion = "1.12.0"
 
 # ===== Kotlin & Coroutines =====
@@ -71,6 +71,7 @@ auraBackendApiGenerator = "1.0.0"
 bouncycastle = "1.81"
 bcprovJdk18on = "1.81"
 commonsCompress = "1.28.0"
+android-desugar-jdk-libs = "2.1.4"
 gson = "2.13.1"
 tink = "1.18.0"
 xz = "1.10"
@@ -138,14 +139,14 @@ kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version = "2.2.
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.6.1" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.7.1" }
 
 # ===== Networking =====
 apache-oltu-oauth2-client = { group = "org.apache.oltu.oauth2", name = "org.apache.oltu.oauth2.client", version = "1.0.2" }
 # apache-oltu-oauth2-common is included in client, no need for separate dependency
-moshi = { group = "com.squareup.moshi", name = "moshi", version = "1.15.1" }
-moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version = "1.15.1" }
-moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version = "1.15.1" }
+moshi = { group = "com.squareup.moshi", name = "moshi", version = "1.15.2" }
+moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version = "1.15.2" }
+moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version = "1.15.2" }
 okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-converter-kotlinx-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
@@ -175,7 +176,7 @@ timber = { module = "com.jakewharton.timber:timber", version = "5.0.1" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
 commons-compress = { group = "org.apache.commons", name = "commons-compress", version.ref = "commonsCompress" }
 commons-io = { group = "commons-io", name = "commons-io", version = "2.20.0" }
-coreLibraryDesugaring = { group = "com.android.tools", name = "desugar_jdk_libs", version = "2.1.5" }
+android-desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-desugar-jdk-libs" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 xz = { group = "org.tukaani", name = "xz", version.ref = "xz" }
 

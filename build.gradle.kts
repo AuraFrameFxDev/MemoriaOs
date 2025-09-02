@@ -7,10 +7,11 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.google.services) apply false
-    alias(libs.plugins.firebase.crashlytics) apply false
     alias(libs.plugins.firebase.perf) apply false
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.openapi.generator) apply false
+    alias(libs.plugins.kover) apply false
+    alias(libs.plugins.dokka) apply false
 }
 
 val hasValidSpecFile by extra(file("app/api/unified-aegenesis-api.yml").exists())
