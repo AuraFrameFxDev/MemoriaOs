@@ -31,7 +31,7 @@ firebaseCrashlyticsKtx = "19.4.4"
 googleAuth = "21.4.0"
 googleAuthApiPhone = "18.2.0"
 googleIdentity = "18.1.0"
-hilt = "2.51.1"  # Latest stable version compatible with AGP 9.0.0-alpha02
+hilt = "2.57.1"  # Latest stable version compatible with AGP 9.0.0-alpha02
 materialVersion = "1.12.0"
 
 # ===== Kotlin & Coroutines =====
@@ -71,7 +71,7 @@ auraBackendApiGenerator = "1.0.0"
 bouncycastle = "1.81"
 bcprovJdk18on = "1.81"
 commonsCompress = "1.28.0"
-android-desugar-jdk-libs = "2.1.4"
+android-desugar-jdk-libs = "2.1.5"
 gson = "2.13.1"
 tink = "1.18.0"
 xz = "1.10"
@@ -128,7 +128,7 @@ firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashly
 google-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "googleAuth" }
 google-auth-api-phone = { group = "com.google.android.gms", name = "play-services-auth-api-phone", version.ref = "googleAuthApiPhone" }
 google-identity = { group = "com.google.android.gms", name = "play-services-identity", version.ref = "googleIdentity" }
-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version = "2.57.1" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version = "1.2.0" }
 hilt-work = { group = "androidx.hilt", name = "hilt-work", version = "1.2.0" }
@@ -186,7 +186,7 @@ androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-
 androidx-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTesting" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestJunit" }
-hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
+hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version = "2.57.1" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 junit-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitJupiter" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
