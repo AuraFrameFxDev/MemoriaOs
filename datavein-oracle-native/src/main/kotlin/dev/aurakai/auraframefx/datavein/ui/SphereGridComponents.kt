@@ -69,6 +69,21 @@ import dev.aurakai.auraframefx.datavein.model.NodeType
  *
  * @param node The DataVeinNode to display (used for type, identification, XP, description, data, unlocked/activated state).
  */
+/**
+ * Renders a stylized information card for a DataVein node.
+ *
+ * The card shows the node type title (colored by the node type's glow color) with a small circular
+ * status indicator (green = activated, yellow = unlocked, red = locked). Always displays identification
+ * rows for Tag, ID, Ring, and Level. If the node is unlocked, displays an XP row and a horizontal XP
+ * progress bar whose fill is proportionate to `node.xp / 1000`. The node type description is always
+ * shown; a "Data" row is rendered only when `node.data` is non-empty. A one-line status message at the
+ * bottom summarizes node state as one of:
+ *  - "🔒 Locked - Requires Path Progression" when not unlocked,
+ *  - "💤 Dormant - Click to Activate" when unlocked but not activated,
+ *  - "⚡ Active - Processing Data Flow" when activated.
+ *
+ * @param node The DataVeinNode whose information and progression are rendered.
+ */
 @Composable
 fun NodeInfoPanel(
     node: DataVeinNode,
@@ -181,13 +196,13 @@ fun NodeInfoPanel(
 }
 
 /**
- * Renders a legend Card listing DataVein node types grouped by category.
+ * Renders a compact legend Card listing DataVein node types grouped by category.
  *
- * Displays a titled card that iterates NodeCategory values and shows each NodeType in that
- * category as a small colored swatch (filled with `type.color` and bordered with `type.glowColor`)
- * followed by the type's display name. Ends with a short explanatory legend about interaction
- * and unlocking. Designed as a small, translucent UI panel for quick reference.
-
+ * The card shows a header ("🌐 DataVein Node Types"), a horizontal divider, and for each
+ * NodeCategory a category label followed by the NodeType entries in that category. Each
+ * entry displays a small circular swatch (filled with `type.color` and bordered with a
+ * semi-transparent `type.glowColor`) and the type's `displayName`. A short two-line
+ * explanatory legend appears at the bottom with interaction hints.
  */
 @Composable
 fun NodeTypeLegend(modifier: Modifier = Modifier) {
@@ -262,19 +277,15 @@ fun NodeTypeLegend(modifier: Modifier = Modifier) {
 }
 
 /**
- * Displays a status card summarizing real-time DataVein metrics.
+ * Displays a compact status card with real-time DataVein metrics.
  *
- * Shows a pulsing header, three compact status rows (Active Flows, Active Nodes, Unlocked)
- * and two horizontal progress indicators for activation and progression. Percentages
- * are computed relative to `totalNodes`; if `totalNodes` is zero the percentages are treated
- * as 0 to avoid division by zero.
+ * Renders a pulsing header, three status rows (Active Flows, Active Nodes, Unlocked),
+ * and two horizontal progress indicators (Activation and Progression).
+ * Percentages for the progress indicators are calculated as activeNodes/totalNodes and
+ * unlockedNodes/totalNodes; if `totalNodes` is zero those percentages are treated as 0 to
+ * avoid division by zero.
  *
- * @param activeFlows Number of currently active flows.
- * @param activeNodes Number of currently active nodes.
- * @param totalNodes Total number of nodes; used to compute percentage values.
- * @param unlockedNodes Number of unlocked nodes; used to compute percentage values.
- * @param modifier Optional Compose modifier for the panel.
-
+ * @param totalNodes Total number of nodes; used to compute the activation and progression percentages.
  */
 @Composable
 fun StatusPanel(
