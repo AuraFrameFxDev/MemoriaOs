@@ -88,6 +88,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
 
     // Core library desugaring
+    coreLibraryDesugaring(libs.coreLibraryDesugaring)
 
     // Testing
     testImplementation(libs.bundles.testing)
