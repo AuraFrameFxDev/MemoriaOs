@@ -14,15 +14,16 @@ plugins {
     alias(libs.plugins.dokka) apply false
 }
 
-val hasValidSpecFile by extra(file("app/api/unified-aegenesis-api.yml").exists())
+val specFile = file("app/api/unified-aegenesis-api.yml")
+val hasValidSpecFile by extra(specFile.exists())
 
 // Advanced OpenAPI Configuration
 apply(plugin = "org.openapi.generator")
 
 configure<org.openapitools.generator.gradle.plugin.extensions.OpenApiGeneratorGenerateExtension> {
     generatorName.set("kotlin")
-    inputSpec.set("$rootDir/app/api/unified-aegenesis-api.yml")
-    outputDir.set("$rootDir/core-module/build/generated/source/openapi")
+    inputSpec.set(specFile.absolutePath.replace("\\", "/"))
+    outputDir.set("${rootDir.absolutePath}/core-module/build/generated/source/openapi")
     apiPackage.set("dev.aurakai.auraframefx.api")
     modelPackage.set("dev.aurakai.auraframefx.model")
     configOptions.set(mapOf(
@@ -30,12 +31,22 @@ configure<org.openapitools.generator.gradle.plugin.extensions.OpenApiGeneratorGe
         "serializationLibrary" to "kotlinx_serialization",
         "useCoroutines" to "true"
     ))
+    // Add validation options
+    validateSpec.set(true)
+    skipValidateSpec.set(false)
+    logToStderr.set(true)
+    verbose.set(true)
 }
 
 tasks.named<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerate") {
     group = "openapi tools"
     description = "Generate Kotlin API client from OpenAPI spec"
-    onlyIf { file("app/api/unified-aegenesis-api.yml").exists() }
+    onlyIf { specFile.exists() }
+    
+    // Force clean output directory
+    doFirst {
+        file("${rootDir.absolutePath}/core-module/build/generated/source/openapi").deleteRecursively()
+    }
 }
 
 tasks.register<Delete>("cleanApiGeneration") {
