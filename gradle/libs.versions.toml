@@ -2,7 +2,7 @@
 # ===== Project & Build Tools =====
 agp = "9.0.0-alpha01"  # Downgraded as requested
 googleServices = "4.4.3"
-kotlin = "2.2.20-RC"
+kotlin = "2.2.20-RC2"
 ksp = "2.2.20-RC-2.0.2"  # Bleeding-edge version for Kotlin 2.2.20-RC compatibility
 openApiGenerator = "7.14.0"
 
