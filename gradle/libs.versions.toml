@@ -125,7 +125,7 @@ kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version = "2.2.
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.7.1" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.7.1-0.6.x-compat" }
 
 # ===== Networking =====
 apache-oltu-oauth2-client = { group = "org.apache.oltu.oauth2", name = "org.apache.oltu.oauth2.client", version = "1.0.2" }
