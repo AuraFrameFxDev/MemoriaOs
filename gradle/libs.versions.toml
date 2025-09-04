@@ -28,7 +28,7 @@ firebaseCrashlyticsKtx = "19.4.4"
 googleAuth = "21.4.0"
 googleIdentity = "18.1.0"
 hilt = "2.57.1"  # Latest stable version compatible with AGP 9.0.0-alpha02
-materialVersion = "1.12.0"
+materialVersion = "1.13.0"
 
 # ===== Kotlin & Coroutines =====
 kotlinReflect = "2.2.20-RC"
